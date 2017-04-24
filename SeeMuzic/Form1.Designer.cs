@@ -30,6 +30,8 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
+			this.timer2 = new System.Windows.Forms.Timer(this.components);
+			this.btn_M = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// timer1
@@ -37,11 +39,27 @@
 			this.timer1.Interval = 50;
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
+			// timer2
+			// 
+			this.timer2.Interval = 333;
+			this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+			// 
+			// btn_M
+			// 
+			this.btn_M.Location = new System.Drawing.Point(2, 2);
+			this.btn_M.Name = "btn_M";
+			this.btn_M.Size = new System.Drawing.Size(24, 24);
+			this.btn_M.TabIndex = 0;
+			this.btn_M.Text = "M";
+			this.btn_M.UseVisualStyleBackColor = true;
+			this.btn_M.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(664, 523);
+			this.ClientSize = new System.Drawing.Size(342, 313);
+			this.Controls.Add(this.btn_M);
 			this.DoubleBuffered = true;
 			this.Name = "Form1";
 			this.Text = "See Music";
@@ -55,6 +73,8 @@
 		#endregion
 
 		public System.Windows.Forms.Timer timer1;
+		public System.Windows.Forms.Timer timer2;
+		private System.Windows.Forms.Button btn_M;
 	}
 }
 
