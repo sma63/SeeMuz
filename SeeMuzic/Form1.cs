@@ -40,7 +40,7 @@ namespace SeeMuzic
 		static double x0 = 1.0, y0 = 0.0;
 		static double kf = 1.0;
 
-		public static double Level = 0.7 / 16.0;
+		public static double Level = 0.7 / 16.0, level = 1.0;
 		public static bool bKnopka = false;
 
 		static int palitra = 0, palitra_cnt = 0;
@@ -51,8 +51,9 @@ namespace SeeMuzic
 
 		static int [,] Ref1 = new int [6, 3] { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 2, 1, 0 } }; // порядок цветов
 
+		const int PENW = 4;
 		static bool bRestart = false;
-		static Pen pen2 = new Pen (Color.Yellow, 3);
+		static Pen pen2 = new Pen (Color.Yellow, PENW);
 
 		Random rnd1 = new Random ();
 
@@ -205,6 +206,7 @@ namespace SeeMuzic
 				Bass.BASS_ChannelPlay (stream1, false);
 				palitra = rnd1.Next (6);
 				alpha_plus = 0.0;
+				alpha = 0.0;
 			}
 			else
 			{
@@ -287,27 +289,23 @@ namespace SeeMuzic
 						int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
 						if ((0 <= y2) && (y2 < OKNO))
 						{
-							int v = (int)(Math.Abs ((Xbuf [x2] + Ybuf [y2]) * Level));
+							int v = (int)(Math.Abs (Xbuf [x2] + Ybuf [y2]));
 							vsum += v;
 							vcnt++;
+							v = (int)(v * Level / level);
 
 							int [] ccc = new int [3];
-							if (v < 256)
-							{
-								ccc [0] = v; ccc [1] = 0; ccc [2] = 0;
-							}
-							else if (v < 512)
-							{
-								ccc [0] = 255; ccc [1] = v - 256; ccc [2] = 0;
-							}
-							else if (v < 512 + 256)
-							{
-								ccc [0] = 255; ccc [1] = 255; ccc [2] = v - 512;
-							}
-							else
-							{
-								ccc [0] = 255; ccc [1] = 255; ccc [2] = 255;
-							}
+							//if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+							//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
+							//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
+							//else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+							if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+							else if (v < 512) { ccc [0] = 255; ccc [1] = v - 256; ccc [2] = 0; }
+							else if (v < 512 + 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v - 512; }
+							else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+							//ccc [0] = (v < 256 ? v : 255);
+							//v >>= 3; ccc [1] = (v < 256 ? v : 255);
+							//v >>= 3; ccc [2] = (v < 256 ? v : 255);
 							bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [palitra, 0]], ccc [Ref1 [palitra, 1]], ccc [Ref1 [palitra, 2]]));
 							continue;
 						}
@@ -315,10 +313,14 @@ namespace SeeMuzic
 					bmp1.SetPixel (x, y, Color.FromArgb (0, 0, 0));
 				}
 			}
-			if (0 < vcnt) vsum /= vcnt;
+			if (0 < vcnt)
+			{
+				vsum /= vcnt;
+				level += (vsum - level) / 128.0;
+			}
 			Image img1 = bmp1;
 			g.DrawImage (img1, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
-			g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - 3, 0, this.ClientSize.Height - 3);
+			g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
 		}
 		// Form1_Paint
 
