@@ -19,7 +19,7 @@ namespace SeeMuzic
 		{
 			InitializeComponent ();
 			trk_Level.Value = (int)(1 + trk_Level.Maximum - Math.Log (Form1.Level * DELITEL) / Math.Log (POWER));
-			trk_Interval.Value = (Form1.Interval - 40) / 10;
+			trk_Interval.Value = (Form1.Interval - 40) / 20;
 			trk_Krat.Value = Form1.Krat - 8;
 		}
 
@@ -36,7 +36,7 @@ namespace SeeMuzic
 
 		private void trk_Interval_ValueChanged (object sender, EventArgs e)
 		{
-			Form1.Interval = 40 + trk_Interval.Value * 10;
+			Form1.Interval = 40 + trk_Interval.Value * 20;
 			lab_Interval.Text = String.Format ("Interval = {0} ms", Form1.Interval);
 		}
 

@@ -46,7 +46,7 @@
 			// 
 			// btn_M
 			// 
-			this.btn_M.Location = new System.Drawing.Point(2, 2);
+			this.btn_M.Location = new System.Drawing.Point(0, 0);
 			this.btn_M.Name = "btn_M";
 			this.btn_M.Size = new System.Drawing.Size(24, 24);
 			this.btn_M.TabIndex = 0;
@@ -58,7 +58,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(342, 313);
+			this.ClientSize = new System.Drawing.Size(207, 188);
 			this.Controls.Add(this.btn_M);
 			this.DoubleBuffered = true;
 			this.Name = "Form1";
