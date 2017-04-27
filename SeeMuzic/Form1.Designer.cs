@@ -29,6 +29,7 @@
 		private void InitializeComponent ()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.timer2 = new System.Windows.Forms.Timer(this.components);
 			this.btn_M = new System.Windows.Forms.Button();
@@ -48,7 +49,7 @@
 			// 
 			this.btn_M.Location = new System.Drawing.Point(0, 0);
 			this.btn_M.Name = "btn_M";
-			this.btn_M.Size = new System.Drawing.Size(24, 24);
+			this.btn_M.Size = new System.Drawing.Size(20, 20);
 			this.btn_M.TabIndex = 0;
 			this.btn_M.Text = "M";
 			this.btn_M.UseVisualStyleBackColor = true;
@@ -58,9 +59,11 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(207, 188);
+			this.BackColor = System.Drawing.Color.Black;
+			this.ClientSize = new System.Drawing.Size(207, 196);
 			this.Controls.Add(this.btn_M);
 			this.DoubleBuffered = true;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Form1";
 			this.Text = "See Music";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
