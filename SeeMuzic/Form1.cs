@@ -28,6 +28,8 @@ namespace SeeMuzic
 
 		public static int Krat = 14; // (44100 / 14 = 3150) / 25 = 126
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
+		public static double Level = 0.7 / 16.0, Leak = 1.0;
+		static double level = 1.0;
 
 		static int len = 0;
 		static short [] buf;
@@ -40,10 +42,9 @@ namespace SeeMuzic
 		static double x0 = 1.0, y0 = 0.0;
 		static double kf = 1.0;
 
-		public static double Level = 0.7 / 16.0, level = 1.0;
 		public static bool bKnopka = false;
 
-		static int palitra = 0, palitra_cnt = 0;
+		static int palitra = 0; //, palitra_cnt = 0;
 		static long fpos = 0, flen = 0;
 
 		static int iFnames = 0;
@@ -64,10 +65,13 @@ namespace SeeMuzic
 			pen2.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
 
 			iFnames = 0;
-			Fnames = Directory.GetFiles (Directory.GetCurrentDirectory (), "*.mp3", SearchOption.AllDirectories);
+			string curdir = Directory.GetCurrentDirectory ();
+			Fnames = Directory.GetFiles (curdir, "*.mp3", SearchOption.AllDirectories);
+			Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wma", SearchOption.AllDirectories)).ToArray ();
+			Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wav", SearchOption.AllDirectories)).ToArray ();
 			if (Fnames.Length <= 0)
 			{
-				MessageBox.Show (Directory.GetCurrentDirectory (), "Чёта не нашел файлов *.mp3 в диретории");
+				MessageBox.Show (curdir, "Не нашел *.mp3; *.wma в текущей диретории");
 				Environment.Exit (0);
 			}
 
@@ -214,7 +218,7 @@ namespace SeeMuzic
 				if (Math.PI < (alpha = alpha + alpha_plus / 180.0 * Math.PI)) alpha -= 2.0 * Math.PI;
 				x0 = Math.Cos (alpha);
 				y0 = Math.Sin (alpha);
-				kf = 0.75; // 1.0 / (Math.Abs (x0) < Math.Abs (y0) ? Math.Abs (y0) : Math.Abs (x0));
+				kf = 1.0 / (Math.Abs (x0) + Math.Abs (y0)); // 0.75; // Math.Abs (x0) + Math.Abs (y0);
 				if (bKnopka)
 				{
 					bKnopka = false;
@@ -222,16 +226,30 @@ namespace SeeMuzic
 					btn_M.Enabled = true;
 				}
 				timer1.Interval = Interval;
-
-				//if (32 < ++palitra_cnt)
-				//{
-				//	palitra_cnt = 0;
-				//	palitra = (palitra + 1) % 6;
-				//}
 			}
 			fpos = Bass.BASS_ChannelGetPosition (stream1);
 		}
 		// timer2_Tick
+
+		private void Form1_SizeChanged (object sender, EventArgs e)
+		{
+			if (this.WindowState == FormWindowState.Maximized)
+			{
+				this.FormBorderStyle = FormBorderStyle.None; // убираю заголовок в полноэкранном режиме
+			}
+		}
+		// Form1_SizeChanged
+
+		private void Form1_MouseDown (object sender, MouseEventArgs e)
+		{
+			if (this.WindowState == FormWindowState.Maximized)
+			{
+				this.WindowState = FormWindowState.Normal;
+				this.FormBorderStyle = FormBorderStyle.Sizable; // возвращаю заголовок в полноэкранном режиме
+			}
+		}
+
+		// Form1_MouseDown
 
 		static double [] mass0 = null;
 
@@ -289,24 +307,32 @@ namespace SeeMuzic
 						int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
 						if ((0 <= y2) && (y2 < OKNO))
 						{
-							int v = (int)(Math.Abs (Xbuf [x2] + Ybuf [y2]));
+							int v = Xbuf [x2] + Ybuf [y2]; if (v < 0) v = -v;
 							vsum += v;
 							vcnt++;
 							v = (int)(v * Level / level);
+							if (v < 0) v = 0;
+							/*
+								int [] ccc = new int [3];
 
-							int [] ccc = new int [3];
-							//if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-							//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
-							//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
-							//else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-							if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-							else if (v < 512) { ccc [0] = 255; ccc [1] = v - 256; ccc [2] = 0; }
-							else if (v < 512 + 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v - 512; }
-							else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-							//ccc [0] = (v < 256 ? v : 255);
-							//v >>= 3; ccc [1] = (v < 256 ? v : 255);
-							//v >>= 3; ccc [2] = (v < 256 ? v : 255);
-							bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [palitra, 0]], ccc [Ref1 [palitra, 1]], ccc [Ref1 [palitra, 2]]));
+								//if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+								//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
+								//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
+								//else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+
+								if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+								else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = v; ccc [2] = 0; }
+								else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v; }
+								else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+
+								//ccc [0] = (v < 256 ? v : 255);
+								//v >>= 3; ccc [1] = (v < 256 ? v : 255);
+								//v >>= 3; ccc [2] = (v < 256 ? v : 255);
+
+								bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [palitra, 0]], ccc [Ref1 [palitra, 1]], ccc [Ref1 [palitra, 2]]));
+							*/
+							//bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 60.0 + 360.0 * fpos / flen, 1.0, (v < Level * 2 ? v / Level / 2 : 1.0)));
+							bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 45.0 + 225.0, 1.0, (v < Level ? v / Level : 1.0)));
 							continue;
 						}
 					}
@@ -316,7 +342,7 @@ namespace SeeMuzic
 			if (0 < vcnt)
 			{
 				vsum /= vcnt;
-				level += (vsum - level) / 128.0;
+				level += (vsum - level) / Leak;
 			}
 			Image img1 = bmp1;
 			g.DrawImage (img1, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
@@ -339,7 +365,8 @@ namespace SeeMuzic
 			parms1.Add (new XElement ("LEVEL", Level));
 			parms1.Add (new XElement ("INTERVAL", Interval));
 			parms1.Add (new XElement ("KRAT", Krat));
-			new XDocument (parms1).Save ("parms.xml");
+			parms1.Add (new XElement ("LEAK", Leak));
+			new XDocument (parms1).Save ("SeeMuz.xml");
 		}
 		// Save_Parms_Xml
 
@@ -347,7 +374,7 @@ namespace SeeMuzic
 		{
 			try 
 			{
-				XDocument xdoc = XDocument.Load ("parms.xml");
+				XDocument xdoc = XDocument.Load ("SeeMuz.xml");
 				IEnumerable<XElement> parms = from f in (from p in xdoc.Elements () where p.Name.ToString ().ToUpper () == "PARMS" select p).Elements () select f;
 				foreach (XElement parm in parms)
 				{
@@ -358,6 +385,7 @@ namespace SeeMuzic
 							case "LEVEL": Level = double.Parse (parm.Value); break;
 							case "INTERVAL": Interval = int.Parse (parm.Value); break;
 							case "KRAT": Krat = int.Parse (parm.Value); break;
+							case "LEAK": Leak = int.Parse (parm.Value); break;
 						}
 					}
 					catch
@@ -371,5 +399,41 @@ namespace SeeMuzic
 		}
 		// Load_Parms_Xml
 
+		public static Color ColorFromHSV (double hue, double saturation, double value) //угол, насыщ
+		{
+			double f = hue / 60 - Math.Floor (hue / 60);
+
+			value = value * 255;
+			int v = Convert.ToInt32 (value);
+			int p = Convert.ToInt32 (value * (1 - saturation));
+			int q = Convert.ToInt32 (value * (1 - f * saturation));
+			int t = Convert.ToInt32 (value * (1 - (1 - f) * saturation));
+
+			int hi = Convert.ToInt32 (Math.Floor (hue / 60)) % 6;
+			switch (hi)
+			{
+				case 0: return Color.FromArgb (255, v, t, p);
+				case 1: return Color.FromArgb (255, q, v, p);
+				case 2: return Color.FromArgb (255, p, v, t);
+				case 3: return Color.FromArgb (255, p, q, v);
+				case 4: return Color.FromArgb (255, t, p, v);
+				default: return Color.FromArgb (255, v, p, q);
+			}
+		}
+
+		static void Test (double a)
+		{
+			double x = Math.Cos (a) * 0.7071;
+			double y = Math.Sin (a) * 0.7071;
+			double z = 0.7071;
+
+			double x1 = (x + z) * 0.7071;
+			double y1 = y;
+			double z1 = (z - x) * 0.7071;
+
+			double x2 = (x1 - y1) * 0.7071;
+			double y2 = (x1 + y1) * 0.7071;
+			double z2 = z1;
+		}
 	}
 }

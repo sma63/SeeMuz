@@ -51,7 +51,7 @@
 			this.btn_M.Name = "btn_M";
 			this.btn_M.Size = new System.Drawing.Size(20, 20);
 			this.btn_M.TabIndex = 0;
-			this.btn_M.Text = "M";
+			this.btn_M.Text = "P";
 			this.btn_M.UseVisualStyleBackColor = true;
 			this.btn_M.Click += new System.EventHandler(this.button1_Click);
 			// 
@@ -65,10 +65,13 @@
 			this.DoubleBuffered = true;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Form1";
-			this.Text = "See Music";
+			this.Text = "See Muz";
+			this.TopMost = true;
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
 			this.Load += new System.EventHandler(this.Form1_Load);
+			this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
 			this.ResumeLayout(false);
 
 		}

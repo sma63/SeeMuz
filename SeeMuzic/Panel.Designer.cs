@@ -34,25 +34,29 @@
 			this.trk_Interval = new System.Windows.Forms.TrackBar();
 			this.lab_Krat = new System.Windows.Forms.Label();
 			this.trk_Krat = new System.Windows.Forms.TrackBar();
+			this.lab_Front = new System.Windows.Forms.Label();
+			this.trk_Front = new System.Windows.Forms.TrackBar();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Krat)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// trk_Level
 			// 
-			this.trk_Level.Location = new System.Drawing.Point(12, 25);
+			this.trk_Level.Location = new System.Drawing.Point(122, 25);
 			this.trk_Level.Minimum = 1;
 			this.trk_Level.Name = "trk_Level";
 			this.trk_Level.Size = new System.Drawing.Size(104, 45);
 			this.trk_Level.TabIndex = 0;
+			this.trk_Level.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Level.Value = 1;
-			this.trk_Level.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+			this.trk_Level.ValueChanged += new System.EventHandler(this.trk_Level_ValueChanged);
 			// 
 			// lab_Level
 			// 
 			this.lab_Level.AutoSize = true;
-			this.lab_Level.Location = new System.Drawing.Point(12, 9);
+			this.lab_Level.Location = new System.Drawing.Point(122, 7);
 			this.lab_Level.Name = "lab_Level";
 			this.lab_Level.Size = new System.Drawing.Size(33, 13);
 			this.lab_Level.TabIndex = 1;
@@ -61,7 +65,7 @@
 			// lab_Interval
 			// 
 			this.lab_Interval.AutoSize = true;
-			this.lab_Interval.Location = new System.Drawing.Point(122, 9);
+			this.lab_Interval.Location = new System.Drawing.Point(232, 7);
 			this.lab_Interval.Name = "lab_Interval";
 			this.lab_Interval.Size = new System.Drawing.Size(42, 13);
 			this.lab_Interval.TabIndex = 3;
@@ -69,18 +73,19 @@
 			// 
 			// trk_Interval
 			// 
-			this.trk_Interval.Location = new System.Drawing.Point(122, 25);
-			this.trk_Interval.Maximum = 9;
+			this.trk_Interval.Location = new System.Drawing.Point(232, 25);
+			this.trk_Interval.Minimum = 1;
 			this.trk_Interval.Name = "trk_Interval";
 			this.trk_Interval.Size = new System.Drawing.Size(104, 45);
 			this.trk_Interval.TabIndex = 2;
+			this.trk_Interval.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Interval.Value = 1;
 			this.trk_Interval.ValueChanged += new System.EventHandler(this.trk_Interval_ValueChanged);
 			// 
 			// lab_Krat
 			// 
 			this.lab_Krat.AutoSize = true;
-			this.lab_Krat.Location = new System.Drawing.Point(232, 9);
+			this.lab_Krat.Location = new System.Drawing.Point(342, 7);
 			this.lab_Krat.Name = "lab_Krat";
 			this.lab_Krat.Size = new System.Drawing.Size(26, 13);
 			this.lab_Krat.TabIndex = 5;
@@ -88,19 +93,42 @@
 			// 
 			// trk_Krat
 			// 
-			this.trk_Krat.Location = new System.Drawing.Point(232, 25);
-			this.trk_Krat.Maximum = 9;
+			this.trk_Krat.Location = new System.Drawing.Point(345, 25);
+			this.trk_Krat.Minimum = 1;
 			this.trk_Krat.Name = "trk_Krat";
 			this.trk_Krat.Size = new System.Drawing.Size(104, 45);
 			this.trk_Krat.TabIndex = 4;
+			this.trk_Krat.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Krat.Value = 1;
 			this.trk_Krat.ValueChanged += new System.EventHandler(this.trk_Krat_ValueChanged);
+			// 
+			// lab_Front
+			// 
+			this.lab_Front.AutoSize = true;
+			this.lab_Front.Location = new System.Drawing.Point(12, 9);
+			this.lab_Front.Name = "lab_Front";
+			this.lab_Front.Size = new System.Drawing.Size(31, 13);
+			this.lab_Front.TabIndex = 7;
+			this.lab_Front.Text = "Front";
+			// 
+			// trk_Front
+			// 
+			this.trk_Front.Location = new System.Drawing.Point(12, 25);
+			this.trk_Front.Minimum = 1;
+			this.trk_Front.Name = "trk_Front";
+			this.trk_Front.Size = new System.Drawing.Size(104, 45);
+			this.trk_Front.TabIndex = 6;
+			this.trk_Front.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Front.Value = 1;
+			this.trk_Front.ValueChanged += new System.EventHandler(this.trk_Front_ValueChanged);
 			// 
 			// Panel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(342, 75);
+			this.ClientSize = new System.Drawing.Size(464, 59);
+			this.Controls.Add(this.lab_Front);
+			this.Controls.Add(this.trk_Front);
 			this.Controls.Add(this.lab_Krat);
 			this.Controls.Add(this.trk_Krat);
 			this.Controls.Add(this.lab_Interval);
@@ -117,6 +145,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Krat)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -130,5 +159,7 @@
 		private System.Windows.Forms.Label lab_Krat;
 		private System.Windows.Forms.TrackBar trk_Krat;
 		public System.Windows.Forms.Label lab_Level;
+		public System.Windows.Forms.Label lab_Front;
+		public System.Windows.Forms.TrackBar trk_Front;
 	}
 }
