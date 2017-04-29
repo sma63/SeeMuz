@@ -56,7 +56,10 @@ namespace SeeMuzic
 		static bool bRestart = false;
 		static Pen pen2 = new Pen (Color.Yellow, PENW);
 
-		Random rnd1 = new Random ();
+		static Random rnd1 = new Random ();
+
+		static double [] Xrot = new double [128];
+		static double [] Yrot = new double [128];
 
 		public Form1 ()
 		{
@@ -75,8 +78,14 @@ namespace SeeMuzic
 				Environment.Exit (0);
 			}
 
+			for (int i = 0; i < 128; i++)
+			{
+				Xrot [i] = 1.0;
+				Yrot [i] = 0.0;
+			}
+
 			// Перетасовка
-			palitra = rnd1.Next (6);
+			palitra = rnd1.Next (18 + 1);
 			for (int i = 0; i < Fnames.Length; i++)
 			{
 				int j = rnd1.Next (Fnames.Length);
@@ -142,27 +151,8 @@ namespace SeeMuzic
 		private void SyncMethodEndStream (int handle, int channel, int data, IntPtr user)
 		{
 			bRestart = true;
-			//Bass.BASS_ChannelSetPosition (stream1, 0L);
-			//Form1_FormClosed (null, null);
-			//MessageBox.Show ("SyncMethodEndStream");
-			//Form1_Load (null, null);
-			/*
-						Bass.BASS_StreamFree (stream1);
-						stream1 = Bass.BASS_StreamCreateFile (Fnames [iFnames = (iFnames + 1) % Fnames.Length], 0, 0, BASSFlag.BASS_DEFAULT);
-						Bass.BASS_ChannelPlay (stream1, false);
-						len = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0);
-						EventHandler handler = EndStream;
-						if (handler != null) handler (this, new EventArgs ());
-			*/
 		}
 		// SyncMethodEndStream
-
-		//private void OnEndStream ()
-		//{
-		//	EventHandler handler = EndStream;
-		//	if (handler != null) handler (this, new EventArgs ());
-		//}
-		// OnEndStream
 
 		private void timer1_Tick (object sender, EventArgs e)
 		{
@@ -208,17 +198,22 @@ namespace SeeMuzic
 				flen = Bass.BASS_ChannelGetLength (stream1);
 				_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 				Bass.BASS_ChannelPlay (stream1, false);
-				palitra = rnd1.Next (6);
+				palitra = rnd1.Next (18 + 1);
 				alpha_plus = 0.0;
 				alpha = 0.0;
 			}
 			else
 			{
-				alpha_plus = 30.0 * fpos / flen; //if (360.0 <= (alpha_plus += 0.1)) alpha_plus -= 360.0;
+				alpha_plus = 2.0 * fpos / flen; //if (360.0 <= (alpha_plus += 0.1)) alpha_plus -= 360.0;
 				if (Math.PI < (alpha = alpha + alpha_plus / 180.0 * Math.PI)) alpha -= 2.0 * Math.PI;
-				x0 = Math.Cos (alpha);
-				y0 = Math.Sin (alpha);
-				kf = 1.0 / (Math.Abs (x0) + Math.Abs (y0)); // 0.75; // Math.Abs (x0) + Math.Abs (y0);
+				for (int i = 63; 0 < i; i--)
+				{
+					Xrot [i] = Xrot [i - 1];
+					Yrot [i] = Yrot [i - 1];
+				}
+				Xrot [0] = x0 = Math.Cos (alpha);
+				Yrot [0] = y0 = Math.Sin (alpha);
+				kf = 0.7071;// + 0.7071 * fpos / flen; // 1.0 / (Math.Abs (x0) + Math.Abs (y0)); // 0.75; // Math.Abs (x0) + Math.Abs (y0);
 				if (bKnopka)
 				{
 					bKnopka = false;
@@ -294,17 +289,20 @@ namespace SeeMuzic
 			int vsum = 0, vcnt = 0;
 			Graphics g = e.Graphics;
 			Bitmap bmp1 = new Bitmap (OKNO, OKNO, g);
+
 			for (int x = 0; x < OKNO; x++)
 			{
-				//int ppp = (palitra + (x < xrange ? 0 : 1)) % 6;
 				for (int y = 0; y < OKNO; y++)
 				{
 					double x1 = (x - okno2) * kf;
 					double y1 = (y - okno2) * kf;
+					int r = (int)Math.Sqrt (x1 * x1 + y1 * y1);
+					x0 = Xrot [r];
+					y0 = Yrot [r];
 					int x2 = (int)(x0 * x1 + y0 * y1) + okno2;
+					int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
 					if ((0 <= x2) && (x2 < OKNO))
 					{
-						int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
 						if ((0 <= y2) && (y2 < OKNO))
 						{
 							int v = Xbuf [x2] + Ybuf [y2]; if (v < 0) v = -v;
@@ -312,38 +310,92 @@ namespace SeeMuzic
 							vcnt++;
 							v = (int)(v * Level / level);
 							if (v < 0) v = 0;
-							/*
-								int [] ccc = new int [3];
 
-								//if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-								//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
-								//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
-								//else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-
+							int [] ccc = new int [3];
+							if (palitra < 6)
+							{
 								if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
 								else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = v; ccc [2] = 0; }
 								else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v; }
 								else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-
-								//ccc [0] = (v < 256 ? v : 255);
-								//v >>= 3; ccc [1] = (v < 256 ? v : 255);
-								//v >>= 3; ccc [2] = (v < 256 ? v : 255);
-
-								bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [palitra, 0]], ccc [Ref1 [palitra, 1]], ccc [Ref1 [palitra, 2]]));
-							*/
-							//bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 60.0 + 360.0 * fpos / flen, 1.0, (v < Level * 2 ? v / Level / 2 : 1.0)));
-							bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 45.0 + 225.0, 1.0, (v < Level ? v / Level : 1.0)));
+							}
+							else if (palitra < 12)
+							{
+								ccc [0] = (v < 256 ? v : 255);
+								v >>= 3; ccc [1] = (v < 256 ? v : 255);
+								v >>= 3; ccc [2] = (v < 256 ? v : 255);
+							}
+							else if (palitra < 18)
+							{
+								if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+								else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
+								else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
+								else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+							}
+							else
+							{
+								bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 45.0 + 225.0, 1.0, (v < Level ? v / Level : 1.0)));
+								continue;
+							}
+							int ppp = palitra % 6;
+							bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [ppp, 0]], ccc [Ref1 [ppp, 1]], ccc [Ref1 [ppp, 2]]));
 							continue;
 						}
 					}
-					bmp1.SetPixel (x, y, Color.FromArgb (0, 0, 0));
+					bmp1.SetPixel (x, y, Color.Black);
 				}
 			}
+			//for (int x = 0; x < OKNO; x++)
+			//{
+			//	//int ppp = (palitra + (x < xrange ? 0 : 1)) % 6;
+			//	for (int y = 0; y < OKNO; y++)
+			//	{
+			//		double x1 = (x - okno2) * kf;
+			//		double y1 = (y - okno2) * kf;
+			//		int x2 = (int)(x0 * x1 + y0 * y1) + okno2;
+			//		if ((0 <= x2) && (x2 < OKNO))
+			//		{
+			//			int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
+			//			if ((0 <= y2) && (y2 < OKNO))
+			//			{
+			//				int v = Xbuf [x2] + Ybuf [y2]; if (v < 0) v = -v;
+			//				vsum += v;
+			//				vcnt++;
+			//				v = (int)(v * Level / level);
+			//				if (v < 0) v = 0;
+			//				/*
+			//					int [] ccc = new int [3];
+
+			//					//if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+			//					//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
+			//					//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
+			//					//else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+
+			//					if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
+			//					else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = v; ccc [2] = 0; }
+			//					else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v; }
+			//					else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
+
+			//					//ccc [0] = (v < 256 ? v : 255);
+			//					//v >>= 3; ccc [1] = (v < 256 ? v : 255);
+			//					//v >>= 3; ccc [2] = (v < 256 ? v : 255);
+
+			//					bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [palitra, 0]], ccc [Ref1 [palitra, 1]], ccc [Ref1 [palitra, 2]]));
+			//				*/
+			//				//bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 60.0 + 360.0 * fpos / flen, 1.0, (v < Level * 2 ? v / Level / 2 : 1.0)));
+			//				bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 45.0 + 225.0, 1.0, (v < Level ? v / Level : 1.0)));
+			//				continue;
+			//			}
+			//		}
+			//		bmp1.SetPixel (x, y, Color.FromArgb (0, 0, 0));
+			//	}
+			//}
 			if (0 < vcnt)
 			{
 				vsum /= vcnt;
 				level += (vsum - level) / Leak;
 			}
+
 			Image img1 = bmp1;
 			g.DrawImage (img1, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
 			g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
