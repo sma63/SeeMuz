@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cic.cs" />
+    <Compile Include="Fir.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
