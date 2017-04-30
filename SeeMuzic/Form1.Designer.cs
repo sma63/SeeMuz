@@ -47,11 +47,12 @@
 			// 
 			// btn_M
 			// 
-			this.btn_M.Location = new System.Drawing.Point(0, 0);
+			this.btn_M.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btn_M.Location = new System.Drawing.Point(186, 186);
 			this.btn_M.Name = "btn_M";
 			this.btn_M.Size = new System.Drawing.Size(20, 20);
 			this.btn_M.TabIndex = 0;
-			this.btn_M.Text = "P";
+			this.btn_M.Text = "$";
 			this.btn_M.UseVisualStyleBackColor = true;
 			this.btn_M.Click += new System.EventHandler(this.button1_Click);
 			// 
@@ -60,13 +61,12 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Black;
-			this.ClientSize = new System.Drawing.Size(207, 196);
+			this.ClientSize = new System.Drawing.Size(207, 207);
 			this.Controls.Add(this.btn_M);
 			this.DoubleBuffered = true;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Form1";
 			this.Text = "See Muz";
-			this.TopMost = true;
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);

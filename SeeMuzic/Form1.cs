@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define SPIRAL
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,38 +21,42 @@ namespace SeeMuzic
 {
 	public partial class Form1 : Form
 	{
+		const int MIN_RESAMPLE = 5;
+		const int MAX_INTERVAL = 250; // [ms] 
+		const int SAMPLE_BYTES = 4; // число байт в сампле
+		const int AUDIO_SAMPLES = MAX_INTERVAL * 44100 / 1000; // Длина аудиобуффера в самплах
+		const int AUDIO_BYTES = AUDIO_SAMPLES * SAMPLE_BYTES; // .. в байтах
+
 		private int _syncer = 0;
 		SYNCPROC _syncProcEndStream;
 		//public event EventHandler EndStream;
 		static int stream1 = 0;
 
-		//const string fname = "Gangnam-Style-PSY.mp3";
-
-		public static int Krat = 14; // (44100 / 14 = 3150) / 25 = 126
+		public static int Palitra = 0;
+		public static int Resample = 14; // (44100 / 14 = 3150) / 25 = 126
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
 		public static double Level = 0.7 / 16.0, Leak = 1.0;
-		static double level = 1.0;
 
-		static int len = 0;
-		static short [] buf;
-		static int [] Xbuf, Ybuf;
-		static audio_sma.Cic cic = new Cic (Krat, 4);
-		static int ibuf = 0;
-		//BinaryWriter bw = new BinaryWriter (File.Open ("test.pcm", FileMode.Create));
+		static double Power = 1.0;
+		static int Resample2 = Resample; // контроль изменений Resample 
 
-		static double alpha = 0.0, alpha_plus = 0.5; // угол
+		static int audio_bytes = 0;
+		static short [] audiobuf = new short [AUDIO_BYTES];
+		static int [] Xbuf = new int [AUDIO_SAMPLES / MIN_RESAMPLE];
+		static int [] Ybuf = new int [AUDIO_SAMPLES / MIN_RESAMPLE];
+		static double [] Xrot = new double [AUDIO_SAMPLES / MIN_RESAMPLE / 2];
+		static double [] Yrot = new double [AUDIO_SAMPLES / MIN_RESAMPLE / 2];
+		static audio_sma.Cic cic = new Cic (Resample, 4);
+
+		static double alpha = 0.0; // угол
 		static double x0 = 1.0, y0 = 0.0;
 		static double kf = 1.0;
 
 		public static bool bKnopka = false;
 
-		static int palitra = 0; //, palitra_cnt = 0;
 		static long fpos = 0, flen = 0;
-
 		static int iFnames = 0;
 		static string [] Fnames;
-
-		static int [,] Ref1 = new int [6, 3] { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 2, 1, 0 } }; // порядок цветов
 
 		const int PENW = 4;
 		static bool bRestart = false;
@@ -58,8 +64,9 @@ namespace SeeMuzic
 
 		static Random rnd1 = new Random ();
 
-		static double [] Xrot = new double [128];
-		static double [] Yrot = new double [128];
+		static Font fnt1 = new Font ("Arial", 10.0f);
+
+		static double pct = 0.0;
 
 		public Form1 ()
 		{
@@ -70,22 +77,15 @@ namespace SeeMuzic
 			iFnames = 0;
 			string curdir = Directory.GetCurrentDirectory ();
 			Fnames = Directory.GetFiles (curdir, "*.mp3", SearchOption.AllDirectories);
-			Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wma", SearchOption.AllDirectories)).ToArray ();
-			Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wav", SearchOption.AllDirectories)).ToArray ();
+			//Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wma", SearchOption.AllDirectories)).ToArray ();
+			//Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wav", SearchOption.AllDirectories)).ToArray ();
 			if (Fnames.Length <= 0)
 			{
-				MessageBox.Show (curdir, "Не нашел *.mp3; *.wma в текущей диретории");
+				MessageBox.Show (curdir, "Не нашел *.mp3, *.wma, *.wav в текущей диретории");
 				Environment.Exit (0);
 			}
 
-			for (int i = 0; i < 128; i++)
-			{
-				Xrot [i] = 1.0;
-				Yrot [i] = 0.0;
-			}
-
 			// Перетасовка
-			palitra = rnd1.Next (18 + 1);
 			for (int i = 0; i < Fnames.Length; i++)
 			{
 				int j = rnd1.Next (Fnames.Length);
@@ -115,16 +115,20 @@ namespace SeeMuzic
 
 			flen = Bass.BASS_ChannelGetLength (stream1);
 
-			len = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0);
-			//MessageBox.Show (String.Format ("len = {0}\nlen4 = {1}\nlencic = {2}", len, len / 4, len / 4 / Krat));
-
-			buf = new short [len];
-			Xbuf = new int [len / 4 / Krat + 1];
-			Ybuf = new int [len / 4 / Krat + 1];
-
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
 			_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 			Bass.BASS_ChannelPlay (stream1, false);
+			Palitra = rnd1.Next (14);
+
+			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
+
+			//MessageBox.Show (String.Format ("Interval = {0}\nbuflen = {1}\nlen4 = {2}\nlencic = {3}", Interval, audio_bytes, audio_bytes / 4, audio_bytes / 4 / Resample));
+
+			for (int i = 0; i < Xrot.Length; i++)
+			{
+				Xrot [i] = 1.0;
+				Yrot [i] = 0.0;
+			}
 
 			timer1.Interval = Interval;
 			timer1.Enabled = true;
@@ -156,18 +160,6 @@ namespace SeeMuzic
 
 		private void timer1_Tick (object sender, EventArgs e)
 		{
-			ibuf = 0;
-			int len4 = Bass.BASS_ChannelGetData (stream1, buf, len) / 4;
-			for (int i = 0; i < len4; i += 2)
-			{
-				if (cic.Decimate ((int)buf [i], (int)buf [i + 1]))
-				{
-					Xbuf [ibuf] = cic.X;
-					Ybuf [ibuf] = cic.Y;
-					ibuf++;
-				}
-			}
-			// сдесь бы сделать корреляционное выравнивание ...
 			Invalidate ();
 		}
 		// timer1_Tick
@@ -198,31 +190,48 @@ namespace SeeMuzic
 				flen = Bass.BASS_ChannelGetLength (stream1);
 				_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 				Bass.BASS_ChannelPlay (stream1, false);
-				palitra = rnd1.Next (18 + 1);
-				alpha_plus = 0.0;
-				alpha = 0.0;
-			}
-			else
-			{
-				alpha_plus = 2.0 * fpos / flen; //if (360.0 <= (alpha_plus += 0.1)) alpha_plus -= 360.0;
-				if (Math.PI < (alpha = alpha + alpha_plus / 180.0 * Math.PI)) alpha -= 2.0 * Math.PI;
-				for (int i = 63; 0 < i; i--)
-				{
-					Xrot [i] = Xrot [i - 1];
-					Yrot [i] = Yrot [i - 1];
-				}
-				Xrot [0] = x0 = Math.Cos (alpha);
-				Yrot [0] = y0 = Math.Sin (alpha);
-				kf = 0.7071;// + 0.7071 * fpos / flen; // 1.0 / (Math.Abs (x0) + Math.Abs (y0)); // 0.75; // Math.Abs (x0) + Math.Abs (y0);
-				if (bKnopka)
-				{
-					bKnopka = false;
-					btn_M.Visible = true;
-					btn_M.Enabled = true;
-				}
-				timer1.Interval = Interval;
+				Palitra = rnd1.Next (14);
 			}
 			fpos = Bass.BASS_ChannelGetPosition (stream1);
+			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
+
+			// перезапуск ресамплера
+			if (Resample != Resample2)
+			{
+				Resample2 = Resample;
+				cic = new Cic (Resample, 4);
+			}
+
+			pct = (double)fpos / flen;
+#if SPIRAL
+			alpha = 1.0 * Math.PI * pct;
+			double a = 0.0;
+			int nnn = (int)(audio_bytes / SAMPLE_BYTES / Resample / 1.4142);
+			for (int i = 0; i < nnn; i++)
+			{
+				a = alpha * i / nnn; //внутрь
+				//a = alpha * (nnn - 1 - i) / nnn; //вширь
+				Xrot [i] = Math.Cos (a);
+				Yrot [i] = Math.Sin (a);
+			}
+			x0 = Math.Cos (alpha); // внутрь
+			y0 = Math.Sin (alpha);
+			//x0 = 1.0; // вширь
+			//y0 = 0.0; 
+#else
+			alpha = 2.0 * Math.PI * pct;
+			x0 = Math.Cos (alpha);
+			y0 = Math.Sin (alpha);
+#endif
+
+			if (bKnopka)
+			{
+				bKnopka = false;
+				btn_M.Visible = true;
+				btn_M.Enabled = true;
+			}
+			timer1.Interval = Interval;
+
 		}
 		// timer2_Tick
 
@@ -246,159 +255,141 @@ namespace SeeMuzic
 
 		// Form1_MouseDown
 
-		static double [] mass0 = null;
+		static double [] kor0 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
+		static double [] kor1 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
 
 		private void Form1_Paint (object sender, PaintEventArgs e)
 		{
-			if (ibuf <= 0) return;
+			int Okno = 0;
+			int samples = Bass.BASS_ChannelGetData (stream1, audiobuf, audio_bytes) / SAMPLE_BYTES; // число самплов в аудиобуффере
+			for (int i = 0, j = 0; i < samples; i++, j += 2)
+			{
+				if (cic.Decimate ((int)audiobuf [j], (int)audiobuf [j + 1]))
+				{
+					Xbuf [Okno] = cic.X;
+					Ybuf [Okno] = cic.Y;
+					Okno++;
+				}
+			}
+			if (Okno == 0) return;
 
-			int OKNO = ibuf, okno2 = ibuf / 2;
+			int Okno2 = Okno / 2; // центр окна
 
 			// кореляция
-			double [] mass = new double [256]; // !!!!!!!!!!!!!
-			for (int i = 0; i < OKNO; i++)
+			for (int i = 0; i < Okno; i++)
 			{
-				mass [i] = Math.Abs (Xbuf [i] + Ybuf [i]);
+				kor0 [i] = Math.Abs (Xbuf [i]);
 			}
-			if (mass0 != null)
+			int imax = 0;
+			double si = double.MinValue;
+			for (int i = 0; i < Okno / 2; i++)
 			{
-				int imax = 0;
-				double si = double.MinValue;
-				for (int i = 0; i < OKNO / 2; i++)
+				double sj = 0.0;
+				for (int j = 0; j < Okno; j++)
 				{
-					double sj = 0.0;
-					for (int j = 0; j < OKNO; j++)
-					{
-						//sj += Math.Abs (mass0 [j] * mass [(i + j) % OKNO]);
-						sj += Math.Abs (mass0 [j] + mass [(i + j) % OKNO]);
-					}
-					if (si < sj)
-					{
-						si = sj;
-						imax = i;
-					}
+					sj += Math.Abs (kor0 [j] + kor1 [(i + j) % Okno]);
 				}
-				for (int i = 0, j = imax; j < OKNO; i++, j++)
+				if (si < sj)
 				{
-					Xbuf [i] = Xbuf [j];
-					Ybuf [i] = Ybuf [j];
+					si = sj;
+					imax = i;
 				}
 			}
-			mass0 = mass;
+			for (int i = 0, j = imax; j < Okno; i++, j++)
+			{
+				Xbuf [i] = Xbuf [j];
+				Ybuf [i] = Ybuf [j];
+			}
+			double [] swap = kor0; kor0 = kor1; kor1 = swap;
 
-			int vsum = 0, vcnt = 0;
+			int vcnt = 0;
+			double vsum2 = 0.0;
 			Graphics g = e.Graphics;
-			Bitmap bmp1 = new Bitmap (OKNO, OKNO, g);
+			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
 
-			for (int x = 0; x < OKNO; x++)
+#if SPIRAL
+			// Спираль
+			int rrr = (int)(Okno2 * 1.4142);
+			kf = (Math.Abs (Xrot [rrr]) + Math.Abs (Yrot [rrr])); // внутрь
+			//kf = 0.7071 / (Math.Abs (Xrot [rrr]) + Math.Abs (Yrot [rrr])); // вширь
+			for (int x = 0; x < Okno; x++)
 			{
-				for (int y = 0; y < OKNO; y++)
+				for (int y = 0; y < Okno; y++)
 				{
-					double x1 = (x - okno2) * kf;
-					double y1 = (y - okno2) * kf;
+					double x1 = (x - Okno2) * kf;
+					double y1 = (y - Okno2) * kf;
 					int r = (int)Math.Sqrt (x1 * x1 + y1 * y1);
-					x0 = Xrot [r];
-					y0 = Yrot [r];
-					int x2 = (int)(x0 * x1 + y0 * y1) + okno2;
-					int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
-					if ((0 <= x2) && (x2 < OKNO))
+					double x0 = Xrot [r];
+					double y0 = Yrot [r];
+					int x2 = (int)(x0 * x1 + y0 * y1) + Okno2;
+					if ((0 <= x2) && (x2 < Okno))
 					{
-						if ((0 <= y2) && (y2 < OKNO))
+						int y2 = (int)(x0 * y1 - y0 * x1) + Okno2;
+						if ((0 <= y2) && (y2 < Okno))
 						{
-							int v = Xbuf [x2] + Ybuf [y2]; if (v < 0) v = -v;
-							vsum += v;
+							int v = Math.Abs (Xbuf [x2] + Ybuf [y2]);
+							vsum2 += v * v;
 							vcnt++;
-							v = (int)(v * Level / level);
+							v = (int)(v * Level / Power);
 							if (v < 0) v = 0;
 
-							int [] ccc = new int [3];
-							if (palitra < 6)
-							{
-								if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-								else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = v; ccc [2] = 0; }
-								else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v; }
-								else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-							}
-							else if (palitra < 12)
-							{
-								ccc [0] = (v < 256 ? v : 255);
-								v >>= 3; ccc [1] = (v < 256 ? v : 255);
-								v >>= 3; ccc [2] = (v < 256 ? v : 255);
-							}
-							else if (palitra < 18)
-							{
-								if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-								else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
-								else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
-								else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-							}
+							if (Palitra < 6)
+								bmp1.SetPixel (x, y, ColorFromHSV (Palitra * 60.0 + v, 1.0, (v < Level ? v / Level : 1.0)));
+							else if (Palitra < 12)
+								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (Palitra * 60.0 + v), 1.0, (v < Level ? v / Level : 1.0)));
+							else if (Palitra < 13)
+								bmp1.SetPixel (x, y, ColorFromHSV (720.0 * pct + v, 1.0, (v < Level ? v / Level : 1.0)));
 							else
-							{
-								bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 45.0 + 225.0, 1.0, (v < Level ? v / Level : 1.0)));
-								continue;
-							}
-							int ppp = palitra % 6;
-							bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [ppp, 0]], ccc [Ref1 [ppp, 1]], ccc [Ref1 [ppp, 2]]));
+								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (720.0 * (1.0 - pct) + v), 1.0, (v < Level ? v / Level : 1.0)));
 							continue;
 						}
 					}
 					bmp1.SetPixel (x, y, Color.Black);
 				}
 			}
-			//for (int x = 0; x < OKNO; x++)
-			//{
-			//	//int ppp = (palitra + (x < xrange ? 0 : 1)) % 6;
-			//	for (int y = 0; y < OKNO; y++)
-			//	{
-			//		double x1 = (x - okno2) * kf;
-			//		double y1 = (y - okno2) * kf;
-			//		int x2 = (int)(x0 * x1 + y0 * y1) + okno2;
-			//		if ((0 <= x2) && (x2 < OKNO))
-			//		{
-			//			int y2 = (int)(x0 * y1 - y0 * x1) + okno2;
-			//			if ((0 <= y2) && (y2 < OKNO))
-			//			{
-			//				int v = Xbuf [x2] + Ybuf [y2]; if (v < 0) v = -v;
-			//				vsum += v;
-			//				vcnt++;
-			//				v = (int)(v * Level / level);
-			//				if (v < 0) v = 0;
-			//				/*
-			//					int [] ccc = new int [3];
-
-			//					//if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-			//					//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = v; ccc [2] = 0; }
-			//					//else if ((v -= 256) < 256) { ccc [0] = 0; ccc [1] = 0; ccc [2] = v; }
-			//					//else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-
-			//					if (v < 256) { ccc [0] = v; ccc [1] = 0; ccc [2] = 0; }
-			//					else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = v; ccc [2] = 0; }
-			//					else if ((v -= 256) < 256) { ccc [0] = 255; ccc [1] = 255; ccc [2] = v; }
-			//					else { ccc [0] = 255; ccc [1] = 255; ccc [2] = 255; }
-
-			//					//ccc [0] = (v < 256 ? v : 255);
-			//					//v >>= 3; ccc [1] = (v < 256 ? v : 255);
-			//					//v >>= 3; ccc [2] = (v < 256 ? v : 255);
-
-			//					bmp1.SetPixel (x, y, Color.FromArgb (ccc [Ref1 [palitra, 0]], ccc [Ref1 [palitra, 1]], ccc [Ref1 [palitra, 2]]));
-			//				*/
-			//				//bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 60.0 + 360.0 * fpos / flen, 1.0, (v < Level * 2 ? v / Level / 2 : 1.0)));
-			//				bmp1.SetPixel (x, y, ColorFromHSV (v / Level * 45.0 + 225.0, 1.0, (v < Level ? v / Level : 1.0)));
-			//				continue;
-			//			}
-			//		}
-			//		bmp1.SetPixel (x, y, Color.FromArgb (0, 0, 0));
-			//	}
-			//}
-			if (0 < vcnt)
+#else
+			// Решетка
+			kf = 1.05 * Math.Abs (x0) + Math.Abs (y0);
+			for (int x = 0; x < Okno; x++)
 			{
-				vsum /= vcnt;
-				level += (vsum - level) / Leak;
+				for (int y = 0; y < Okno; y++)
+				{
+					double x1 = (x - Okno2) * kf;
+					double y1 = (y - Okno2) * kf;
+					int x2 = Okno2 + (int)(x0 * x1 + y0 * y1);
+					if ((0 <= x2) && (x2 < Okno))
+					{
+						int y2 = Okno2 + (int)(x0 * y1 - y0 * x1);
+						if ((0 <= y2) && (y2 < Okno))
+						{
+							int v = Math.Abs (Xbuf [x2] + Ybuf [y2]);
+							vsum2 += v * v;
+							vcnt++;
+							v = (int)(v / Power * Level);
+							if (v < 0) v = 0;
+
+							if (Palitra < 6)
+								bmp1.SetPixel (x, y, ColorFromHSV (Palitra * 60.0 + v, 1.0, (v < Level ? v / Level : 1.0)));
+							else if (Palitra < 12)
+								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (Palitra * 60.0 + v), 1.0, (v < Level ? v / Level : 1.0)));
+							else if (Palitra < 13)
+								bmp1.SetPixel (x, y, ColorFromHSV (720.0 * pct + v, 1.0, (v < Level ? v / Level : 1.0)));
+							else
+								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (720.0 * (1.0 - pct) + v), 1.0, (v < Level ? v / Level : 1.0)));
+							continue;
+						}
+					}
+					bmp1.SetPixel (x, y, Color.Black);
+				}
 			}
+#endif
+			if (0 < vcnt) Power += (Math.Sqrt (vsum2 / vcnt) - Power) / Leak;
 
 			Image img1 = bmp1;
-			g.DrawImage (img1, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
+			int side = Math.Min (this.ClientSize.Width, this.ClientSize.Height);
+			g.DrawImage (img1, (this.ClientSize.Width - side) / 2, (this.ClientSize.Height - side) / 2, side, side);
 			g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
+			//g.DrawString (kf.ToString (), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 		}
 		// Form1_Paint
 
@@ -416,7 +407,7 @@ namespace SeeMuzic
 			XElement parms1 = new XElement ("PARMS");
 			parms1.Add (new XElement ("LEVEL", Level));
 			parms1.Add (new XElement ("INTERVAL", Interval));
-			parms1.Add (new XElement ("KRAT", Krat));
+			parms1.Add (new XElement ("KRAT", Resample));
 			parms1.Add (new XElement ("LEAK", Leak));
 			new XDocument (parms1).Save ("SeeMuz.xml");
 		}
@@ -436,7 +427,7 @@ namespace SeeMuzic
 						{
 							case "LEVEL": Level = double.Parse (parm.Value); break;
 							case "INTERVAL": Interval = int.Parse (parm.Value); break;
-							case "KRAT": Krat = int.Parse (parm.Value); break;
+							case "KRAT": Resample = int.Parse (parm.Value); break;
 							case "LEAK": Leak = int.Parse (parm.Value); break;
 						}
 					}
