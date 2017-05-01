@@ -85,6 +85,8 @@ namespace SeeMuzic
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
 
+		static Param [] parm1;
+
 		public Form1 ()
 		{
 			InitializeComponent ();
@@ -109,12 +111,33 @@ namespace SeeMuzic
 				int k = rnd1.Next (Fnames.Length);
 				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
 			}
+
+			parm1 = new Param [Fnames.Length];
+			for (int i = 0; i < parm1.Length; i++)
+			{
+				parm1 [i] = new Param ();
+				parm1 [i].bInside = bInside;
+				parm1 [i].Bright = Bright;
+				parm1 [i].bRotate = bRotate;
+				parm1 [i].bStretch = bStretch;
+				parm1 [i].iFilter = iFilter;
+				parm1 [i].Interval = Interval;
+				parm1 [i].Leak = Leak;
+				parm1 [i].Palitra = Palitra;
+				parm1 [i].Resample = Resample;
+			}
+
 			Load_Parms_Xml ();
 		}
 		// Form1
 
 		private void Form1_Load (object sender, EventArgs e)
 		{
+			//this.FormBorderStyle = FormBorderStyle.None;
+			//this.AllowTransparency = true;
+			//this.BackColor = Color.White; // AliceBlue;//цвет фона  
+			//this.TransparencyKey = Color.White; // this.BackColor;//он же будет заменен на прозрачный цвет
+
 			if (!Bass.BASS_Init (-1, 44100, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 			{
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
@@ -172,6 +195,16 @@ namespace SeeMuzic
 		private void SyncMethodEndStream (int handle, int channel, int data, IntPtr user)
 		{
 			bRestart = true;
+			parm1 [iFnames].bInside = bInside;
+			parm1 [iFnames].Bright = Bright;
+			parm1 [iFnames].bRotate = bRotate;
+			parm1 [iFnames].bStretch = bStretch;
+			parm1 [iFnames].iFilter = iFilter;
+			parm1 [iFnames].Interval = Interval;
+			parm1 [iFnames].Leak = Leak;
+			parm1 [iFnames].Palitra = Palitra;
+			parm1 [iFnames].Resample = Resample;
+
 		}
 		// SyncMethodEndStream
 
@@ -375,13 +408,13 @@ namespace SeeMuzic
 							if (v < 0) v = 0;
 
 							if (Palitra < 6)
-								bmp1.SetPixel (x, y, ColorFromHSV (Palitra * 60.0 + v, 1.0, (v < Bright ? v / Bright : 1.0)));
+								bmp1.SetPixel (x, y, H2Color (Palitra * 60.0 + v, 1.0, (v < Bright ? v / Bright : 1.0)));
 							else if (Palitra < 12)
-								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (Palitra * 60.0 + v), 1.0, (v < Bright ? v / Bright : 1.0)));
+								bmp1.SetPixel (x, y, H2Color (720.0 - (Palitra * 60.0 + v), 1.0, (v < Bright ? v / Bright : 1.0)));
 							else if (Palitra < 13)
-								bmp1.SetPixel (x, y, ColorFromHSV (720.0 * pct + v, 1.0, (v < Bright ? v / Bright : 1.0)));
+								bmp1.SetPixel (x, y, H2Color (720.0 * pct + v, 1.0, (v < Bright ? v / Bright : 1.0)));
 							else
-								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (720.0 * (1.0 - pct) + v), 1.0, (v < Bright ? v / Bright : 1.0)));
+								bmp1.SetPixel (x, y, H2Color (720.0 - (720.0 * (1.0 - pct) + v), 1.0, (v < Bright ? v / Bright : 1.0)));
 							continue;
 						}
 					}
@@ -406,24 +439,20 @@ namespace SeeMuzic
 						int y2 = Okno2 + (int)(x0 * y1 - y0 * x1);
 						if ((0 <= y2) && (y2 < Okno))
 						{
-							int v = Math.Abs (Xbuf [x2] + Ybuf [y2]);
+							double v = Math.Abs (Xbuf [x2] + Ybuf [y2]);
+							//double v = Xbuf [x2] + Ybuf [y2];
 							vsum2 += v * v;
 							vcnt++;
-							v = (int)(v / Power * Bright);
-							if (v < 0) v = 0;
+							v = v / Power * (Bright / 16.0);
 
-							if (Palitra < 6)
-								bmp1.SetPixel (x, y, ColorFromHSV (Palitra * 60.0 + v, 1.0, (v < Bright ? v / Bright : 1.0)));
-							else if (Palitra < 12)
-								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (Palitra * 60.0 + v), 1.0, (v < Bright ? v / Bright : 1.0)));
-							else if (Palitra < 13)
-								bmp1.SetPixel (x, y, ColorFromHSV (720.0 * pct + v, 1.0, (v < Bright ? v / Bright : 1.0)));
+							if (Palitra < 12)
+								bmp1.SetPixel (x, y, H2Color (Palitra / 12.0 - v / 16.0, Math.Abs (v)));
 							else
-								bmp1.SetPixel (x, y, ColorFromHSV (720.0 - (720.0 * (1.0 - pct) + v), 1.0, (v < Bright ? v / Bright : 1.0)));
+								bmp1.SetPixel (x, y, H2Color (pct + v / 16.0, Math.Abs (v)));
 							continue;
 						}
 					}
-					bmp1.SetPixel (x, y, Color.Black);
+					bmp1.SetPixel (x, y, Color.Black); // Color.White - для прозрачности
 				}
 			}
 #endif
@@ -465,6 +494,25 @@ namespace SeeMuzic
 			parms1.Add (new XElement ("STRETCH", bStretch));
 			parms1.Add (new XElement ("INSIDE", bInside));
 			new XDocument (parms1).Save ("SeeMuz.xml");
+
+			XElement list1 = new XElement ("LIST");
+			for (int i = 0; i < Fnames.Length; i++)
+			{
+				XElement item1 = new XElement 
+				(	"ITEM",
+					new XAttribute ("BRIGHT", parm1 [i].Bright),
+					new XAttribute ("INTERVAL", parm1 [i].Interval),
+					new XAttribute ("RESAMPLE", parm1 [i].Resample),
+					new XAttribute ("LEAK", parm1 [i].Leak),
+					new XAttribute ("FILTER", parm1 [i].iFilter),
+					new XAttribute ("ROTATE", parm1 [i].bRotate),
+					new XAttribute ("STRETCH", parm1 [i].bStretch),
+					new XAttribute ("INSIDE", parm1 [i].bInside),
+					new XAttribute ("FILE", Fnames [i])
+				);
+				list1.Add (item1);
+			}
+			new XDocument (list1).Save ("SeeMuzList.xml");
 		}
 		// Save_Parms_Xml
 
@@ -501,46 +549,38 @@ namespace SeeMuzic
 		}
 		// Load_Parms_Xml
 
-		public static Color ColorFromHSV (double hue, double saturation, double value) //угол, насыщ, яркость
+		public static Color H2Color (double h, double v) //цвет, яркость
 		{
-			if (hue < 0.0) hue = (hue / 360.0 + Math.Floor (hue / 360.0)) * 360.0;
-			if (saturation < 0.0) saturation = 0.0; else if (1.0 < saturation) saturation = 1.0;
-			if (value < 0.0) value = 0.0; else if (1.0 < value) value = 1.0;
-
-			double h = hue / 60.0;
-			double f = h - Math.Floor (h);
-
-			value = value * 255.0;
-			int v = Convert.ToInt32 (value);
-			int p = Convert.ToInt32 (value * (1 - saturation));
-			int q = Convert.ToInt32 (value * (1 - f * saturation));
-			int t = Convert.ToInt32 (value * (1 - (1 - f) * saturation));
-
-			int hi = Convert.ToInt32 (Math.Floor (h)) % 6;
-			switch (hi)
+			if (v < 0.0) v = 0.0; else if (1.0 <= v) v = 255.0; else v *= 256.0;
+			double h6 = (h - Math.Floor (h)) * 6.0;
+			int a = (int)((h6 - Math.Floor (h6)) * v);
+			int b = (int)v;
+			int c = b - a;
+			switch ((int)h6)
 			{
-				case 0: return Color.FromArgb (255, v, t, p);
-				case 1: return Color.FromArgb (255, q, v, p);
-				case 2: return Color.FromArgb (255, p, v, t);
-				case 3: return Color.FromArgb (255, p, q, v);
-				case 4: return Color.FromArgb (255, t, p, v);
-				default: return Color.FromArgb (255, v, p, q);
+				case  0: return Color.FromArgb (b, a, 0);
+				case  1: return Color.FromArgb (c, b, 0);
+				case  2: return Color.FromArgb (0, b, a);
+				case  3: return Color.FromArgb (0, c, b);
+				case  4: return Color.FromArgb (a, 0, b);
+				default: return Color.FromArgb (b, 0, c);
 			}
 		}
+		// H2Color
 
-		static void Test (double a)
-		{
-			double x = Math.Cos (a) * 0.7071;
-			double y = Math.Sin (a) * 0.7071;
-			double z = 0.7071;
-
-			double x1 = (x + z) * 0.7071;
-			double y1 = y;
-			double z1 = (z - x) * 0.7071;
-
-			double x2 = (x1 - y1) * 0.7071;
-			double y2 = (x1 + y1) * 0.7071;
-			double z2 = z1;
-		}
 	}
+
+	class Param
+	{
+		public double Bright;
+		public int Interval;
+		public int Resample;
+		public double Leak;
+		public int iFilter;
+		public int Palitra;
+		public bool bRotate;
+		public bool bStretch;
+		public bool bInside;
+	}
+
 }
