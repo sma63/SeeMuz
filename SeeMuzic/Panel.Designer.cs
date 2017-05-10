@@ -29,6 +29,7 @@
 		private void InitializeComponent ()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel));
 			this.trk_Level = new System.Windows.Forms.TrackBar();
 			this.lab_Level = new System.Windows.Forms.Label();
 			this.lab_Interval = new System.Windows.Forms.Label();
@@ -320,6 +321,7 @@
 			// 
 			// btn_Play
 			// 
+			this.btn_Play.Enabled = false;
 			this.btn_Play.Location = new System.Drawing.Point(59, 4);
 			this.btn_Play.Name = "btn_Play";
 			this.btn_Play.Size = new System.Drawing.Size(48, 23);
@@ -412,6 +414,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(333, 221);
 			this.Controls.Add(this.tabControl1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Panel";

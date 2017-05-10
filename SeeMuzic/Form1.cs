@@ -1,5 +1,5 @@
 ﻿//#define SPIRAL
-#define KORELAT
+//#define KORELAT
 
 using System;
 using System.Collections.Generic;
@@ -486,22 +486,35 @@ namespace SeeMuzic
 			{
 				for (int y = 0; y < Okno; y++)
 				{
-					double x1 = x - Okno2;
-					double y1 = y - Okno2;
+					double x1 = (double)(x - Okno2) / Okno2; //if (0.0 < x1) x1 = 0.9 - x1; else x1 = -0.9 - x1;
+					double y1 = (double)(y - Okno2) / Okno2; //if (0.0 < y1) y1 = 0.9 - y1; else y1 = -0.9 - y1;
+
+					double x2 = (x0 * x1 + y0 * y1);
 					if (bEros)
 					{
-						x1 = x1 / Okno2; x1 *= Math.Abs (x1) * Okno2;
-						y1 = y1 / Okno2; y1 *= Math.Abs (y1) * Okno2;
+						x2 *= Math.Abs (x2); // x2 = (x2 < 0.0 ? -Math.Sqrt (-x2) : Math.Sqrt (x2)); // 
+						x2 = Okno2 + x2 * Okno2 * kf * kf;
 					}
-					x1 = x1 * kf;
-					y1 = y1 * kf;
-					int x2 = Okno2 + (int)(x0 * x1 + y0 * y1);
+					else
+					{
+						x2 = Okno2 + x2 * Okno2 * kf;
+					}
+
 					if ((0 <= x2) && (x2 < Okno))
 					{
-						int y2 = Okno2 + (int)(x0 * y1 - y0 * x1);
+						double y2 = (x0 * y1 - y0 * x1);
+						if (bEros)
+						{
+							y2 *= Math.Abs (y2); // y2 = (y2 < 0.0 ? -Math.Sqrt (-y2) : Math.Sqrt (y2)); // 
+							y2 = Okno2 + y2 * Okno2 * kf * kf;
+						}
+						else
+						{
+							y2 = Okno2 + y2 * Okno2 * kf;
+						}
 						if ((0 <= y2) && (y2 < Okno))
 						{
-							double v = Math.Abs (Xbuf [x2] + Ybuf [y2]);
+							double v = Math.Abs (Xbuf [(int)x2] + Ybuf [(int)y2]);
 							//double v = Xbuf [x2] + Ybuf [y2];
 							vsum2 += v * v;
 							vcnt++;
