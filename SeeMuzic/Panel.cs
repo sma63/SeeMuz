@@ -15,7 +15,7 @@ namespace SeeMuzic
 		const double LEAK = 10.0;
 		const double LEVEL = 10.0;
 		const int INTERVAL = 10, INTERVAL2 = 0; //1-10,2-20,3-30,4-40,5-50,6-60,7-70,8-80,9-90,10-100
-		const int KRAT = 7;
+		const int RESAMPLE = Form1.MIN_RESAMPLE - 1;
 
 		int iFnames = 0;
 
@@ -30,7 +30,7 @@ namespace SeeMuzic
 			trk_Front.Value = Ranger10 (Form1.Leak / LEAK);
 			trk_Level.Value = Ranger10 (Form1.Bright / LEVEL);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
-			trk_Krat.Value = Ranger10 (Form1.Resample - KRAT);
+			trk_Resample.Value = Ranger10 (Form1.Resample - RESAMPLE);
 			num_Palitra.Value = Form1.Palitra;
 			num_Filter.Value = Form1.iFilter;
 			chk_Rotate.Checked = Form1.bRotate;
@@ -41,7 +41,7 @@ namespace SeeMuzic
 			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
 			lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
-			lab_Krat.Text = String.Format ("Fs = {0} Hz", Form1.SAMPLERATE / Form1.Resample);
+			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
 
 			for (int i = 0; i < Form1.Fnames.Length; i++)
 			{
@@ -76,8 +76,8 @@ namespace SeeMuzic
 
 		private void trk_Krat_ValueChanged (object sender, EventArgs e)
 		{
-			Form1.Resample = trk_Krat.Value + KRAT;
-			lab_Krat.Text = String.Format ("Fs = {0} Hz", Form1.SAMPLERATE / Form1.Resample);
+			Form1.Resample = trk_Resample.Value + RESAMPLE;
+			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
 		}
 
 		private void Panel_FormClosed (object sender, FormClosedEventArgs e)
@@ -145,10 +145,10 @@ namespace SeeMuzic
 			Form1.bEros = chk_Eros.Checked;
 		}
 
-		private int Ranger10 (double v)
+		private int Ranger10 (double v, double vmin = 1.0, double vmax = 10.0)
 		{
-			if (v < 1.0) return 1;
-			if (10.0 < v) return 10;
+			if (v < vmin) return (int)vmin;
+			if (vmax < v) return (int)vmax;
 			return (int)v;
 		}
 

@@ -22,33 +22,43 @@ namespace SeeMuzic
 {
 	public partial class Form1 : Form
 	{
-		public const int SAMPLERATE = 11025;//44100;//22050;//
-		const int MIN_RESAMPLE = 5;
-		const int MAX_INTERVAL = 250; // [ms] 
-		const int SAMPLE_BYTES = 4; // число байт в сампле
-		const int AUDIO_SAMPLES = MAX_INTERVAL * SAMPLERATE / 1000; // Длина аудиобуффера в самплах
+		public const int SAMPLERATE = 44100;//11025;//22050;//
+		public const int MIN_RESAMPLE = 10;
+		const int MAX_RESAMPLE = 20;
+		const int MAX_INTERVAL = 100; // [ms] 
+		const int SAMPLE_BYTES = sizeof (Int32); // число байт в сампле
+		const int AUDIO_SAMPLES = (MAX_INTERVAL * SAMPLERATE + 999) / 1000; // Длина аудиобуффера в самплах
 		const int AUDIO_BYTES = AUDIO_SAMPLES * SAMPLE_BYTES; // .. в байтах
 
 		private int _syncer = 0;
 		SYNCPROC _syncProcEndStream;
-		//public event EventHandler EndStream;
 		static int stream1 = 0;
 
 		public static int Palitra = 0;
-		public static int Resample = 14; // (44100 / 14 = 3150) / 25 = 126
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
 		public static double Bright = 30.0, Leak = 1.0;
+		public static int Resample = MAX_RESAMPLE; // (44100 / 14 = 3150) / 25 = 126
 
-		static double Power = 1.0;
 		static int Resample2 = Resample; // контроль изменений Resample 
+		static double Power = 1.0;
 
 		static int audio_bytes = 0;
 		static short [] audiobuf = new short [AUDIO_BYTES];
-		static int [] Xbuf = new int [AUDIO_SAMPLES / MIN_RESAMPLE];
-		static int [] Ybuf = new int [AUDIO_SAMPLES / MIN_RESAMPLE];
-		static double [] Xrot = new double [AUDIO_SAMPLES / MIN_RESAMPLE / 2];
-		static double [] Yrot = new double [AUDIO_SAMPLES / MIN_RESAMPLE / 2];
-		static audio_sma.Cic cic = new Cic (Resample, 4);
+		const int XYBUF = (AUDIO_SAMPLES + MIN_RESAMPLE - 1) / MIN_RESAMPLE;
+		static int [] Xbuf = new int [XYBUF];
+		static int [] Ybuf = new int [XYBUF];
+		const int XYROT = (AUDIO_SAMPLES + MIN_RESAMPLE * 2 - 1) / (MIN_RESAMPLE * 2);
+		static double [] Xrot = new double [XYROT];
+		static double [] Yrot = new double [XYROT];
+
+		static audio_sma.Cic [] Mcic = new audio_sma.Cic [] 
+		{
+			new Cic (0, 0), new Cic (1, 1), new Cic (2, 3), new Cic (3, 3), new Cic (4, 3), new Cic (5, 3),
+			new Cic (6, 3),	new Cic (7, 3), new Cic (8, 3), new Cic (9, 3), new Cic (10, 3), new Cic (11, 3),
+			new Cic (12, 3), new Cic (13, 3), new Cic (14, 3), new Cic (15, 3), new Cic (16, 3), new Cic (17, 3),
+			new Cic (18, 3), new Cic (19, 3), new Cic (20, 3)
+		};
+		static audio_sma.Cic cic = Mcic [Resample];
 
 		static double alpha = 0.0; // угол
 		static double x0 = 1.0, y0 = 0.0;
@@ -69,16 +79,16 @@ namespace SeeMuzic
 
 		public static int iFilter = 1, iFilter2 = 1;
 		static Fir Xfir = null, Yfir = null;
-		static Fir [] Mfir = new Fir []
+		static Fir [,] Mfir = new Fir [8, 2]
 		{
-			null, null, //0
-			null, null, //1
-			new Fir (33, Fir.coef2), new Fir (33, Fir.coef2),
-			new Fir (33, Fir.coef3), new Fir (33, Fir.coef3),
-			new Fir (33, Fir.coef4), new Fir (33, Fir.coef4),
-			new Fir (33, Fir.coef5), new Fir (33, Fir.coef5),
-			new Fir (33, Fir.coef6), new Fir (33, Fir.coef6),
-			new Fir (33, Fir.coef7), new Fir (33, Fir.coef7),
+			{ null, null }, //0
+			{ new Fir (33, Fir.coef2), new Fir (33, Fir.coef2) },
+			{ new Fir (33, Fir.coef2), new Fir (33, Fir.coef2) },
+			{ new Fir (33, Fir.coef3), new Fir (33, Fir.coef3) },
+			{ new Fir (33, Fir.coef4), new Fir (33, Fir.coef4) },
+			{ new Fir (33, Fir.coef5), new Fir (33, Fir.coef5) },
+			{ new Fir (33, Fir.coef6), new Fir (33, Fir.coef6) },
+			{ new Fir (33, Fir.coef7), new Fir (33, Fir.coef7) },
 		};
 
 		static bool bRestart = false;
@@ -132,6 +142,7 @@ namespace SeeMuzic
 				parm1 [i].Resample = Resample;
 			}
 
+			Palitra = rnd1.Next (14);
 			Load_Parms_Xml ();
 		}
 		// Form1
@@ -143,7 +154,7 @@ namespace SeeMuzic
 			//this.BackColor = Color.White; // AliceBlue;//цвет фона  
 			//this.TransparencyKey = Color.White; // this.BackColor;//он же будет заменен на прозрачный цвет
 
-			if (!Bass.BASS_Init (-1, 11025, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+			if (!Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 			{
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
 				this.Close ();
@@ -159,15 +170,11 @@ namespace SeeMuzic
 			}
 
 			flen = Bass.BASS_ChannelGetLength (stream1);
+			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
 
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
 			_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 			Bass.BASS_ChannelPlay (stream1, false);
-			Palitra = rnd1.Next (14);
-
-			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
-
-			//MessageBox.Show (String.Format ("Interval = {0}\nbuflen = {1}\nlen4 = {2}\nlencic = {3}", Interval, audio_bytes, audio_bytes / 4, audio_bytes / 4 / Resample));
 
 			for (int i = 0; i < Xrot.Length; i++)
 			{
@@ -299,7 +306,7 @@ namespace SeeMuzic
 			if (Resample != Resample2)
 			{
 				Resample2 = Resample;
-				cic = new Cic (Resample, (Resample <= 1 ? 1 : (4 < Resample ? 3 : Resample - 1)));
+				cic = Mcic [Resample];
 			}
 
 			pct = (double)fpos / flen;
@@ -335,8 +342,8 @@ namespace SeeMuzic
 			if (iFilter != iFilter2)
 			{
 				iFilter2 = iFilter;
-				Xfir = Mfir [iFilter * 2];
-				Yfir = Mfir [iFilter * 2 + 1];
+				Xfir = Mfir [iFilter, 0];
+				Yfir = Mfir [iFilter, 1];
 			}
 
 			if (!bPanel)

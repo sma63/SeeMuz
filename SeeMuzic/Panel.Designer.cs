@@ -34,8 +34,8 @@
 			this.lab_Level = new System.Windows.Forms.Label();
 			this.lab_Interval = new System.Windows.Forms.Label();
 			this.trk_Interval = new System.Windows.Forms.TrackBar();
-			this.lab_Krat = new System.Windows.Forms.Label();
-			this.trk_Krat = new System.Windows.Forms.TrackBar();
+			this.lab_Resample = new System.Windows.Forms.Label();
+			this.trk_Resample = new System.Windows.Forms.TrackBar();
 			this.lab_Front = new System.Windows.Forms.Label();
 			this.trk_Front = new System.Windows.Forms.TrackBar();
 			this.num_Palitra = new System.Windows.Forms.NumericUpDown();
@@ -61,7 +61,7 @@
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.trk_Krat)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.num_Palitra)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.num_Filter)).BeginInit();
@@ -116,25 +116,25 @@
 			this.trk_Interval.Value = 1;
 			this.trk_Interval.ValueChanged += new System.EventHandler(this.trk_Interval_ValueChanged);
 			// 
-			// lab_Krat
+			// lab_Resample
 			// 
-			this.lab_Krat.AutoSize = true;
-			this.lab_Krat.Location = new System.Drawing.Point(116, 111);
-			this.lab_Krat.Name = "lab_Krat";
-			this.lab_Krat.Size = new System.Drawing.Size(49, 13);
-			this.lab_Krat.TabIndex = 8;
-			this.lab_Krat.Text = "Частота";
+			this.lab_Resample.AutoSize = true;
+			this.lab_Resample.Location = new System.Drawing.Point(116, 111);
+			this.lab_Resample.Name = "lab_Resample";
+			this.lab_Resample.Size = new System.Drawing.Size(49, 13);
+			this.lab_Resample.TabIndex = 8;
+			this.lab_Resample.Text = "Частота";
 			// 
-			// trk_Krat
+			// trk_Resample
 			// 
-			this.trk_Krat.Location = new System.Drawing.Point(6, 111);
-			this.trk_Krat.Minimum = 1;
-			this.trk_Krat.Name = "trk_Krat";
-			this.trk_Krat.Size = new System.Drawing.Size(104, 45);
-			this.trk_Krat.TabIndex = 3;
-			this.trk_Krat.TickStyle = System.Windows.Forms.TickStyle.None;
-			this.trk_Krat.Value = 1;
-			this.trk_Krat.ValueChanged += new System.EventHandler(this.trk_Krat_ValueChanged);
+			this.trk_Resample.Location = new System.Drawing.Point(6, 111);
+			this.trk_Resample.Minimum = 1;
+			this.trk_Resample.Name = "trk_Resample";
+			this.trk_Resample.Size = new System.Drawing.Size(104, 45);
+			this.trk_Resample.TabIndex = 3;
+			this.trk_Resample.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Resample.Value = 1;
+			this.trk_Resample.ValueChanged += new System.EventHandler(this.trk_Krat_ValueChanged);
 			// 
 			// lab_Front
 			// 
@@ -181,7 +181,7 @@
 			// 
 			// num_Filter
 			// 
-			this.num_Filter.Location = new System.Drawing.Point(202, 109);
+			this.num_Filter.Location = new System.Drawing.Point(202, 78);
 			this.num_Filter.Maximum = new decimal(new int[] {
             7,
             0,
@@ -206,7 +206,7 @@
 			// lab_Filter
 			// 
 			this.lab_Filter.AutoSize = true;
-			this.lab_Filter.Location = new System.Drawing.Point(244, 111);
+			this.lab_Filter.Location = new System.Drawing.Point(244, 80);
 			this.lab_Filter.Name = "lab_Filter";
 			this.lab_Filter.Size = new System.Drawing.Size(47, 13);
 			this.lab_Filter.TabIndex = 11;
@@ -381,11 +381,11 @@
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.trk_Krat);
+			this.groupBox1.Controls.Add(this.trk_Resample);
 			this.groupBox1.Controls.Add(this.trk_Interval);
 			this.groupBox1.Controls.Add(this.trk_Level);
 			this.groupBox1.Controls.Add(this.trk_Front);
-			this.groupBox1.Controls.Add(this.lab_Krat);
+			this.groupBox1.Controls.Add(this.lab_Resample);
 			this.groupBox1.Controls.Add(this.lab_Front);
 			this.groupBox1.Controls.Add(this.lab_Palitra);
 			this.groupBox1.Controls.Add(this.lab_Interval);
@@ -423,7 +423,7 @@
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Panel_FormClosed);
 			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.trk_Krat)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.num_Palitra)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.num_Filter)).EndInit();
@@ -443,13 +443,13 @@
 
 		#endregion
 
-		private System.Windows.Forms.TrackBar trk_Krat;//1
+		private System.Windows.Forms.TrackBar trk_Resample;//1
 		private System.Windows.Forms.TrackBar trk_Interval;//2
 		private System.Windows.Forms.TrackBar trk_Level;//3
 		public System.Windows.Forms.TrackBar trk_Front;//4
 
 		private System.Windows.Forms.Label lab_Interval;
-		private System.Windows.Forms.Label lab_Krat;
+		private System.Windows.Forms.Label lab_Resample;
 		public System.Windows.Forms.Label lab_Level;
 		public System.Windows.Forms.Label lab_Front;
 

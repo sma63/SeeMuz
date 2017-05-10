@@ -41,6 +41,13 @@ namespace audio_sma
 
 		public bool Decimate (int x, int y)
 		{
+			if (RRR <= 1)
+			{
+				X = x;
+				Y = y;
+				return true;
+			}
+
 			int i;
 			for (i = 0; i < NNN; i++)
 			{
