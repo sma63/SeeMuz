@@ -22,10 +22,11 @@ namespace SeeMuzic
 {
 	public partial class Form1 : Form
 	{
+		public const int SAMPLERATE = 11025;//44100;//22050;//
 		const int MIN_RESAMPLE = 5;
 		const int MAX_INTERVAL = 250; // [ms] 
 		const int SAMPLE_BYTES = 4; // число байт в сампле
-		const int AUDIO_SAMPLES = MAX_INTERVAL * 44100 / 1000; // Длина аудиобуффера в самплах
+		const int AUDIO_SAMPLES = MAX_INTERVAL * SAMPLERATE / 1000; // Длина аудиобуффера в самплах
 		const int AUDIO_BYTES = AUDIO_SAMPLES * SAMPLE_BYTES; // .. в байтах
 
 		private int _syncer = 0;
@@ -54,8 +55,8 @@ namespace SeeMuzic
 		static double kf = 1.0;
 
 		static long fpos = 0, flen = 0;
-		static int iFnames = 0;
-		static string [] Fnames;
+		public static int iFnames = 0;
+		public static string [] Fnames;
 
 		const int PENW = 4;
 		static Pen pen2 = new Pen (Color.Yellow, PENW);
@@ -64,11 +65,10 @@ namespace SeeMuzic
 
 		static Font fnt1 = new Font ("Arial", 10.0f);
 
-		static double pct = 0.0;
+		public static double pct = 0.0;
 
 		public static int iFilter = 1, iFilter2 = 1;
-		static Fir Xfir = null;
-		static Fir Yfir = null;
+		static Fir Xfir = null, Yfir = null;
 		static Fir [] Mfir = new Fir [] 
 		{
 			null, null, //0
@@ -76,16 +76,21 @@ namespace SeeMuzic
 			new Fir (33, Fir.coef2), new Fir (33, Fir.coef2),
 			new Fir (33, Fir.coef3), new Fir (33, Fir.coef3),
 			new Fir (33, Fir.coef4), new Fir (33, Fir.coef4),
+			new Fir (33, Fir.coef5), new Fir (33, Fir.coef5),
+			new Fir (33, Fir.coef6), new Fir (33, Fir.coef6),
+			new Fir (33, Fir.coef7), new Fir (33, Fir.coef7),
 		};
 
 		static bool bRestart = false;
-		public static bool bKnopka = false;
+		//public static bool bKnopka = false;
 
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
 
 		static Param [] parm1;
+
+		public static bool bPanel = false;
 
 		public Form1 ()
 		{
@@ -138,7 +143,7 @@ namespace SeeMuzic
 			//this.BackColor = Color.White; // AliceBlue;//цвет фона  
 			//this.TransparencyKey = Color.White; // this.BackColor;//он же будет заменен на прозрачный цвет
 
-			if (!Bass.BASS_Init (-1, 44100, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+			if (!Bass.BASS_Init (-1, 11025, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 			{
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
 				this.Close ();
@@ -194,19 +199,45 @@ namespace SeeMuzic
 
 		private void SyncMethodEndStream (int handle, int channel, int data, IntPtr user)
 		{
-			bRestart = true;
-			parm1 [iFnames].bInside = bInside;
-			parm1 [iFnames].Bright = Bright;
-			parm1 [iFnames].bRotate = bRotate;
-			parm1 [iFnames].bStretch = bStretch;
-			parm1 [iFnames].iFilter = iFilter;
-			parm1 [iFnames].Interval = Interval;
-			parm1 [iFnames].Leak = Leak;
-			parm1 [iFnames].Palitra = Palitra;
-			parm1 [iFnames].Resample = Resample;
-
+			Audio_Next (-1);
 		}
 		// SyncMethodEndStream
+
+		public static void Audio_Next (int idx = -1)
+		{
+			if (idx < 0)
+			{
+				parm1 [iFnames].bInside = bInside;
+				parm1 [iFnames].Bright = Bright;
+				parm1 [iFnames].bRotate = bRotate;
+				parm1 [iFnames].bStretch = bStretch;
+				parm1 [iFnames].iFilter = iFilter;
+				parm1 [iFnames].Interval = Interval;
+				parm1 [iFnames].Leak = Leak;
+				parm1 [iFnames].Palitra = Palitra;
+				parm1 [iFnames].Resample = Resample;
+				if (idx == -1)
+					iFnames = (iFnames + 1) % Fnames.Length;
+				else
+					iFnames = (iFnames - 1 + Fnames.Length) % Fnames.Length;
+				bRestart = true;
+			}
+			else if (idx != iFnames)
+			{
+				parm1 [iFnames].bInside = bInside;
+				parm1 [iFnames].Bright = Bright;
+				parm1 [iFnames].bRotate = bRotate;
+				parm1 [iFnames].bStretch = bStretch;
+				parm1 [iFnames].iFilter = iFilter;
+				parm1 [iFnames].Interval = Interval;
+				parm1 [iFnames].Leak = Leak;
+				parm1 [iFnames].Palitra = Palitra;
+				parm1 [iFnames].Resample = Resample;
+				iFnames = idx;
+				bRestart = true;
+			}
+		}
+		// Audio_Next
 
 		private void timer1_Tick (object sender, EventArgs e)
 		{
@@ -223,13 +254,13 @@ namespace SeeMuzic
 				Bass.BASS_StreamFree (stream1);
 				Bass.BASS_Free ();
 
-				if (!Bass.BASS_Init (-1, 44100, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+				if (!Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 				{
 					MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
 					this.Close ();
 				}
 
-				Form1_Next_Title (Fnames [iFnames = (iFnames + 1) % Fnames.Length]);
+				Form1_Next_Title (Fnames [iFnames]);
 				stream1 = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
 				if (stream1 == 0)
 				{
@@ -249,7 +280,7 @@ namespace SeeMuzic
 			if (Resample != Resample2)
 			{
 				Resample2 = Resample;
-				cic = new Cic (Resample, 4);
+				cic = new Cic (Resample, (Resample <= 1 ? 1 : (4 < Resample ? 3 : Resample - 1)));
 			}
 
 			pct = (double)fpos / flen;
@@ -282,18 +313,23 @@ namespace SeeMuzic
 				y0 = 0.0;
 			}
 #endif
-			if (bKnopka)
-			{
-				bKnopka = false;
-				btn_M.Visible = true;
-				btn_M.Enabled = true;
-			}
-
 			if (iFilter != iFilter2)
 			{
 				iFilter2 = iFilter;
 				Xfir = Mfir [iFilter * 2];
 				Yfir = Mfir [iFilter * 2 + 1];
+			}
+
+			if (!bPanel)
+			{
+				if (0 < btn_M_Visible_Cnt)
+				{
+					if (--btn_M_Visible_Cnt <= 0)
+					{
+						btn_M.Visible = false;
+						btn_M.Enabled = false;
+					}
+				}
 			}
 
 			timer1.Interval = Interval;
@@ -472,6 +508,19 @@ namespace SeeMuzic
 			//g.DrawString (kf.ToString (), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 		}
 		// Form1_Paint
+
+		int btn_M_Visible_Cnt = 5;
+
+		private void Form1_MouseMove (object sender, MouseEventArgs e)
+		{
+			if (!bPanel)
+			{
+				btn_M.Visible = true;
+				btn_M.Enabled = true;
+				btn_M_Visible_Cnt = 5;
+			}
+		}
+		// Form1_MouseMove
 
 		private void button1_Click (object sender, EventArgs e)
 		{

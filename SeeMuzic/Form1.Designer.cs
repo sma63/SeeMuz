@@ -47,24 +47,32 @@
 			// 
 			// btn_M
 			// 
-			this.btn_M.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btn_M.Location = new System.Drawing.Point(123, 123);
+			this.btn_M.BackColor = System.Drawing.Color.Transparent;
+			this.btn_M.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+			this.btn_M.FlatAppearance.BorderColor = System.Drawing.Color.Red;
+			this.btn_M.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btn_M.Font = new System.Drawing.Font("Arial Black", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.btn_M.ForeColor = System.Drawing.Color.Red;
+			this.btn_M.Location = new System.Drawing.Point(11, 12);
+			this.btn_M.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
 			this.btn_M.Name = "btn_M";
-			this.btn_M.Size = new System.Drawing.Size(20, 20);
+			this.btn_M.Size = new System.Drawing.Size(24, 24);
 			this.btn_M.TabIndex = 0;
-			this.btn_M.Text = "$";
-			this.btn_M.UseVisualStyleBackColor = true;
+			this.btn_M.Text = "P";
+			this.btn_M.UseVisualStyleBackColor = false;
 			this.btn_M.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// Form1
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(5F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Black;
-			this.ClientSize = new System.Drawing.Size(144, 144);
+			this.ClientSize = new System.Drawing.Size(220, 215);
 			this.Controls.Add(this.btn_M);
 			this.DoubleBuffered = true;
+			this.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
 			this.Name = "Form1";
 			this.Text = "See Muz";
 			this.TopMost = true;
@@ -73,6 +81,7 @@
 			this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
 			this.ResumeLayout(false);
 
 		}

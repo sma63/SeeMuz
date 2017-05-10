@@ -14,8 +14,10 @@ namespace SeeMuzic
 	{
 		const double LEAK = 16.0;
 		const double LEVEL = 10.0;
-		const int INTERVAL = 10, INTERVAL2 = 30;
+		const int INTERVAL = 10, INTERVAL2 = 0; //1-10,2-20,3-30,4-40,5-50,6-60,7-70,8-80,9-90,10-100
 		const int KRAT = 7;
+
+		int iFnames = 0;
 
 		//
 		// После загрузки новой мелодии обновлять панель (если она активна)
@@ -24,6 +26,7 @@ namespace SeeMuzic
 		public Panel ()
 		{
 			InitializeComponent ();
+
 			trk_Front.Value = Ranger10 (Form1.Leak / LEAK);
 			trk_Level.Value = Ranger10 (Form1.Bright / LEVEL);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
@@ -37,7 +40,19 @@ namespace SeeMuzic
 			lab_Front.Text = String.Format ("Накоп = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
 			lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
-			lab_Krat.Text = String.Format ("Fs = {0} Hz", 44100 / Form1.Resample);
+			lab_Krat.Text = String.Format ("Fs = {0} Hz", Form1.SAMPLERATE / Form1.Resample);
+
+			for (int i = 0; i < Form1.Fnames.Length; i++)
+			{
+				int p1 = Form1.Fnames [i].LastIndexOf ('\\');
+				dataGridView1.Rows.Add (Form1.Fnames [i].Substring (p1 + 1), Form1.Fnames [i]);
+			}
+			iFnames = Form1.iFnames;
+			dataGridView1.Rows [iFnames].Selected = true;
+			dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
+
+			Panel_Timer.Enabled = true;
+			Form1.bPanel = true;
 		}
 
 		private void trk_Front_ValueChanged (object sender, EventArgs e)
@@ -61,12 +76,12 @@ namespace SeeMuzic
 		private void trk_Krat_ValueChanged (object sender, EventArgs e)
 		{
 			Form1.Resample = trk_Krat.Value + KRAT;
-			lab_Krat.Text = String.Format ("Fs = {0} Hz", 44100 / Form1.Resample);
+			lab_Krat.Text = String.Format ("Fs = {0} Hz", Form1.SAMPLERATE / Form1.Resample);
 		}
 
 		private void Panel_FormClosed (object sender, FormClosedEventArgs e)
 		{
-			Form1.bKnopka = true;
+			Form1.bPanel = true;
 		}
 
 		private void num_Palitra_ValueChanged (object sender, EventArgs e)
@@ -92,6 +107,35 @@ namespace SeeMuzic
 		private void chk_Inside_CheckedChanged (object sender, EventArgs e)
 		{
 			Form1.bInside = chk_Inside.Checked;
+		}
+
+		private void Panel_Timer_Tick (object sender, EventArgs e)
+		{
+			progressBar1.Value = (int)(Form1.pct * 100.0);
+			if (iFnames != Form1.iFnames)
+			{
+				iFnames = Form1.iFnames;
+				dataGridView1.Rows [iFnames].Selected = true;
+				dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
+			}
+		}
+
+		private void btn_Prev_Click (object sender, EventArgs e)
+		{
+			Form1.Audio_Next (-2);
+		}
+
+		private void btn_Next_Click (object sender, EventArgs e)
+		{
+			Form1.Audio_Next (-1);
+		}
+
+		private void dataGridView1_SelectionChanged (object sender, EventArgs e)
+		{
+			if (0 < dataGridView1.SelectedRows.Count)
+			{
+				Form1.Audio_Next (dataGridView1.SelectedRows [0].Index);
+			}
 		}
 
 		private int Ranger10 (double v)
