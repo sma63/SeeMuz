@@ -90,7 +90,7 @@
 
 		public System.Windows.Forms.Timer timer1;
 		public System.Windows.Forms.Timer timer2;
-		private System.Windows.Forms.Button btn_M;
+		public System.Windows.Forms.Button btn_M;
 	}
 }
 

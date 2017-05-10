@@ -1,5 +1,5 @@
 ﻿//#define SPIRAL
-//#define KORELAT
+#define KORELAT
 
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace SeeMuzic
 
 		public static int iFilter = 1, iFilter2 = 1;
 		static Fir Xfir = null, Yfir = null;
-		static Fir [] Mfir = new Fir [] 
+		static Fir [] Mfir = new Fir []
 		{
 			null, null, //0
 			null, null, //1
@@ -84,11 +84,10 @@ namespace SeeMuzic
 		static bool bRestart = false;
 		//public static bool bKnopka = false;
 
+		public static bool bEros = false; // гнуть
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
-
-		static Param [] parm1;
 
 		public static bool bPanel = false;
 
@@ -125,10 +124,11 @@ namespace SeeMuzic
 				parm1 [i].Bright = Bright;
 				parm1 [i].bRotate = bRotate;
 				parm1 [i].bStretch = bStretch;
+				parm1 [i].bEros = bEros;
 				parm1 [i].iFilter = iFilter;
 				parm1 [i].Interval = Interval;
 				parm1 [i].Leak = Leak;
-				parm1 [i].Palitra = Palitra;
+				parm1 [i].Palitra = -1;
 				parm1 [i].Resample = Resample;
 			}
 
@@ -211,6 +211,7 @@ namespace SeeMuzic
 				parm1 [iFnames].Bright = Bright;
 				parm1 [iFnames].bRotate = bRotate;
 				parm1 [iFnames].bStretch = bStretch;
+				parm1 [iFnames].bEros = bEros;
 				parm1 [iFnames].iFilter = iFilter;
 				parm1 [iFnames].Interval = Interval;
 				parm1 [iFnames].Leak = Leak;
@@ -228,6 +229,7 @@ namespace SeeMuzic
 				parm1 [iFnames].Bright = Bright;
 				parm1 [iFnames].bRotate = bRotate;
 				parm1 [iFnames].bStretch = bStretch;
+				parm1 [iFnames].bEros = bEros;
 				parm1 [iFnames].iFilter = iFilter;
 				parm1 [iFnames].Interval = Interval;
 				parm1 [iFnames].Leak = Leak;
@@ -271,7 +273,24 @@ namespace SeeMuzic
 				flen = Bass.BASS_ChannelGetLength (stream1);
 				_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 				Bass.BASS_ChannelPlay (stream1, false);
-				Palitra = rnd1.Next (14);
+
+				if (parm1 [iFnames].Palitra < 0)
+				{
+					Palitra = rnd1.Next (14);
+				}
+				else
+				{
+					bInside = parm1 [iFnames].bInside;
+					Bright = parm1 [iFnames].Bright;
+					bRotate = parm1 [iFnames].bRotate;
+					bStretch = parm1 [iFnames].bStretch;
+					bEros = parm1 [iFnames].bEros;
+					iFilter = parm1 [iFnames].iFilter;
+					Interval = parm1 [iFnames].Interval;
+					Leak = parm1 [iFnames].Leak;
+					Palitra = parm1 [iFnames].Palitra;
+					Resample = parm1 [iFnames].Resample;
+				}
 			}
 			fpos = Bass.BASS_ChannelGetPosition (stream1);
 			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
@@ -467,8 +486,15 @@ namespace SeeMuzic
 			{
 				for (int y = 0; y < Okno; y++)
 				{
-					double x1 = (x - Okno2) * kf;
-					double y1 = (y - Okno2) * kf;
+					double x1 = x - Okno2;
+					double y1 = y - Okno2;
+					if (bEros)
+					{
+						x1 = x1 / Okno2; x1 *= Math.Abs (x1) * Okno2;
+						y1 = y1 / Okno2; y1 *= Math.Abs (y1) * Okno2;
+					}
+					x1 = x1 * kf;
+					y1 = y1 * kf;
 					int x2 = Okno2 + (int)(x0 * x1 + y0 * y1);
 					if ((0 <= x2) && (x2 < Okno))
 					{
@@ -509,7 +535,7 @@ namespace SeeMuzic
 		}
 		// Form1_Paint
 
-		int btn_M_Visible_Cnt = 5;
+		int btn_M_Visible_Cnt = 3;
 
 		private void Form1_MouseMove (object sender, MouseEventArgs e)
 		{
@@ -517,7 +543,7 @@ namespace SeeMuzic
 			{
 				btn_M.Visible = true;
 				btn_M.Enabled = true;
-				btn_M_Visible_Cnt = 5;
+				btn_M_Visible_Cnt = 3;
 			}
 		}
 		// Form1_MouseMove
@@ -531,73 +557,6 @@ namespace SeeMuzic
 		}
 		// button1_Click
 
-		private void Save_Parms_Xml ()
-		{
-			XElement parms1 = new XElement ("PARMS");
-			parms1.Add (new XElement ("BRIGHT", Bright));
-			parms1.Add (new XElement ("INTERVAL", Interval));
-			parms1.Add (new XElement ("RESAMPLE", Resample));
-			parms1.Add (new XElement ("LEAK", Leak));
-			parms1.Add (new XElement ("FILTER", iFilter));
-			parms1.Add (new XElement ("ROTATE", bRotate));
-			parms1.Add (new XElement ("STRETCH", bStretch));
-			parms1.Add (new XElement ("INSIDE", bInside));
-			new XDocument (parms1).Save ("SeeMuz.xml");
-
-			XElement list1 = new XElement ("LIST");
-			for (int i = 0; i < Fnames.Length; i++)
-			{
-				XElement item1 = new XElement 
-				(	"ITEM",
-					new XAttribute ("BRIGHT", parm1 [i].Bright),
-					new XAttribute ("INTERVAL", parm1 [i].Interval),
-					new XAttribute ("RESAMPLE", parm1 [i].Resample),
-					new XAttribute ("LEAK", parm1 [i].Leak),
-					new XAttribute ("FILTER", parm1 [i].iFilter),
-					new XAttribute ("ROTATE", parm1 [i].bRotate),
-					new XAttribute ("STRETCH", parm1 [i].bStretch),
-					new XAttribute ("INSIDE", parm1 [i].bInside),
-					new XAttribute ("FILE", Fnames [i])
-				);
-				list1.Add (item1);
-			}
-			new XDocument (list1).Save ("SeeMuzList.xml");
-		}
-		// Save_Parms_Xml
-
-		private void Load_Parms_Xml ()
-		{
-			try 
-			{
-				XDocument xdoc = XDocument.Load ("SeeMuz.xml");
-				IEnumerable<XElement> parms = from f in (from p in xdoc.Elements () where p.Name.ToString ().ToUpper () == "PARMS" select p).Elements () select f;
-				foreach (XElement parm in parms)
-				{
-					try
-					{
-						switch (parm.Name.ToString ().ToUpper ())
-						{
-							case "BRIGHT": Bright = double.Parse (parm.Value); break;
-							case "INTERVAL": Interval = int.Parse (parm.Value); break;
-							case "RESAMPLE": Resample = int.Parse (parm.Value); break;
-							case "LEAK": Leak = int.Parse (parm.Value); break;
-							case "FILTER": iFilter = int.Parse (parm.Value); break;
-							case "ROTATE": bRotate = bool.Parse (parm.Value); break;
-							case "STRETCH": bStretch = bool.Parse (parm.Value); break;
-							case "INSIDE": bInside = bool.Parse (parm.Value); break;
-						}
-					}
-					catch
-					{
-					}
-				}
-			}
-			catch
-			{
-			}
-		}
-		// Load_Parms_Xml
-
 		public static Color H2Color (double h, double v) //цвет, яркость
 		{
 			if (v < 0.0) v = 0.0; else if (1.0 <= v) v = 255.0; else v *= 256.0;
@@ -607,29 +566,14 @@ namespace SeeMuzic
 			int c = b - a;
 			switch ((int)h6)
 			{
-				case  0: return Color.FromArgb (b, a, 0);
-				case  1: return Color.FromArgb (c, b, 0);
-				case  2: return Color.FromArgb (0, b, a);
-				case  3: return Color.FromArgb (0, c, b);
-				case  4: return Color.FromArgb (a, 0, b);
+				case 0: return Color.FromArgb (b, a, 0);
+				case 1: return Color.FromArgb (c, b, 0);
+				case 2: return Color.FromArgb (0, b, a);
+				case 3: return Color.FromArgb (0, c, b);
+				case 4: return Color.FromArgb (a, 0, b);
 				default: return Color.FromArgb (b, 0, c);
 			}
 		}
 		// H2Color
-
 	}
-
-	class Param
-	{
-		public double Bright;
-		public int Interval;
-		public int Resample;
-		public double Leak;
-		public int iFilter;
-		public int Palitra;
-		public bool bRotate;
-		public bool bStretch;
-		public bool bInside;
-	}
-
 }

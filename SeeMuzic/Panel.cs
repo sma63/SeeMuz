@@ -12,7 +12,7 @@ namespace SeeMuzic
 {
 	public partial class Panel : Form
 	{
-		const double LEAK = 16.0;
+		const double LEAK = 10.0;
 		const double LEVEL = 10.0;
 		const int INTERVAL = 10, INTERVAL2 = 0; //1-10,2-20,3-30,4-40,5-50,6-60,7-70,8-80,9-90,10-100
 		const int KRAT = 7;
@@ -36,8 +36,9 @@ namespace SeeMuzic
 			chk_Rotate.Checked = Form1.bRotate;
 			chk_Stretch.Checked = Form1.bStretch;
 			chk_Inside.Checked = Form1.bInside;
+			chk_Eros.Checked = Form1.bEros;
 
-			lab_Front.Text = String.Format ("Накоп = {0}", Form1.Leak);
+			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
 			lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
 			lab_Krat.Text = String.Format ("Fs = {0} Hz", Form1.SAMPLERATE / Form1.Resample);
@@ -58,7 +59,7 @@ namespace SeeMuzic
 		private void trk_Front_ValueChanged (object sender, EventArgs e)
 		{
 			Form1.Leak = trk_Front.Value * LEAK;
-			lab_Front.Text = String.Format ("Накоп = {0}", Form1.Leak);
+			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
 		}
 
 		private void trk_Level_ValueChanged (object sender, EventArgs e)
@@ -81,7 +82,7 @@ namespace SeeMuzic
 
 		private void Panel_FormClosed (object sender, FormClosedEventArgs e)
 		{
-			Form1.bPanel = true;
+			Form1.bPanel = false;
 		}
 
 		private void num_Palitra_ValueChanged (object sender, EventArgs e)
@@ -111,6 +112,7 @@ namespace SeeMuzic
 
 		private void Panel_Timer_Tick (object sender, EventArgs e)
 		{
+			num_Palitra.Value = Form1.Palitra;
 			progressBar1.Value = (int)(Form1.pct * 100.0);
 			if (iFnames != Form1.iFnames)
 			{
@@ -136,6 +138,11 @@ namespace SeeMuzic
 			{
 				Form1.Audio_Next (dataGridView1.SelectedRows [0].Index);
 			}
+		}
+
+		private void chk_Eros_CheckedChanged (object sender, EventArgs e)
+		{
+			Form1.bEros = chk_Eros.Checked;
 		}
 
 		private int Ranger10 (double v)

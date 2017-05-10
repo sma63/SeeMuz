@@ -43,7 +43,7 @@
 			this.lab_Filter = new System.Windows.Forms.Label();
 			this.chk_Stretch = new System.Windows.Forms.CheckBox();
 			this.chk_Inside = new System.Windows.Forms.CheckBox();
-			this.checkBox3 = new System.Windows.Forms.CheckBox();
+			this.chk_Eros = new System.Windows.Forms.CheckBox();
 			this.chk_Rotate = new System.Windows.Forms.CheckBox();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage0 = new System.Windows.Forms.TabPage();
@@ -233,15 +233,16 @@
 			this.chk_Inside.UseVisualStyleBackColor = true;
 			this.chk_Inside.CheckedChanged += new System.EventHandler(this.chk_Inside_CheckedChanged);
 			// 
-			// checkBox3
+			// chk_Eros
 			// 
-			this.checkBox3.AutoSize = true;
-			this.checkBox3.Location = new System.Drawing.Point(17, 155);
-			this.checkBox3.Name = "checkBox3";
-			this.checkBox3.Size = new System.Drawing.Size(54, 17);
-			this.checkBox3.TabIndex = 14;
-			this.checkBox3.Text = "Гнуть";
-			this.checkBox3.UseVisualStyleBackColor = true;
+			this.chk_Eros.AutoSize = true;
+			this.chk_Eros.Location = new System.Drawing.Point(17, 155);
+			this.chk_Eros.Name = "chk_Eros";
+			this.chk_Eros.Size = new System.Drawing.Size(54, 17);
+			this.chk_Eros.TabIndex = 14;
+			this.chk_Eros.Text = "Гнуть";
+			this.chk_Eros.UseVisualStyleBackColor = true;
+			this.chk_Eros.CheckedChanged += new System.EventHandler(this.chk_Eros_CheckedChanged);
 			// 
 			// chk_Rotate
 			// 
@@ -388,7 +389,7 @@
 			this.groupBox1.Controls.Add(this.lab_Interval);
 			this.groupBox1.Controls.Add(this.chk_Rotate);
 			this.groupBox1.Controls.Add(this.num_Filter);
-			this.groupBox1.Controls.Add(this.checkBox3);
+			this.groupBox1.Controls.Add(this.chk_Eros);
 			this.groupBox1.Controls.Add(this.lab_Level);
 			this.groupBox1.Controls.Add(this.chk_Inside);
 			this.groupBox1.Controls.Add(this.lab_Filter);
@@ -415,7 +416,7 @@
 			this.MinimizeBox = false;
 			this.Name = "Panel";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "SeeMuz - Настройки";
+			this.Text = "SeeMuz - Control";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Panel_FormClosed);
 			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).EndInit();
@@ -457,7 +458,7 @@
 
 		private System.Windows.Forms.CheckBox chk_Stretch;
 		private System.Windows.Forms.CheckBox chk_Inside;
-		private System.Windows.Forms.CheckBox checkBox3;
+		private System.Windows.Forms.CheckBox chk_Eros;
 		private System.Windows.Forms.CheckBox chk_Rotate;
 
 		private System.Windows.Forms.TabControl tabControl1;
