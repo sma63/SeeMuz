@@ -126,24 +126,30 @@ namespace SeeMuzic
 				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
 			}
 
+			Palitra = rnd1.Next (14);
+			Load_Parms_Xml ();
+
+			// инициализация параметров просмотра
 			parm1 = new Param [Fnames.Length];
 			for (int i = 0; i < parm1.Length; i++)
 			{
-				parm1 [i] = new Param ();
-				parm1 [i].bInside = bInside;
-				parm1 [i].Bright = Bright;
-				parm1 [i].bRotate = bRotate;
-				parm1 [i].bStretch = bStretch;
-				parm1 [i].bEros = bEros;
-				parm1 [i].iFilter = iFilter;
-				parm1 [i].Interval = Interval;
-				parm1 [i].Leak = Leak;
-				parm1 [i].Palitra = -1;
-				parm1 [i].Resample = Resample;
+				if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
+				{
+					parm1 [i] = new Param (); // если нет старых сведений - по умолчанию текущими значениями
+					parm1 [i].bInside = bInside;
+					parm1 [i].Bright = Bright;
+					parm1 [i].bRotate = bRotate;
+					parm1 [i].bStretch = bStretch;
+					parm1 [i].bEros = bEros;
+					parm1 [i].iFilter = iFilter;
+					parm1 [i].Interval = Interval;
+					parm1 [i].Leak = Leak;
+					parm1 [i].Palitra = rnd1.Next (14);
+					parm1 [i].Resample = Resample;
+					parm1 [i].Fname = Fnames [i];
+				}
 			}
 
-			Palitra = rnd1.Next (14);
-			Load_Parms_Xml ();
 		}
 		// Form1
 
