@@ -60,7 +60,7 @@
 			this.btn_M.TabIndex = 0;
 			this.btn_M.Text = "P";
 			this.btn_M.UseVisualStyleBackColor = false;
-			this.btn_M.Click += new System.EventHandler(this.button1_Click);
+			this.btn_M.Click += new System.EventHandler(this.btn_M_Click);
 			// 
 			// Form1
 			// 

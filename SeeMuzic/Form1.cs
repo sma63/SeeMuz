@@ -31,7 +31,7 @@ namespace SeeMuzic
 		const int AUDIO_BYTES = AUDIO_SAMPLES * SAMPLE_BYTES; // .. в байтах
 
 		private int _syncer = 0;
-		SYNCPROC _syncProcEndStream;
+		static SYNCPROC _syncProcEndStream;
 		static int stream1 = 0;
 
 		public static int Palitra = 0;
@@ -181,18 +181,44 @@ namespace SeeMuzic
 					parm1 [i].Fname = Fnames [i];
 				}
 			}
+
+			btn_M.Enabled = false;
+			btn_M.Visible = false;
 		}
 		// Form1
+
+		static bool bTransparencyOn = false;
+
+		private void TransparencyCtrl (bool b)
+		{
+			if (bTransparencyOn != b)
+			{
+				bTransparencyOn = b;
+				if (bTransparencyOn)
+				{
+					this.FormBorderStyle = FormBorderStyle.None;
+					this.AllowTransparency = true;
+					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
+					this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+				}
+				else
+				{
+					this.FormBorderStyle = FormBorderStyle.Sizable;
+					this.AllowTransparency = false;
+					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
+					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+				}
+			}
+		}
+		// TransparencyCtrl
 
 		private void Form1_Load (object sender, EventArgs e)
 		{
 			// Прозрачность
-			this.FormBorderStyle = FormBorderStyle.None;
-			this.AllowTransparency = true;
-			this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-			this.TransparencyKey = this.BackColor;//он же будет заменен на прозрачный цвет
+			TransparencyCtrl (true);
 
-			Audio_Start ();
+			_syncProcEndStream = new SYNCPROC(SyncMethodEndStream);
+			Audio_Start();
 
 			for (int i = 0; i < Xrot.Length; i++)
 			{
@@ -374,6 +400,7 @@ namespace SeeMuzic
 					{
 						btn_M.Visible = false;
 						btn_M.Enabled = false;
+						TransparencyCtrl(true);
 					}
 				}
 			}
@@ -580,7 +607,7 @@ namespace SeeMuzic
 		}
 		// Form1_Paint
 
-		int btn_M_Visible_Cnt = 3;
+		int btn_M_Visible_Cnt = 0;
 
 		private void Form1_MouseMove (object sender, MouseEventArgs e)
 		{
@@ -588,19 +615,21 @@ namespace SeeMuzic
 			{
 				btn_M.Visible = true;
 				btn_M.Enabled = true;
-				btn_M_Visible_Cnt = 3;
+				btn_M_Visible_Cnt = 5;
+				TransparencyCtrl(false);
 			}
 		}
 		// Form1_MouseMove
 
-		private void button1_Click (object sender, EventArgs e)
+		private void btn_M_Click (object sender, EventArgs e)
 		{
 			btn_M.Enabled = false;
 			btn_M.Visible = false;
-			Panel panel1 = new Panel ();
-			panel1.Show (this);
+			TransparencyCtrl(true);
+			Panel panel1 = new Panel();
+			panel1.Show(this);
 		}
-		// button1_Click
+		// btn_M_Click
 
 		public static Color H2Color (double h, double v) //цвет, яркость
 		{
