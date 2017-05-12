@@ -40,6 +40,7 @@ namespace SeeMuzic
 		const string _INSIDE_ = "INS";
 		const string _LEAK_ = "LEA";
 		const string _PALITRA_ = "PAL";
+		const string _PAGE0_ = "PAGE0";
 		const string _RESAMPLE_ = "RES";
 		const string _ROTATE_ = "ROT";
 		const string _STRETCH_ = "STR";
@@ -60,6 +61,7 @@ namespace SeeMuzic
 			parms1.Add (new XElement (_STRETCH_, bStretch));
 			parms1.Add (new XElement (_INSIDE_, bInside));
 			parms1.Add (new XElement (_EROS_, bEros));
+			parms1.Add (new XElement (_PAGE0_, bPage0));
 			new XDocument (parms1).Save ("SeeMuz.xml");
 
 			XElement list1 = new XElement ("LIST");
@@ -107,6 +109,7 @@ namespace SeeMuzic
 							case _STRETCH_: bStretch = bool.Parse (parm.Value); break;
 							case _INSIDE_: bInside = bool.Parse (parm.Value); break;
 							case _EROS_: bEros = bool.Parse (parm.Value); break;
+							case _PAGE0_: bPage0 = bool.Parse (parm.Value); break;
 						}
 					}
 					catch

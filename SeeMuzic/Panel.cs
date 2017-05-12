@@ -15,9 +15,10 @@ namespace SeeMuzic
 		const double LEAK = 10.0;
 		const double LEVEL = 10.0;
 		const int INTERVAL = 10, INTERVAL2 = 0; //1-10,2-20,3-30,4-40,5-50,6-60,7-70,8-80,9-90,10-100
-		const int RESAMPLE = Form1.MIN_RESAMPLE - 1;
+		//const int RESAMPLE = Form1.MIN_RESAMPLE - 1;
 
 		int iFnames = 0;
+		bool bUpdate = false;
 
 		//
 		// После загрузки новой мелодии обновлять панель (если она активна)
@@ -27,10 +28,13 @@ namespace SeeMuzic
 		{
 			InitializeComponent ();
 
+			bUpdate = false;
 			trk_Front.Value = Ranger10 (Form1.Leak / LEAK);
 			trk_Level.Value = Ranger10 (Form1.Bright / LEVEL);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
-			trk_Resample.Value = Ranger10 (Form1.Resample - RESAMPLE);
+			trk_Resample.Value = Ranger10 (Form1.ResToIdx (Form1.Resample) - Form1.ResToIdx (Form1.MIN_RESAMPLE), 0.0, 9.0);
+			bUpdate = true;
+
 			num_Palitra.Value = Form1.Palitra;
 			num_Filter.Value = Form1.iFilter;
 			chk_Rotate.Checked = Form1.bRotate;
@@ -41,6 +45,7 @@ namespace SeeMuzic
 			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
 			lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
+
 			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
 
 			for (int i = 0; i < Form1.Fnames.Length; i++)
@@ -54,35 +59,50 @@ namespace SeeMuzic
 
 			Panel_Timer.Enabled = true;
 			Form1.bPanel = true;
-		}
 
-		private void trk_Front_ValueChanged (object sender, EventArgs e)
-		{
-			Form1.Leak = trk_Front.Value * LEAK;
-			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
-		}
-
-		private void trk_Level_ValueChanged (object sender, EventArgs e)
-		{
-			Form1.Bright = trk_Level.Value * LEVEL;
-			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
-		}
-
-		private void trk_Interval_ValueChanged (object sender, EventArgs e)
-		{
-			Form1.Interval = INTERVAL2 + trk_Interval.Value * INTERVAL;
-			lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
-		}
-
-		private void trk_Krat_ValueChanged (object sender, EventArgs e)
-		{
-			Form1.Resample = trk_Resample.Value + RESAMPLE;
-			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
+			this.tabControl1.SelectedTab = (Form1.bPage0 ? this.tabPage0 : this.tabPage1);
 		}
 
 		private void Panel_FormClosed (object sender, FormClosedEventArgs e)
 		{
+			Form1.bPage0 = (this.tabControl1.SelectedTab == this.tabPage0);
 			Form1.bPanel = false;
+		}
+
+		private void trk_Front_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Leak = trk_Front.Value * LEAK;
+				lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
+			}
+		}
+
+		private void trk_Level_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Bright = trk_Level.Value * LEVEL;
+				lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
+			}
+		}
+
+		private void trk_Interval_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Interval = INTERVAL2 + trk_Interval.Value * INTERVAL;
+				lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
+			}
+		}
+
+		private void trk_Krat_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Resample = Form1.IdxToRes (trk_Resample.Value + Form1.ResToIdx (Form1.MIN_RESAMPLE));
+				lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
+			}
 		}
 
 		private void num_Palitra_ValueChanged (object sender, EventArgs e)

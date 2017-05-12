@@ -128,7 +128,7 @@
 			// trk_Resample
 			// 
 			this.trk_Resample.Location = new System.Drawing.Point(6, 111);
-			this.trk_Resample.Minimum = 1;
+			this.trk_Resample.Maximum = 9;
 			this.trk_Resample.Name = "trk_Resample";
 			this.trk_Resample.Size = new System.Drawing.Size(104, 45);
 			this.trk_Resample.TabIndex = 3;
@@ -417,6 +417,7 @@
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(349, 259);
 			this.Name = "Panel";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "SeeMuz - Control";

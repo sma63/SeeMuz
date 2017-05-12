@@ -22,9 +22,9 @@ namespace SeeMuzic
 {
 	public partial class Form1 : Form
 	{
-		public const int SAMPLERATE = 44100;//11025;//22050;//
+		public const int SAMPLERATE = 44100;//11025 и 22050 - под сомнением
 		public const int MIN_RESAMPLE = 10;
-		const int MAX_RESAMPLE = 20;
+		const int MAX_RESAMPLE = 42;
 		const int MAX_INTERVAL = 100; // [ms] 
 		const int SAMPLE_BYTES = sizeof (Int32); // число байт в сампле
 		const int AUDIO_SAMPLES = (MAX_INTERVAL * SAMPLERATE + 999) / 1000; // Длина аудиобуффера в самплах
@@ -37,28 +37,60 @@ namespace SeeMuzic
 		public static int Palitra = 0;
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
 		public static double Bright = 30.0, Leak = 1.0;
-		public static int Resample = MAX_RESAMPLE; // (44100 / 14 = 3150) / 25 = 126
+		public static int Resample = (MIN_RESAMPLE + MAX_RESAMPLE) / 2; // (44100 / 14 = 3150) / 25 = 126
 
 		static int Resample2 = Resample; // контроль изменений Resample 
 		static double Power = 1.0;
 
 		static int audio_bytes = 0;
 		static short [] audiobuf = new short [AUDIO_BYTES];
+
 		const int XYBUF = (AUDIO_SAMPLES + MIN_RESAMPLE - 1) / MIN_RESAMPLE;
 		static int [] Xbuf = new int [XYBUF];
 		static int [] Ybuf = new int [XYBUF];
+
 		const int XYROT = (AUDIO_SAMPLES + MIN_RESAMPLE * 2 - 1) / (MIN_RESAMPLE * 2);
 		static double [] Xrot = new double [XYROT];
 		static double [] Yrot = new double [XYROT];
 
-		static audio_sma.Cic [] Mcic = new audio_sma.Cic [] 
+		// Resample = 2 ^ (i / 5.0); i = log2 (Resample) * 5.0;
+		static audio_sma.Cic [] Mcic = new audio_sma.Cic []
 		{
-			new Cic (0, 0), new Cic (1, 1), new Cic (2, 3), new Cic (3, 3), new Cic (4, 3), new Cic (5, 3),
-			new Cic (6, 3),	new Cic (7, 3), new Cic (8, 3), new Cic (9, 3), new Cic (10, 3), new Cic (11, 3),
-			new Cic (12, 3), new Cic (13, 3), new Cic (14, 3), new Cic (15, 3), new Cic (16, 3), new Cic (17, 3),
-			new Cic (18, 3), new Cic (19, 3), new Cic (20, 3)
+			new Cic (1, 1), //2^0=1
+			new Cic (1, 1), //2^0.2=1.14
+			new Cic (1, 1), //2^0.4=1.32
+			new Cic (2, 1), //2^0.6=1.52
+			new Cic (2, 1), //2^0.8=1.74
+
+			new Cic (2, 1), //2^1=2
+			new Cic (2, 1), //2^1.2=2.30
+			new Cic (3, 2), //2^1.4=2.64
+			new Cic (3, 2), //2^1.6=3.03
+			new Cic (3, 2), //2^1.8=3.48
+
+			new Cic (4, 3), //2^2=4
+			new Cic (5, 3), //2^2.2=4.59
+			new Cic (5, 3), //2^2.4=5.28
+			new Cic (6, 3), //2^2.6=6.06
+			new Cic (7, 3), //2^2.8=6.96
+
+			new Cic (8, 3), //2^3=8
+			new Cic (9, 3), //2^3.2=9.19
+			new Cic (10, 3), //2^3.4=10.56
+			new Cic (12, 3), //2^3.6=12.13 
+			new Cic (14, 3), //2^3.8=13.99
+
+			new Cic (16, 3), //2^4=16
+			new Cic (18, 3), //2^4.2=18.38
+			new Cic (21, 3), //2^4.4=21.11
+			new Cic (24, 3), //2^4.6=24.25
+			new Cic (28, 3), //2^4.8=27.86
+
+			new Cic (32, 3),  //2^5=32
+			new Cic (37, 3),  //2^5.2=36.77
+			new Cic (42, 3),  //2^5.4=42.22
 		};
-		static audio_sma.Cic cic = Mcic [Resample];
+		static audio_sma.Cic cic = Mcic [ResToIdx (Resample)];
 
 		static double alpha = 0.0; // угол
 		static double x0 = 1.0, y0 = 0.0;
@@ -91,15 +123,15 @@ namespace SeeMuzic
 			{ new Fir (33, Fir.coef7), new Fir (33, Fir.coef7) },
 		};
 
-		static bool bRestart = false;
-		//public static bool bKnopka = false;
-
 		public static bool bEros = false; // гнуть
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
 
+		static bool bRestart = false;
 		public static bool bPanel = false;
+
+		public static bool bPage0 = true;
 
 		public Form1 ()
 		{
@@ -149,38 +181,18 @@ namespace SeeMuzic
 					parm1 [i].Fname = Fnames [i];
 				}
 			}
-
 		}
 		// Form1
 
 		private void Form1_Load (object sender, EventArgs e)
 		{
-			//this.FormBorderStyle = FormBorderStyle.None;
-			//this.AllowTransparency = true;
-			//this.BackColor = Color.White; // AliceBlue;//цвет фона  
-			//this.TransparencyKey = Color.White; // this.BackColor;//он же будет заменен на прозрачный цвет
+			// Прозрачность
+			this.FormBorderStyle = FormBorderStyle.None;
+			this.AllowTransparency = true;
+			this.BackColor = Color.Black; // AliceBlue;//цвет фона  
+			this.TransparencyKey = this.BackColor;//он же будет заменен на прозрачный цвет
 
-			if (!Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
-			{
-				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
-				this.Close ();
-			}
-
-			Form1_Next_Title (Fnames [iFnames]);
-
-			stream1 = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
-			if (stream1 == 0)
-			{
-				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
-				this.Close ();
-			}
-
-			flen = Bass.BASS_ChannelGetLength (stream1);
-			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
-
-			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
-			_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
-			Bass.BASS_ChannelPlay (stream1, false);
+			Audio_Start ();
 
 			for (int i = 0; i < Xrot.Length; i++)
 			{
@@ -215,6 +227,53 @@ namespace SeeMuzic
 			Audio_Next (-1);
 		}
 		// SyncMethodEndStream
+
+		private void Audio_Start ()
+		{
+			if (!Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+			{
+				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
+				this.Close ();
+			}
+
+			Form1_Next_Title (Fnames [iFnames]);
+			stream1 = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
+			if (stream1 == 0)
+			{
+				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
+				this.Close ();
+			}
+
+			flen = Bass.BASS_ChannelGetLength (stream1);
+			_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
+			Bass.BASS_ChannelPlay (stream1, false);
+
+			if (parm1 [iFnames].Palitra < 0)
+			{
+				Palitra = rnd1.Next (14);
+			}
+			else
+			{
+				bInside = parm1 [iFnames].bInside;
+				Bright = parm1 [iFnames].Bright;
+				bRotate = parm1 [iFnames].bRotate;
+				bStretch = parm1 [iFnames].bStretch;
+				bEros = parm1 [iFnames].bEros;
+				iFilter = parm1 [iFnames].iFilter;
+				Interval = parm1 [iFnames].Interval;
+				Leak = parm1 [iFnames].Leak;
+				Palitra = parm1 [iFnames].Palitra;
+				Resample = parm1 [iFnames].Resample;
+			}
+		}
+		//Audio_Start
+
+		private void Audio_Stop ()
+		{
+			Bass.BASS_StreamFree (stream1);
+			Bass.BASS_Free ();
+		}
+		// Audio_Stop
 
 		public static void Audio_Next (int idx = -1)
 		{
@@ -265,57 +324,12 @@ namespace SeeMuzic
 			if (bRestart)
 			{
 				bRestart = false;
-
-				Bass.BASS_StreamFree (stream1);
-				Bass.BASS_Free ();
-
-				if (!Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
-				{
-					MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
-					this.Close ();
-				}
-
-				Form1_Next_Title (Fnames [iFnames]);
-				stream1 = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
-				if (stream1 == 0)
-				{
-					MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
-					this.Close ();
-				}
-
-				flen = Bass.BASS_ChannelGetLength (stream1);
-				_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
-				Bass.BASS_ChannelPlay (stream1, false);
-
-				if (parm1 [iFnames].Palitra < 0)
-				{
-					Palitra = rnd1.Next (14);
-				}
-				else
-				{
-					bInside = parm1 [iFnames].bInside;
-					Bright = parm1 [iFnames].Bright;
-					bRotate = parm1 [iFnames].bRotate;
-					bStretch = parm1 [iFnames].bStretch;
-					bEros = parm1 [iFnames].bEros;
-					iFilter = parm1 [iFnames].iFilter;
-					Interval = parm1 [iFnames].Interval;
-					Leak = parm1 [iFnames].Leak;
-					Palitra = parm1 [iFnames].Palitra;
-					Resample = parm1 [iFnames].Resample;
-				}
-			}
-			fpos = Bass.BASS_ChannelGetPosition (stream1);
-			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
-
-			// перезапуск ресамплера
-			if (Resample != Resample2)
-			{
-				Resample2 = Resample;
-				cic = Mcic [Resample];
+				Audio_Stop ();
+				Audio_Start ();
 			}
 
-			pct = (double)fpos / flen;
+			pct = (double)(fpos = Bass.BASS_ChannelGetPosition (stream1)) / flen;
+
 #if SPIRAL
 			alpha = 1.0 * Math.PI * pct;
 			double a = 0.0;
@@ -379,6 +393,9 @@ namespace SeeMuzic
 
 		private void Form1_MouseDown (object sender, MouseEventArgs e)
 		{
+			this.FormBorderStyle = FormBorderStyle.Sizable;
+			this.AllowTransparency = false;
+
 			if (this.WindowState == FormWindowState.Maximized)
 			{
 				this.WindowState = FormWindowState.Normal;
@@ -394,6 +411,8 @@ namespace SeeMuzic
 		private void Form1_Paint (object sender, PaintEventArgs e)
 		{
 			int Okno = 0;
+			cic = Mcic [ResToIdx (Resample)];
+			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
 			int samples = Bass.BASS_ChannelGetData (stream1, audiobuf, audio_bytes) / SAMPLE_BYTES; // число самплов в аудиобуффере
 			for (int i = 0, j = 0; i < samples; i++, j += 2)
 			{
@@ -531,7 +550,7 @@ namespace SeeMuzic
 							//double v = Xbuf [x2] + Ybuf [y2];
 							vsum2 += v * v;
 							vcnt++;
-							v = v / Power * (Bright / 16.0);
+							if (0.0 < Power) v = v / Power * (Bright / 16.0);
 
 							if (Palitra < 12)
 								bmp1.SetPixel (x, y, H2Color (Palitra / 12.0 - v / 16.0, Math.Abs (v)));
@@ -601,5 +620,19 @@ namespace SeeMuzic
 			}
 		}
 		// H2Color
+
+		// i = log2 (Resample) * 5.0;
+		public static int ResToIdx (int r)
+		{
+			r = (r < MIN_RESAMPLE ? MIN_RESAMPLE : (MAX_RESAMPLE < r ? MAX_RESAMPLE : r));
+			int i = (int)(Math.Log (r) / Math.Log (2.0) * 5.0 + 0.5);
+			return (i < 0 ? 0 : i);
+		}
+		// Resample = 2 ^ (i / 5.0);
+		public static int IdxToRes (int i)
+		{
+			int r = (int)(Math.Pow (2.0, i / 5.0) + 0.5);
+			return (r < MIN_RESAMPLE ? MIN_RESAMPLE : (MAX_RESAMPLE < r ? MAX_RESAMPLE : r));
+		}
 	}
 }
