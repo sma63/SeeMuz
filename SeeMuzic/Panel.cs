@@ -165,6 +165,11 @@ namespace SeeMuzic
 			Form1.bEros = chk_Eros.Checked;
 		}
 
+		private void btn_Play_Click(object sender, EventArgs e)
+		{
+			btn_Play.Text = (Form1.btn_Panel_Play_Click () ? "| |" : ">");
+		}
+
 		private int Ranger10 (double v, double vmin = 1.0, double vmax = 10.0)
 		{
 			if (v < vmin) return (int)vmin;

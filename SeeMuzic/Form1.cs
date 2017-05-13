@@ -1,5 +1,5 @@
 ﻿//#define SPIRAL
-//#define KORELAT
+#define KORELAT
 
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace SeeMuzic
 
 		private int _syncer = 0;
 		static SYNCPROC _syncProcEndStream;
-		static int stream1 = 0;
+		static int Audio_Stream = 0;
 
 		public static int Palitra = 0;
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
@@ -217,8 +217,8 @@ namespace SeeMuzic
 			// Прозрачность
 			TransparencyCtrl (true);
 
-			_syncProcEndStream = new SYNCPROC(SyncMethodEndStream);
-			Audio_Start();
+			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
+			Audio_Start ();
 
 			for (int i = 0; i < Xrot.Length; i++)
 			{
@@ -242,7 +242,7 @@ namespace SeeMuzic
 
 		private void Form1_FormClosed (object sender, FormClosedEventArgs e)
 		{
-			Bass.BASS_StreamFree (stream1);
+			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
 			Save_Parms_Xml ();
 		}
@@ -263,16 +263,16 @@ namespace SeeMuzic
 			}
 
 			Form1_Next_Title (Fnames [iFnames]);
-			stream1 = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
-			if (stream1 == 0)
+			Audio_Stream = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
+			if (Audio_Stream == 0)
 			{
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
 				this.Close ();
 			}
 
-			flen = Bass.BASS_ChannelGetLength (stream1);
-			_syncer = Bass.BASS_ChannelSetSync (stream1, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
-			Bass.BASS_ChannelPlay (stream1, false);
+			flen = Bass.BASS_ChannelGetLength (Audio_Stream);
+			_syncer = Bass.BASS_ChannelSetSync (Audio_Stream, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
+			Bass.BASS_ChannelPlay (Audio_Stream, false);
 
 			if (parm1 [iFnames].Palitra < 0)
 			{
@@ -296,7 +296,7 @@ namespace SeeMuzic
 
 		private void Audio_Stop ()
 		{
-			Bass.BASS_StreamFree (stream1);
+			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
 		}
 		// Audio_Stop
@@ -354,7 +354,7 @@ namespace SeeMuzic
 				Audio_Start ();
 			}
 
-			pct = (double)(fpos = Bass.BASS_ChannelGetPosition (stream1)) / flen;
+			pct = (double)(fpos = Bass.BASS_ChannelGetPosition (Audio_Stream)) / flen;
 
 #if SPIRAL
 			alpha = 1.0 * Math.PI * pct;
@@ -400,7 +400,7 @@ namespace SeeMuzic
 					{
 						btn_M.Visible = false;
 						btn_M.Enabled = false;
-						TransparencyCtrl(true);
+						TransparencyCtrl (true);
 					}
 				}
 			}
@@ -439,8 +439,8 @@ namespace SeeMuzic
 		{
 			int Okno = 0;
 			cic = Mcic [ResToIdx (Resample)];
-			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (stream1, Interval / 1000.0); // текущая длина аудиобуффера в байтах
-			int samples = Bass.BASS_ChannelGetData (stream1, audiobuf, audio_bytes) / SAMPLE_BYTES; // число самплов в аудиобуффере
+			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (Audio_Stream, Interval / 1000.0); // текущая длина аудиобуффера в байтах
+			int samples = Bass.BASS_ChannelGetData (Audio_Stream, audiobuf, audio_bytes) / SAMPLE_BYTES; // число самплов в аудиобуффере
 			for (int i = 0, j = 0; i < samples; i++, j += 2)
 			{
 				if (cic.Decimate ((int)audiobuf [j], (int)audiobuf [j + 1]))
@@ -452,8 +452,8 @@ namespace SeeMuzic
 					}
 					else
 					{
-						Xbuf [Okno] = (int)Xfir.Go ((double)cic.X);
-						Ybuf [Okno] = (int)Yfir.Go ((double)cic.Y);
+						Xbuf [Okno] = (int)Xfir.Sim ((double)cic.X);
+						Ybuf [Okno] = (int)Yfir.Sim ((double)cic.Y);
 					}
 					Okno++;
 				}
@@ -616,7 +616,7 @@ namespace SeeMuzic
 				btn_M.Visible = true;
 				btn_M.Enabled = true;
 				btn_M_Visible_Cnt = 5;
-				TransparencyCtrl(false);
+				TransparencyCtrl (false);
 			}
 		}
 		// Form1_MouseMove
@@ -625,11 +625,28 @@ namespace SeeMuzic
 		{
 			btn_M.Enabled = false;
 			btn_M.Visible = false;
-			TransparencyCtrl(true);
-			Panel panel1 = new Panel();
-			panel1.Show(this);
+			TransparencyCtrl (true);
+			Panel panel1 = new Panel ();
+			panel1.Show (this);
 		}
 		// btn_M_Click
+
+		public static bool btn_Panel_Play_Click ()
+		{
+			if (Bass.BASS_ChannelIsActive (Audio_Stream) == BASSActive.BASS_ACTIVE_PAUSED)
+			{
+				Bass.BASS_ChannelPlay (Audio_Stream, false);
+				//timer1.Enabled = true;
+				return true;
+			}
+			else
+			{
+				Bass.BASS_ChannelPause (Audio_Stream);
+				//timer1.Enabled = false;
+				return false;
+			}
+		}
+		// btn_Panel_Play_Click
 
 		public static Color H2Color (double h, double v) //цвет, яркость
 		{

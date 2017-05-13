@@ -59,6 +59,7 @@
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
+			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -215,7 +216,7 @@
 			// chk_Stretch
 			// 
 			this.chk_Stretch.AutoSize = true;
-			this.chk_Stretch.Location = new System.Drawing.Point(77, 155);
+			this.chk_Stretch.Location = new System.Drawing.Point(82, 158);
 			this.chk_Stretch.Name = "chk_Stretch";
 			this.chk_Stretch.Size = new System.Drawing.Size(61, 17);
 			this.chk_Stretch.TabIndex = 12;
@@ -226,7 +227,7 @@
 			// chk_Inside
 			// 
 			this.chk_Inside.AutoSize = true;
-			this.chk_Inside.Location = new System.Drawing.Point(144, 155);
+			this.chk_Inside.Location = new System.Drawing.Point(149, 158);
 			this.chk_Inside.Name = "chk_Inside";
 			this.chk_Inside.Size = new System.Drawing.Size(68, 17);
 			this.chk_Inside.TabIndex = 13;
@@ -237,7 +238,7 @@
 			// chk_Eros
 			// 
 			this.chk_Eros.AutoSize = true;
-			this.chk_Eros.Location = new System.Drawing.Point(17, 155);
+			this.chk_Eros.Location = new System.Drawing.Point(22, 158);
 			this.chk_Eros.Name = "chk_Eros";
 			this.chk_Eros.Size = new System.Drawing.Size(54, 17);
 			this.chk_Eros.TabIndex = 14;
@@ -248,7 +249,7 @@
 			// chk_Rotate
 			// 
 			this.chk_Rotate.AutoSize = true;
-			this.chk_Rotate.Location = new System.Drawing.Point(218, 155);
+			this.chk_Rotate.Location = new System.Drawing.Point(223, 158);
 			this.chk_Rotate.Name = "chk_Rotate";
 			this.chk_Rotate.Size = new System.Drawing.Size(66, 17);
 			this.chk_Rotate.TabIndex = 15;
@@ -269,6 +270,7 @@
 			// 
 			// tabPage0
 			// 
+			this.tabPage0.BackColor = System.Drawing.SystemColors.Control;
 			this.tabPage0.Controls.Add(this.splitContainer1);
 			this.tabPage0.Location = new System.Drawing.Point(4, 22);
 			this.tabPage0.Name = "tabPage0";
@@ -276,7 +278,6 @@
 			this.tabPage0.Size = new System.Drawing.Size(325, 195);
 			this.tabPage0.TabIndex = 1;
 			this.tabPage0.Text = "Play List";
-			this.tabPage0.UseVisualStyleBackColor = true;
 			// 
 			// splitContainer1
 			// 
@@ -321,13 +322,13 @@
 			// 
 			// btn_Play
 			// 
-			this.btn_Play.Enabled = false;
 			this.btn_Play.Location = new System.Drawing.Point(59, 4);
 			this.btn_Play.Name = "btn_Play";
 			this.btn_Play.Size = new System.Drawing.Size(48, 23);
 			this.btn_Play.TabIndex = 1;
-			this.btn_Play.Text = ">";
+			this.btn_Play.Text = "| |";
 			this.btn_Play.UseVisualStyleBackColor = true;
+			this.btn_Play.Click += new System.EventHandler(this.btn_Play_Click);
 			// 
 			// btn_Prev
 			// 
@@ -370,6 +371,7 @@
 			// 
 			// tabPage1
 			// 
+			this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
 			this.tabPage1.Controls.Add(this.groupBox1);
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
@@ -377,10 +379,10 @@
 			this.tabPage1.Size = new System.Drawing.Size(325, 195);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "View";
-			this.tabPage1.UseVisualStyleBackColor = true;
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.chk_Transparency);
 			this.groupBox1.Controls.Add(this.trk_Resample);
 			this.groupBox1.Controls.Add(this.trk_Interval);
 			this.groupBox1.Controls.Add(this.trk_Level);
@@ -407,6 +409,16 @@
 			// 
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
+			// 
+			// chk_Transparency
+			// 
+			this.chk_Transparency.AutoSize = true;
+			this.chk_Transparency.Location = new System.Drawing.Point(189, 135);
+			this.chk_Transparency.Name = "chk_Transparency";
+			this.chk_Transparency.Size = new System.Drawing.Size(98, 17);
+			this.chk_Transparency.TabIndex = 16;
+			this.chk_Transparency.Text = "Прозрачность";
+			this.chk_Transparency.UseVisualStyleBackColor = true;
 			// 
 			// Panel
 			// 
@@ -479,5 +491,6 @@
 		private System.Windows.Forms.Timer Panel_Timer;
 		public System.Windows.Forms.ProgressBar progressBar1;
 		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.CheckBox chk_Transparency;
 	}
 }
