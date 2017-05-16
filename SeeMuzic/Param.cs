@@ -44,6 +44,7 @@ namespace SeeMuzic
 		const string _RESAMPLE_ = "RES";
 		const string _ROTATE_ = "ROT";
 		const string _STRETCH_ = "STR";
+		const string _TRANSPARENCY_ = "TRA";
 
 		static Param [] parm1;
 		static List<Param> ListParam = new List<Param> ();
@@ -61,7 +62,8 @@ namespace SeeMuzic
 			parms1.Add (new XElement (_STRETCH_, bStretch));
 			parms1.Add (new XElement (_INSIDE_, bInside));
 			parms1.Add (new XElement (_EROS_, bEros));
-			parms1.Add (new XElement (_PAGE0_, bPage0));
+			parms1.Add (new XElement (_TRANSPARENCY_, bTrnsparency));
+			parms1.Add (new XElement (_PAGE0_, bLastPage0));
 			new XDocument (parms1).Save ("SeeMuz.xml");
 
 			XElement list1 = new XElement ("LIST");
@@ -109,7 +111,8 @@ namespace SeeMuzic
 							case _STRETCH_: bStretch = bool.Parse (parm.Value); break;
 							case _INSIDE_: bInside = bool.Parse (parm.Value); break;
 							case _EROS_: bEros = bool.Parse (parm.Value); break;
-							case _PAGE0_: bPage0 = bool.Parse (parm.Value); break;
+							case _TRANSPARENCY_: bTrnsparency = bool.Parse (parm.Value); break;
+							case _PAGE0_: bLastPage0 = bool.Parse (parm.Value); break;
 						}
 					}
 					catch

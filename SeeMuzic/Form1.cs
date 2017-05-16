@@ -34,10 +34,18 @@ namespace SeeMuzic
 		static SYNCPROC _syncProcEndStream;
 		static int Audio_Stream = 0;
 
-		public static int Palitra = 0;
+		public static double Bright = 30.0;
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
-		public static double Bright = 30.0, Leak = 1.0;
 		public static int Resample = (MIN_RESAMPLE + MAX_RESAMPLE) / 2; // (44100 / 14 = 3150) / 25 = 126
+		public static double Leak = 1.0;
+		public static int iFilter = 1, iFilter2 = 1;
+		public static int Palitra = 0;
+		public static bool bRotate = true; // крутить
+		public static bool bStretch = false; // растянуть
+		public static bool bInside = true; // вписать
+		public static bool bEros = false; // гнуть
+		public static bool bTrnsparency = false; // прозрачность
+		public static string [] Fnames;
 
 		static int Resample2 = Resample; // контроль изменений Resample 
 		static double Power = 1.0;
@@ -98,7 +106,6 @@ namespace SeeMuzic
 
 		static long fpos = 0, flen = 0;
 		public static int iFnames = 0;
-		public static string [] Fnames;
 
 		const int PENW = 4;
 		static Pen pen2 = new Pen (Color.Yellow, PENW);
@@ -109,7 +116,6 @@ namespace SeeMuzic
 
 		public static double pct = 0.0;
 
-		public static int iFilter = 1, iFilter2 = 1;
 		static Fir Xfir = null, Yfir = null;
 		static Fir [,] Mfir = new Fir [8, 2]
 		{
@@ -123,15 +129,14 @@ namespace SeeMuzic
 			{ new Fir (33, Fir.coef7), new Fir (33, Fir.coef7) },
 		};
 
-		public static bool bEros = false; // гнуть
-		public static bool bRotate = true; // крутить
-		public static bool bStretch = false; // растянуть
-		public static bool bInside = true; // вписать
-
 		static bool bRestart = false;
-		public static bool bPanel = false;
+		//public static bool bPanel = false;
 
-		public static bool bPage0 = true;
+		public static bool bLastPage0 = true; // последняя открытая страница в диалоге параметров
+
+		static Panel Panel1;
+		public static bool bPanel = false;
+		int btn_M_Visible_Cnt = 5; // видимость кнопки параметов [сек]
 
 		public Form1 ()
 		{
@@ -189,7 +194,7 @@ namespace SeeMuzic
 
 		static bool bTransparencyOn = false;
 
-		private void TransparencyCtrl (bool b)
+		public void TransparencyCtrl (bool b)
 		{
 			if (bTransparencyOn != b)
 			{
@@ -197,14 +202,14 @@ namespace SeeMuzic
 				if (bTransparencyOn)
 				{
 					this.FormBorderStyle = FormBorderStyle.None;
-					this.AllowTransparency = true;
+					//this.AllowTransparency = bTrnsparency;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
 				else
 				{
 					this.FormBorderStyle = FormBorderStyle.Sizable;
-					this.AllowTransparency = false;
+					//this.AllowTransparency = false;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
 					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
@@ -215,7 +220,7 @@ namespace SeeMuzic
 		private void Form1_Load (object sender, EventArgs e)
 		{
 			// Прозрачность
-			TransparencyCtrl (true);
+			TransparencyCtrl (false);
 
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
 			Audio_Start ();
@@ -269,6 +274,16 @@ namespace SeeMuzic
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
 				this.Close ();
 			}
+			//string [] Mp4Tags = Bass.BASS_ChannelGetTagsMP4 (Audio_Stream);
+			//if (Mp4Tags != null)
+			//{
+			//	StringBuilder sb1 = new StringBuilder ();
+			//	foreach (string s1 in Mp4Tags)
+			//	{
+			//		sb1.Append (s1);
+			//	}
+			//	MessageBox.Show (sb1.ToString ());
+			//}
 
 			flen = Bass.BASS_ChannelGetLength (Audio_Stream);
 			_syncer = Bass.BASS_ChannelSetSync (Audio_Stream, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
@@ -280,16 +295,18 @@ namespace SeeMuzic
 			}
 			else
 			{
-				bInside = parm1 [iFnames].bInside;
-				Bright = parm1 [iFnames].Bright;
-				bRotate = parm1 [iFnames].bRotate;
-				bStretch = parm1 [iFnames].bStretch;
-				bEros = parm1 [iFnames].bEros;
-				iFilter = parm1 [iFnames].iFilter;
-				Interval = parm1 [iFnames].Interval;
-				Leak = parm1 [iFnames].Leak;
-				Palitra = parm1 [iFnames].Palitra;
-				Resample = parm1 [iFnames].Resample;
+				Param prm1 = parm1 [iFnames];
+				bInside = prm1.bInside;
+				Bright = prm1.Bright;
+				bRotate = prm1.bRotate;
+				bStretch = prm1.bStretch;
+				bEros = prm1.bEros;
+				iFilter = prm1.iFilter;
+				Interval = prm1.Interval;
+				Leak = prm1.Leak;
+				Palitra = prm1.Palitra;
+				Resample = prm1.Resample;
+				if (bPanel) Panel1.Reload ();
 			}
 		}
 		//Audio_Start
@@ -323,18 +340,20 @@ namespace SeeMuzic
 			}
 			else if (idx != iFnames)
 			{
-				parm1 [iFnames].bInside = bInside;
-				parm1 [iFnames].Bright = Bright;
-				parm1 [iFnames].bRotate = bRotate;
-				parm1 [iFnames].bStretch = bStretch;
-				parm1 [iFnames].bEros = bEros;
-				parm1 [iFnames].iFilter = iFilter;
-				parm1 [iFnames].Interval = Interval;
-				parm1 [iFnames].Leak = Leak;
-				parm1 [iFnames].Palitra = Palitra;
-				parm1 [iFnames].Resample = Resample;
+				Param prm1 = parm1 [iFnames];
+				bInside = prm1.bInside;
+				Bright = prm1.Bright;
+				bRotate = prm1.bRotate;
+				bStretch = prm1.bStretch;
+				bEros = prm1.bEros;
+				iFilter = prm1.iFilter;
+				Interval = prm1.Interval;
+				Leak = prm1.Leak;
+				Palitra = prm1.Palitra;
+				Resample = prm1.Resample;
 				iFnames = idx;
 				bRestart = true;
+				if (bPanel) Panel1.Reload ();
 			}
 		}
 		// Audio_Next
@@ -406,6 +425,11 @@ namespace SeeMuzic
 			}
 
 			timer1.Interval = Interval;
+
+			//if (this.AllowTransparency != bTrnsparency)
+			//{
+			//	TransparencyCtrl (bTrnsparency);
+			//}
 		}
 		// timer2_Tick
 
@@ -429,7 +453,6 @@ namespace SeeMuzic
 				this.FormBorderStyle = FormBorderStyle.Sizable; // возвращаю заголовок в полноэкранном режиме
 			}
 		}
-
 		// Form1_MouseDown
 
 		static double [] kor0 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
@@ -577,12 +600,14 @@ namespace SeeMuzic
 							//double v = Xbuf [x2] + Ybuf [y2];
 							vsum2 += v * v;
 							vcnt++;
-							if (0.0 < Power) v = v / Power * (Bright / 16.0);
+							if (0.0 < Power) v = v / Power;
 
-							if (Palitra < 12)
-								bmp1.SetPixel (x, y, H2Color (Palitra / 12.0 - v / 16.0, Math.Abs (v)));
-							else
-								bmp1.SetPixel (x, y, H2Color (pct + v / 16.0, Math.Abs (v)));
+							v = Math.Sqrt (v);
+							bmp1.SetPixel (x, y, Raduga (pct + v * 0.1 * Bright, v * 1.0));
+							//if (Palitra < 12)
+							//	bmp1.SetPixel (x, y, H2Color (Palitra / 12.0 - v * 0.05, Math.Abs (v * 0.2)));
+							//else
+							//	bmp1.SetPixel (x, y, H2Color (pct + v * 0.05, Math.Abs (v * 0.2)));
 							continue;
 						}
 					}
@@ -607,8 +632,6 @@ namespace SeeMuzic
 		}
 		// Form1_Paint
 
-		int btn_M_Visible_Cnt = 0;
-
 		private void Form1_MouseMove (object sender, MouseEventArgs e)
 		{
 			if (!bPanel)
@@ -626,8 +649,9 @@ namespace SeeMuzic
 			btn_M.Enabled = false;
 			btn_M.Visible = false;
 			TransparencyCtrl (true);
-			Panel panel1 = new Panel ();
-			panel1.Show (this);
+			Panel1 = new Panel ();
+			Panel1.Show (this);
+			bPanel = true;
 		}
 		// btn_M_Click
 
@@ -650,19 +674,22 @@ namespace SeeMuzic
 
 		public static Color H2Color (double h, double v) //цвет, яркость
 		{
-			if (v < 0.0) v = 0.0; else if (1.0 <= v) v = 255.0; else v *= 256.0;
+			//if (1.0 <= v) return Color.FromArgb (255, 255, 255); //
+
+			int z = 0;
+			if (v < 0.0) v = 0.0; else if (v < 1.0) v *= 255.0; else { v = 255.0; z = (int)((v - 1.0) * 64.0); if (255 < z) z = 255; }
 			double h6 = (h - Math.Floor (h)) * 6.0;
 			int a = (int)((h6 - Math.Floor (h6)) * v);
 			int b = (int)v;
 			int c = b - a;
 			switch ((int)h6)
 			{
-				case 0: return Color.FromArgb (b, a, 0);
-				case 1: return Color.FromArgb (c, b, 0);
-				case 2: return Color.FromArgb (0, b, a);
-				case 3: return Color.FromArgb (0, c, b);
-				case 4: return Color.FromArgb (a, 0, b);
-				default: return Color.FromArgb (b, 0, c);
+				case 0: return Color.FromArgb (b, a, z);
+				case 1: return Color.FromArgb (c, b, z);
+				case 2: return Color.FromArgb (z, b, a);
+				case 3: return Color.FromArgb (z, c, b);
+				case 4: return Color.FromArgb (a, z, b);
+				default: return Color.FromArgb (b, z, c);
 			}
 		}
 		// H2Color

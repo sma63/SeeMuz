@@ -13,7 +13,7 @@ namespace SeeMuzic
 	public partial class Panel : Form
 	{
 		const double LEAK = 10.0;
-		const double LEVEL = 10.0;
+		const double BRIGHT = 1.0;
 		const int INTERVAL = 10, INTERVAL2 = 0; //1-10,2-20,3-30,4-40,5-50,6-60,7-70,8-80,9-90,10-100
 		//const int RESAMPLE = Form1.MIN_RESAMPLE - 1;
 
@@ -27,10 +27,14 @@ namespace SeeMuzic
 		public Panel ()
 		{
 			InitializeComponent ();
+			Reload ();
+		}
 
+		public void Reload ()
+		{
 			bUpdate = false;
 			trk_Front.Value = Ranger10 (Form1.Leak / LEAK);
-			trk_Level.Value = Ranger10 (Form1.Bright / LEVEL);
+			trk_Bright.Value = Ranger10 (Form1.Bright / BRIGHT);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
 			trk_Resample.Value = Ranger10 (Form1.ResToIdx (Form1.Resample) - Form1.ResToIdx (Form1.MIN_RESAMPLE), 0.0, 9.0);
 			bUpdate = true;
@@ -41,6 +45,7 @@ namespace SeeMuzic
 			chk_Stretch.Checked = Form1.bStretch;
 			chk_Inside.Checked = Form1.bInside;
 			chk_Eros.Checked = Form1.bEros;
+			chk_Transparency.Checked = Form1.bTrnsparency;
 
 			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
@@ -58,14 +63,14 @@ namespace SeeMuzic
 			dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
 
 			Panel_Timer.Enabled = true;
-			Form1.bPanel = true;
+			//Form1.bPanel = true;
 
-			this.tabControl1.SelectedTab = (Form1.bPage0 ? this.tabPage0 : this.tabPage1);
+			this.tabControl1.SelectedTab = (Form1.bLastPage0 ? this.tabPage0 : this.tabPage1);
 		}
 
 		private void Panel_FormClosed (object sender, FormClosedEventArgs e)
 		{
-			Form1.bPage0 = (this.tabControl1.SelectedTab == this.tabPage0);
+			Form1.bLastPage0 = (this.tabControl1.SelectedTab == this.tabPage0);
 			Form1.bPanel = false;
 		}
 
@@ -82,7 +87,7 @@ namespace SeeMuzic
 		{
 			if (bUpdate)
 			{
-				Form1.Bright = trk_Level.Value * LEVEL;
+				Form1.Bright = trk_Bright.Value * BRIGHT;
 				lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
 			}
 		}
@@ -133,7 +138,7 @@ namespace SeeMuzic
 		private void Panel_Timer_Tick (object sender, EventArgs e)
 		{
 			num_Palitra.Value = Form1.Palitra;
-			progressBar1.Value = (int)(Form1.pct * 100.0);
+			progress_Pos.Value = (int)(Form1.pct * 100.0);
 			if (iFnames != Form1.iFnames)
 			{
 				iFnames = Form1.iFnames;
@@ -168,6 +173,11 @@ namespace SeeMuzic
 		private void btn_Play_Click(object sender, EventArgs e)
 		{
 			btn_Play.Text = (Form1.btn_Panel_Play_Click () ? "| |" : ">");
+		}
+
+		private void chk_Transparency_Click (object sender, EventArgs e)
+		{
+			Form1.bTrnsparency = chk_Transparency.Checked;
 		}
 
 		private int Ranger10 (double v, double vmin = 1.0, double vmax = 10.0)

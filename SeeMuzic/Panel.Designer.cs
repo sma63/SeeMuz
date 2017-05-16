@@ -30,7 +30,7 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel));
-			this.trk_Level = new System.Windows.Forms.TrackBar();
+			this.trk_Bright = new System.Windows.Forms.TrackBar();
 			this.lab_Level = new System.Windows.Forms.Label();
 			this.lab_Interval = new System.Windows.Forms.Label();
 			this.trk_Interval = new System.Windows.Forms.TrackBar();
@@ -49,18 +49,19 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage0 = new System.Windows.Forms.TabPage();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.progressBar1 = new System.Windows.Forms.ProgressBar();
+			this.progress_Pos = new System.Windows.Forms.ProgressBar();
 			this.btn_Next = new System.Windows.Forms.Button();
 			this.btn_Play = new System.Windows.Forms.Button();
 			this.btn_Prev = new System.Windows.Forms.Button();
+			this.trk_Volume = new System.Windows.Forms.TrackBar();
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
 			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
-			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).BeginInit();
+			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
+			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).BeginInit();
@@ -72,21 +73,22 @@
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Volume)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.tabPage1.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// trk_Level
+			// trk_Bright
 			// 
-			this.trk_Level.Location = new System.Drawing.Point(6, 49);
-			this.trk_Level.Minimum = 1;
-			this.trk_Level.Name = "trk_Level";
-			this.trk_Level.Size = new System.Drawing.Size(104, 45);
-			this.trk_Level.TabIndex = 1;
-			this.trk_Level.TickStyle = System.Windows.Forms.TickStyle.None;
-			this.trk_Level.Value = 1;
-			this.trk_Level.ValueChanged += new System.EventHandler(this.trk_Level_ValueChanged);
+			this.trk_Bright.Location = new System.Drawing.Point(6, 49);
+			this.trk_Bright.Minimum = 1;
+			this.trk_Bright.Name = "trk_Bright";
+			this.trk_Bright.Size = new System.Drawing.Size(104, 45);
+			this.trk_Bright.TabIndex = 1;
+			this.trk_Bright.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Bright.Value = 1;
+			this.trk_Bright.ValueChanged += new System.EventHandler(this.trk_Level_ValueChanged);
 			// 
 			// lab_Level
 			// 
@@ -289,10 +291,11 @@
 			// 
 			// splitContainer1.Panel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.progressBar1);
+			this.splitContainer1.Panel1.Controls.Add(this.progress_Pos);
 			this.splitContainer1.Panel1.Controls.Add(this.btn_Next);
 			this.splitContainer1.Panel1.Controls.Add(this.btn_Play);
 			this.splitContainer1.Panel1.Controls.Add(this.btn_Prev);
+			this.splitContainer1.Panel1.Controls.Add(this.trk_Volume);
 			// 
 			// splitContainer1.Panel2
 			// 
@@ -301,14 +304,14 @@
 			this.splitContainer1.SplitterDistance = 63;
 			this.splitContainer1.TabIndex = 0;
 			// 
-			// progressBar1
+			// progress_Pos
 			// 
-			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-			this.progressBar1.Location = new System.Drawing.Point(5, 33);
-			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(309, 23);
-			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-			this.progressBar1.TabIndex = 3;
+			this.progress_Pos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+			this.progress_Pos.Location = new System.Drawing.Point(4, 30);
+			this.progress_Pos.Name = "progress_Pos";
+			this.progress_Pos.Size = new System.Drawing.Size(309, 23);
+			this.progress_Pos.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+			this.progress_Pos.TabIndex = 3;
 			// 
 			// btn_Next
 			// 
@@ -339,6 +342,16 @@
 			this.btn_Prev.Text = "<<";
 			this.btn_Prev.UseVisualStyleBackColor = true;
 			this.btn_Prev.Click += new System.EventHandler(this.btn_Prev_Click);
+			// 
+			// trk_Volume
+			// 
+			this.trk_Volume.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.trk_Volume.Location = new System.Drawing.Point(167, 4);
+			this.trk_Volume.Name = "trk_Volume";
+			this.trk_Volume.Size = new System.Drawing.Size(147, 45);
+			this.trk_Volume.TabIndex = 4;
+			this.trk_Volume.TickStyle = System.Windows.Forms.TickStyle.None;
 			// 
 			// dataGridView1
 			// 
@@ -385,7 +398,7 @@
 			this.groupBox1.Controls.Add(this.chk_Transparency);
 			this.groupBox1.Controls.Add(this.trk_Resample);
 			this.groupBox1.Controls.Add(this.trk_Interval);
-			this.groupBox1.Controls.Add(this.trk_Level);
+			this.groupBox1.Controls.Add(this.trk_Bright);
 			this.groupBox1.Controls.Add(this.trk_Front);
 			this.groupBox1.Controls.Add(this.lab_Resample);
 			this.groupBox1.Controls.Add(this.lab_Front);
@@ -405,11 +418,6 @@
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
 			// 
-			// Panel_Timer
-			// 
-			this.Panel_Timer.Interval = 1000;
-			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
-			// 
 			// chk_Transparency
 			// 
 			this.chk_Transparency.AutoSize = true;
@@ -419,6 +427,12 @@
 			this.chk_Transparency.TabIndex = 16;
 			this.chk_Transparency.Text = "Прозрачность";
 			this.chk_Transparency.UseVisualStyleBackColor = true;
+			this.chk_Transparency.Click += new System.EventHandler(this.chk_Transparency_Click);
+			// 
+			// Panel_Timer
+			// 
+			this.Panel_Timer.Interval = 1000;
+			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
 			// 
 			// Panel
 			// 
@@ -431,10 +445,10 @@
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(349, 259);
 			this.Name = "Panel";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "SeeMuz - Control";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Panel_FormClosed);
-			((System.ComponentModel.ISupportInitialize)(this.trk_Level)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).EndInit();
@@ -443,9 +457,11 @@
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage0.ResumeLayout(false);
 			this.splitContainer1.Panel1.ResumeLayout(false);
+			this.splitContainer1.Panel1.PerformLayout();
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.trk_Volume)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
 			this.tabPage1.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
@@ -458,7 +474,7 @@
 
 		private System.Windows.Forms.TrackBar trk_Resample;//1
 		private System.Windows.Forms.TrackBar trk_Interval;//2
-		private System.Windows.Forms.TrackBar trk_Level;//3
+		private System.Windows.Forms.TrackBar trk_Bright;//3
 		public System.Windows.Forms.TrackBar trk_Front;//4
 
 		private System.Windows.Forms.Label lab_Interval;
@@ -489,8 +505,9 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
 		private System.Windows.Forms.Timer Panel_Timer;
-		public System.Windows.Forms.ProgressBar progressBar1;
+		public System.Windows.Forms.ProgressBar progress_Pos;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.CheckBox chk_Transparency;
+		private System.Windows.Forms.TrackBar trk_Volume;
 	}
 }
