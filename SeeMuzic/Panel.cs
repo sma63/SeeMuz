@@ -37,10 +37,11 @@ namespace SeeMuzic
 			trk_Bright.Value = Ranger10 (Form1.Bright / BRIGHT);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
 			trk_Resample.Value = Ranger10 (Form1.ResToIdx (Form1.Resample) - Form1.ResToIdx (Form1.MIN_RESAMPLE), 0.0, 9.0);
+			trk_Gamma.Value = Ranger10 (Form1.Gamma);
+			trk_Filter.Value = Ranger10 (Form1.iFilter, 1.0, 7.0);
+			trk_Palitra.Value = Ranger10 (Form1.Palitra, 0.0, 6.0);
 			bUpdate = true;
 
-			num_Palitra.Value = Form1.Palitra;
-			num_Filter.Value = Form1.iFilter;
 			chk_Rotate.Checked = Form1.bRotate;
 			chk_Stretch.Checked = Form1.bStretch;
 			chk_Inside.Checked = Form1.bInside;
@@ -49,8 +50,10 @@ namespace SeeMuzic
 
 			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
-			lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
-
+			lab_Gamma.Text = String.Format ("Гамма = {0}", Form1.Gamma);
+			lab_Interval.Text = String.Format ("Инт = {0} ms", Form1.Interval);
+			lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
+			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
 
 			for (int i = 0; i < Form1.Fnames.Length; i++)
@@ -72,6 +75,11 @@ namespace SeeMuzic
 		{
 			Form1.bLastPage0 = (this.tabControl1.SelectedTab == this.tabPage0);
 			Form1.bPanel = false;
+		}
+
+		private void tabControl1_SelectedIndexChanged (object sender, EventArgs e)
+		{
+			Form1.bLastPage0 = (this.tabControl1.SelectedTab == this.tabPage0);
 		}
 
 		private void trk_Front_ValueChanged (object sender, EventArgs e)
@@ -110,14 +118,31 @@ namespace SeeMuzic
 			}
 		}
 
-		private void num_Palitra_ValueChanged (object sender, EventArgs e)
+		private void trk_Gamma_ValueChanged (object sender, EventArgs e)
 		{
-			Form1.Palitra = (int)num_Palitra.Value;
+			if (bUpdate)
+			{
+				Form1.Gamma = trk_Gamma.Value;
+				lab_Gamma.Text = String.Format ("Гамма = {0}", Form1.Gamma);
+			}
 		}
 
-		private void num_Filter_ValueChanged (object sender, EventArgs e)
+		private void trk_Filter_ValueChanged (object sender, EventArgs e)
 		{
-			Form1.iFilter = (int)num_Filter.Value;
+			if (bUpdate)
+			{
+				Form1.iFilter = trk_Filter.Value;
+				lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
+			}
+		}
+
+		private void trk_Palitra_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Palitra = trk_Palitra.Value;
+				lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
+			}
 		}
 
 		private void chk_Rotate_CheckedChanged (object sender, EventArgs e)
@@ -137,7 +162,6 @@ namespace SeeMuzic
 
 		private void Panel_Timer_Tick (object sender, EventArgs e)
 		{
-			num_Palitra.Value = Form1.Palitra;
 			progress_Pos.Value = (int)(Form1.pct * 100.0);
 			if (iFnames != Form1.iFnames)
 			{

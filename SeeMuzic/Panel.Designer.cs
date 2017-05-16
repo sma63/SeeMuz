@@ -38,9 +38,7 @@
 			this.trk_Resample = new System.Windows.Forms.TrackBar();
 			this.lab_Front = new System.Windows.Forms.Label();
 			this.trk_Front = new System.Windows.Forms.TrackBar();
-			this.num_Palitra = new System.Windows.Forms.NumericUpDown();
 			this.lab_Palitra = new System.Windows.Forms.Label();
-			this.num_Filter = new System.Windows.Forms.NumericUpDown();
 			this.lab_Filter = new System.Windows.Forms.Label();
 			this.chk_Stretch = new System.Windows.Forms.CheckBox();
 			this.chk_Inside = new System.Windows.Forms.CheckBox();
@@ -59,14 +57,16 @@
 			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.trk_Palitra = new System.Windows.Forms.TrackBar();
+			this.trk_Gamma = new System.Windows.Forms.TrackBar();
+			this.trk_Filter = new System.Windows.Forms.TrackBar();
+			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.num_Palitra)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.num_Filter)).BeginInit();
 			this.tabControl1.SuspendLayout();
 			this.tabPage0.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -77,11 +77,14 @@
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.tabPage1.SuspendLayout();
 			this.groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Palitra)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Gamma)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Filter)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// trk_Bright
 			// 
-			this.trk_Bright.Location = new System.Drawing.Point(6, 49);
+			this.trk_Bright.Location = new System.Drawing.Point(6, 111);
 			this.trk_Bright.Minimum = 1;
 			this.trk_Bright.Name = "trk_Bright";
 			this.trk_Bright.Size = new System.Drawing.Size(104, 45);
@@ -93,7 +96,7 @@
 			// lab_Level
 			// 
 			this.lab_Level.AutoSize = true;
-			this.lab_Level.Location = new System.Drawing.Point(116, 50);
+			this.lab_Level.Location = new System.Drawing.Point(111, 115);
 			this.lab_Level.Name = "lab_Level";
 			this.lab_Level.Size = new System.Drawing.Size(50, 13);
 			this.lab_Level.TabIndex = 6;
@@ -102,7 +105,7 @@
 			// lab_Interval
 			// 
 			this.lab_Interval.AutoSize = true;
-			this.lab_Interval.Location = new System.Drawing.Point(116, 80);
+			this.lab_Interval.Location = new System.Drawing.Point(111, 45);
 			this.lab_Interval.Name = "lab_Interval";
 			this.lab_Interval.Size = new System.Drawing.Size(56, 13);
 			this.lab_Interval.TabIndex = 7;
@@ -110,7 +113,7 @@
 			// 
 			// trk_Interval
 			// 
-			this.trk_Interval.Location = new System.Drawing.Point(6, 79);
+			this.trk_Interval.Location = new System.Drawing.Point(7, 42);
 			this.trk_Interval.Minimum = 1;
 			this.trk_Interval.Name = "trk_Interval";
 			this.trk_Interval.Size = new System.Drawing.Size(104, 45);
@@ -122,7 +125,7 @@
 			// lab_Resample
 			// 
 			this.lab_Resample.AutoSize = true;
-			this.lab_Resample.Location = new System.Drawing.Point(116, 111);
+			this.lab_Resample.Location = new System.Drawing.Point(111, 19);
 			this.lab_Resample.Name = "lab_Resample";
 			this.lab_Resample.Size = new System.Drawing.Size(49, 13);
 			this.lab_Resample.TabIndex = 8;
@@ -130,7 +133,7 @@
 			// 
 			// trk_Resample
 			// 
-			this.trk_Resample.Location = new System.Drawing.Point(6, 111);
+			this.trk_Resample.Location = new System.Drawing.Point(6, 19);
 			this.trk_Resample.Maximum = 9;
 			this.trk_Resample.Name = "trk_Resample";
 			this.trk_Resample.Size = new System.Drawing.Size(104, 45);
@@ -142,7 +145,7 @@
 			// lab_Front
 			// 
 			this.lab_Front.AutoSize = true;
-			this.lab_Front.Location = new System.Drawing.Point(116, 21);
+			this.lab_Front.Location = new System.Drawing.Point(111, 92);
 			this.lab_Front.Name = "lab_Front";
 			this.lab_Front.Size = new System.Drawing.Size(69, 13);
 			this.lab_Front.TabIndex = 5;
@@ -150,7 +153,7 @@
 			// 
 			// trk_Front
 			// 
-			this.trk_Front.Location = new System.Drawing.Point(6, 19);
+			this.trk_Front.Location = new System.Drawing.Point(7, 88);
 			this.trk_Front.Minimum = 1;
 			this.trk_Front.Name = "trk_Front";
 			this.trk_Front.Size = new System.Drawing.Size(104, 45);
@@ -159,57 +162,19 @@
 			this.trk_Front.Value = 1;
 			this.trk_Front.ValueChanged += new System.EventHandler(this.trk_Front_ValueChanged);
 			// 
-			// num_Palitra
-			// 
-			this.num_Palitra.Location = new System.Drawing.Point(202, 48);
-			this.num_Palitra.Maximum = new decimal(new int[] {
-            13,
-            0,
-            0,
-            0});
-			this.num_Palitra.Name = "num_Palitra";
-			this.num_Palitra.ReadOnly = true;
-			this.num_Palitra.Size = new System.Drawing.Size(35, 20);
-			this.num_Palitra.TabIndex = 4;
-			this.num_Palitra.ValueChanged += new System.EventHandler(this.num_Palitra_ValueChanged);
-			// 
 			// lab_Palitra
 			// 
 			this.lab_Palitra.AutoSize = true;
-			this.lab_Palitra.Location = new System.Drawing.Point(243, 50);
+			this.lab_Palitra.Location = new System.Drawing.Point(111, 160);
 			this.lab_Palitra.Name = "lab_Palitra";
 			this.lab_Palitra.Size = new System.Drawing.Size(50, 13);
 			this.lab_Palitra.TabIndex = 9;
 			this.lab_Palitra.Text = "Палитра";
 			// 
-			// num_Filter
-			// 
-			this.num_Filter.Location = new System.Drawing.Point(202, 78);
-			this.num_Filter.Maximum = new decimal(new int[] {
-            7,
-            0,
-            0,
-            0});
-			this.num_Filter.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.num_Filter.Name = "num_Filter";
-			this.num_Filter.ReadOnly = true;
-			this.num_Filter.Size = new System.Drawing.Size(35, 20);
-			this.num_Filter.TabIndex = 10;
-			this.num_Filter.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.num_Filter.ValueChanged += new System.EventHandler(this.num_Filter_ValueChanged);
-			// 
 			// lab_Filter
 			// 
 			this.lab_Filter.AutoSize = true;
-			this.lab_Filter.Location = new System.Drawing.Point(244, 80);
+			this.lab_Filter.Location = new System.Drawing.Point(112, 68);
 			this.lab_Filter.Name = "lab_Filter";
 			this.lab_Filter.Size = new System.Drawing.Size(47, 13);
 			this.lab_Filter.TabIndex = 11;
@@ -218,7 +183,7 @@
 			// chk_Stretch
 			// 
 			this.chk_Stretch.AutoSize = true;
-			this.chk_Stretch.Location = new System.Drawing.Point(82, 158);
+			this.chk_Stretch.Location = new System.Drawing.Point(207, 113);
 			this.chk_Stretch.Name = "chk_Stretch";
 			this.chk_Stretch.Size = new System.Drawing.Size(61, 17);
 			this.chk_Stretch.TabIndex = 12;
@@ -229,7 +194,7 @@
 			// chk_Inside
 			// 
 			this.chk_Inside.AutoSize = true;
-			this.chk_Inside.Location = new System.Drawing.Point(149, 158);
+			this.chk_Inside.Location = new System.Drawing.Point(207, 92);
 			this.chk_Inside.Name = "chk_Inside";
 			this.chk_Inside.Size = new System.Drawing.Size(68, 17);
 			this.chk_Inside.TabIndex = 13;
@@ -240,7 +205,7 @@
 			// chk_Eros
 			// 
 			this.chk_Eros.AutoSize = true;
-			this.chk_Eros.Location = new System.Drawing.Point(22, 158);
+			this.chk_Eros.Location = new System.Drawing.Point(207, 136);
 			this.chk_Eros.Name = "chk_Eros";
 			this.chk_Eros.Size = new System.Drawing.Size(54, 17);
 			this.chk_Eros.TabIndex = 14;
@@ -251,7 +216,7 @@
 			// chk_Rotate
 			// 
 			this.chk_Rotate.AutoSize = true;
-			this.chk_Rotate.Location = new System.Drawing.Point(223, 158);
+			this.chk_Rotate.Location = new System.Drawing.Point(207, 70);
 			this.chk_Rotate.Name = "chk_Rotate";
 			this.chk_Rotate.Size = new System.Drawing.Size(66, 17);
 			this.chk_Rotate.TabIndex = 15;
@@ -267,8 +232,9 @@
 			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(333, 221);
+			this.tabControl1.Size = new System.Drawing.Size(333, 236);
 			this.tabControl1.TabIndex = 16;
+			this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
 			// 
 			// tabPage0
 			// 
@@ -277,7 +243,7 @@
 			this.tabPage0.Location = new System.Drawing.Point(4, 22);
 			this.tabPage0.Name = "tabPage0";
 			this.tabPage0.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage0.Size = new System.Drawing.Size(325, 195);
+			this.tabPage0.Size = new System.Drawing.Size(325, 347);
 			this.tabPage0.TabIndex = 1;
 			this.tabPage0.Text = "Play List";
 			// 
@@ -300,7 +266,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-			this.splitContainer1.Size = new System.Drawing.Size(319, 189);
+			this.splitContainer1.Size = new System.Drawing.Size(319, 341);
 			this.splitContainer1.SplitterDistance = 63;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -362,7 +328,7 @@
 			this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataGridView1.Location = new System.Drawing.Point(0, 0);
 			this.dataGridView1.Name = "dataGridView1";
-			this.dataGridView1.Size = new System.Drawing.Size(319, 122);
+			this.dataGridView1.Size = new System.Drawing.Size(319, 274);
 			this.dataGridView1.TabIndex = 0;
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
 			// 
@@ -389,39 +355,84 @@
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(325, 195);
+			this.tabPage1.Size = new System.Drawing.Size(325, 210);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "View";
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.chk_Transparency);
-			this.groupBox1.Controls.Add(this.trk_Resample);
-			this.groupBox1.Controls.Add(this.trk_Interval);
+			this.groupBox1.Controls.Add(this.trk_Palitra);
+			this.groupBox1.Controls.Add(this.trk_Gamma);
 			this.groupBox1.Controls.Add(this.trk_Bright);
 			this.groupBox1.Controls.Add(this.trk_Front);
+			this.groupBox1.Controls.Add(this.trk_Filter);
+			this.groupBox1.Controls.Add(this.trk_Interval);
+			this.groupBox1.Controls.Add(this.trk_Resample);
+			this.groupBox1.Controls.Add(this.lab_Filter);
+			this.groupBox1.Controls.Add(this.lab_Interval);
+			this.groupBox1.Controls.Add(this.lab_Gamma);
 			this.groupBox1.Controls.Add(this.lab_Resample);
 			this.groupBox1.Controls.Add(this.lab_Front);
 			this.groupBox1.Controls.Add(this.lab_Palitra);
-			this.groupBox1.Controls.Add(this.lab_Interval);
-			this.groupBox1.Controls.Add(this.chk_Rotate);
-			this.groupBox1.Controls.Add(this.num_Filter);
-			this.groupBox1.Controls.Add(this.chk_Eros);
 			this.groupBox1.Controls.Add(this.lab_Level);
+			this.groupBox1.Controls.Add(this.chk_Transparency);
+			this.groupBox1.Controls.Add(this.chk_Rotate);
 			this.groupBox1.Controls.Add(this.chk_Inside);
-			this.groupBox1.Controls.Add(this.lab_Filter);
 			this.groupBox1.Controls.Add(this.chk_Stretch);
-			this.groupBox1.Controls.Add(this.num_Palitra);
-			this.groupBox1.Location = new System.Drawing.Point(6, 6);
+			this.groupBox1.Controls.Add(this.chk_Eros);
+			this.groupBox1.Location = new System.Drawing.Point(6, 5);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(311, 181);
+			this.groupBox1.Size = new System.Drawing.Size(311, 196);
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
+			// 
+			// trk_Palitra
+			// 
+			this.trk_Palitra.Location = new System.Drawing.Point(6, 156);
+			this.trk_Palitra.Maximum = 6;
+			this.trk_Palitra.Name = "trk_Palitra";
+			this.trk_Palitra.Size = new System.Drawing.Size(104, 45);
+			this.trk_Palitra.TabIndex = 20;
+			this.trk_Palitra.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Palitra.Value = 1;
+			this.trk_Palitra.ValueChanged += new System.EventHandler(this.trk_Palitra_ValueChanged);
+			// 
+			// trk_Gamma
+			// 
+			this.trk_Gamma.Location = new System.Drawing.Point(6, 134);
+			this.trk_Gamma.Maximum = 9;
+			this.trk_Gamma.Name = "trk_Gamma";
+			this.trk_Gamma.Size = new System.Drawing.Size(104, 45);
+			this.trk_Gamma.TabIndex = 17;
+			this.trk_Gamma.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Gamma.Value = 1;
+			this.trk_Gamma.ValueChanged += new System.EventHandler(this.trk_Gamma_ValueChanged);
+			// 
+			// trk_Filter
+			// 
+			this.trk_Filter.Location = new System.Drawing.Point(7, 65);
+			this.trk_Filter.Maximum = 7;
+			this.trk_Filter.Minimum = 1;
+			this.trk_Filter.Name = "trk_Filter";
+			this.trk_Filter.Size = new System.Drawing.Size(104, 45);
+			this.trk_Filter.TabIndex = 19;
+			this.trk_Filter.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Filter.Value = 1;
+			this.trk_Filter.ValueChanged += new System.EventHandler(this.trk_Filter_ValueChanged);
+			// 
+			// lab_Gamma
+			// 
+			this.lab_Gamma.AutoSize = true;
+			this.lab_Gamma.Location = new System.Drawing.Point(111, 138);
+			this.lab_Gamma.Name = "lab_Gamma";
+			this.lab_Gamma.Size = new System.Drawing.Size(41, 13);
+			this.lab_Gamma.TabIndex = 18;
+			this.lab_Gamma.Text = "Гамма";
 			// 
 			// chk_Transparency
 			// 
 			this.chk_Transparency.AutoSize = true;
-			this.chk_Transparency.Location = new System.Drawing.Point(189, 135);
+			this.chk_Transparency.Location = new System.Drawing.Point(207, 159);
 			this.chk_Transparency.Name = "chk_Transparency";
 			this.chk_Transparency.Size = new System.Drawing.Size(98, 17);
 			this.chk_Transparency.TabIndex = 16;
@@ -438,12 +449,12 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(333, 221);
+			this.ClientSize = new System.Drawing.Size(333, 236);
 			this.Controls.Add(this.tabControl1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(349, 259);
+			this.MinimumSize = new System.Drawing.Size(349, 274);
 			this.Name = "Panel";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "SeeMuz - Control";
@@ -452,8 +463,6 @@
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Front)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.num_Palitra)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.num_Filter)).EndInit();
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage0.ResumeLayout(false);
 			this.splitContainer1.Panel1.ResumeLayout(false);
@@ -466,6 +475,9 @@
 			this.tabPage1.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Palitra)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Gamma)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Filter)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -481,9 +493,6 @@
 		private System.Windows.Forms.Label lab_Resample;
 		public System.Windows.Forms.Label lab_Level;
 		public System.Windows.Forms.Label lab_Front;
-
-		public System.Windows.Forms.NumericUpDown num_Palitra;
-		public System.Windows.Forms.NumericUpDown num_Filter;
 
 		private System.Windows.Forms.Label lab_Palitra;
 		private System.Windows.Forms.Label lab_Filter;
@@ -509,5 +518,9 @@
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.CheckBox chk_Transparency;
 		private System.Windows.Forms.TrackBar trk_Volume;
+		private System.Windows.Forms.TrackBar trk_Gamma;
+		private System.Windows.Forms.Label lab_Gamma;
+		private System.Windows.Forms.TrackBar trk_Filter;
+		private System.Windows.Forms.TrackBar trk_Palitra;
 	}
 }

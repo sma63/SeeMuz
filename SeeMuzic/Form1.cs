@@ -45,6 +45,7 @@ namespace SeeMuzic
 		public static bool bInside = true; // вписать
 		public static bool bEros = false; // гнуть
 		public static bool bTrnsparency = false; // прозрачность
+		public static double Gamma = 1.0; // ширина цветовой гаммы
 		public static string [] Fnames;
 
 		static int Resample2 = Resample; // контроль изменений Resample 
@@ -156,12 +157,12 @@ namespace SeeMuzic
 			}
 
 			// Перетасовка
-			for (int i = 0; i < Fnames.Length; i++)
-			{
-				int j = rnd1.Next (Fnames.Length);
-				int k = rnd1.Next (Fnames.Length);
-				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
-			}
+			//for (int i = 0; i < Fnames.Length; i++)
+			//{
+			//	int j = rnd1.Next (Fnames.Length);
+			//	int k = rnd1.Next (Fnames.Length);
+			//	string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
+			//}
 
 			Palitra = rnd1.Next (14);
 			Load_Parms_Xml ();
@@ -172,18 +173,7 @@ namespace SeeMuzic
 			{
 				if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
 				{
-					parm1 [i] = new Param (); // если нет старых сведений - по умолчанию текущими значениями
-					parm1 [i].bInside = bInside;
-					parm1 [i].Bright = Bright;
-					parm1 [i].bRotate = bRotate;
-					parm1 [i].bStretch = bStretch;
-					parm1 [i].bEros = bEros;
-					parm1 [i].iFilter = iFilter;
-					parm1 [i].Interval = Interval;
-					parm1 [i].Leak = Leak;
-					parm1 [i].Palitra = rnd1.Next (14);
-					parm1 [i].Resample = Resample;
-					parm1 [i].Fname = Fnames [i];
+					Parm_To_Tab (i);
 				}
 			}
 
@@ -202,14 +192,14 @@ namespace SeeMuzic
 				if (bTransparencyOn)
 				{
 					this.FormBorderStyle = FormBorderStyle.None;
-					//this.AllowTransparency = bTrnsparency;
+					this.AllowTransparency = bTrnsparency;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+					this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
 				else
 				{
 					this.FormBorderStyle = FormBorderStyle.Sizable;
-					//this.AllowTransparency = false;
+					this.AllowTransparency = false;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
 					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
@@ -249,6 +239,7 @@ namespace SeeMuzic
 		{
 			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
+			Parm_To_Tab (iFnames);
 			Save_Parms_Xml ();
 		}
 		// Form1_FormClosed
@@ -274,16 +265,6 @@ namespace SeeMuzic
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
 				this.Close ();
 			}
-			//string [] Mp4Tags = Bass.BASS_ChannelGetTagsMP4 (Audio_Stream);
-			//if (Mp4Tags != null)
-			//{
-			//	StringBuilder sb1 = new StringBuilder ();
-			//	foreach (string s1 in Mp4Tags)
-			//	{
-			//		sb1.Append (s1);
-			//	}
-			//	MessageBox.Show (sb1.ToString ());
-			//}
 
 			flen = Bass.BASS_ChannelGetLength (Audio_Stream);
 			_syncer = Bass.BASS_ChannelSetSync (Audio_Stream, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
@@ -295,21 +276,43 @@ namespace SeeMuzic
 			}
 			else
 			{
-				Param prm1 = parm1 [iFnames];
-				bInside = prm1.bInside;
-				Bright = prm1.Bright;
-				bRotate = prm1.bRotate;
-				bStretch = prm1.bStretch;
-				bEros = prm1.bEros;
-				iFilter = prm1.iFilter;
-				Interval = prm1.Interval;
-				Leak = prm1.Leak;
-				Palitra = prm1.Palitra;
-				Resample = prm1.Resample;
+				Tab_To_Parm (iFnames);
 				if (bPanel) Panel1.Reload ();
 			}
 		}
 		//Audio_Start
+
+		private static void Parm_To_Tab (int i)
+		{
+			Param tab1 = parm1 [i];
+			tab1.bInside = bInside;
+			tab1.Bright = Bright;
+			tab1.bRotate = bRotate;
+			tab1.bStretch = bStretch;
+			tab1.bEros = bEros;
+			tab1.iFilter = iFilter;
+			tab1.Interval = Interval;
+			tab1.Leak = Leak;
+			tab1.Palitra = Palitra;
+			tab1.Resample = Resample;
+		}
+		// Parm_To_Tab
+
+		private static void Tab_To_Parm (int i)
+		{
+			Param tab1 = parm1 [i];
+			bInside = tab1.bInside;
+			Bright = tab1.Bright;
+			bRotate = tab1.bRotate;
+			bStretch = tab1.bStretch;
+			bEros = tab1.bEros;
+			iFilter = tab1.iFilter;
+			Interval = tab1.Interval;
+			Leak = tab1.Leak;
+			Palitra = tab1.Palitra;
+			Resample = tab1.Resample;
+		}
+		// Tab_To_Parm
 
 		private void Audio_Stop ()
 		{
@@ -322,16 +325,7 @@ namespace SeeMuzic
 		{
 			if (idx < 0)
 			{
-				parm1 [iFnames].bInside = bInside;
-				parm1 [iFnames].Bright = Bright;
-				parm1 [iFnames].bRotate = bRotate;
-				parm1 [iFnames].bStretch = bStretch;
-				parm1 [iFnames].bEros = bEros;
-				parm1 [iFnames].iFilter = iFilter;
-				parm1 [iFnames].Interval = Interval;
-				parm1 [iFnames].Leak = Leak;
-				parm1 [iFnames].Palitra = Palitra;
-				parm1 [iFnames].Resample = Resample;
+				Parm_To_Tab (iFnames);
 				if (idx == -1)
 					iFnames = (iFnames + 1) % Fnames.Length;
 				else
@@ -340,17 +334,7 @@ namespace SeeMuzic
 			}
 			else if (idx != iFnames)
 			{
-				Param prm1 = parm1 [iFnames];
-				bInside = prm1.bInside;
-				Bright = prm1.Bright;
-				bRotate = prm1.bRotate;
-				bStretch = prm1.bStretch;
-				bEros = prm1.bEros;
-				iFilter = prm1.iFilter;
-				Interval = prm1.Interval;
-				Leak = prm1.Leak;
-				Palitra = prm1.Palitra;
-				Resample = prm1.Resample;
+				Tab_To_Parm (iFnames);
 				iFnames = idx;
 				bRestart = true;
 				if (bPanel) Panel1.Reload ();
@@ -597,17 +581,12 @@ namespace SeeMuzic
 						if ((0 <= y2) && (y2 < Okno))
 						{
 							double v = Math.Abs (Xbuf [(int)x2] + Ybuf [(int)y2]);
-							//double v = Xbuf [x2] + Ybuf [y2];
 							vsum2 += v * v;
 							vcnt++;
 							if (0.0 < Power) v = v / Power;
-
 							v = Math.Sqrt (v);
-							bmp1.SetPixel (x, y, Raduga (pct + v * 0.1 * Bright, v * 1.0));
-							//if (Palitra < 12)
-							//	bmp1.SetPixel (x, y, H2Color (Palitra / 12.0 - v * 0.05, Math.Abs (v * 0.2)));
-							//else
-							//	bmp1.SetPixel (x, y, H2Color (pct + v * 0.05, Math.Abs (v * 0.2)));
+							//bmp1.SetPixel (x, y, Raduga (Palitra / 7.0 + v * 0.1 * Gamma, v * Bright * 0.2));
+							bmp1.SetPixel (x, y, Raduga (Palitra / 7.0 - v * 0.1 * Gamma, v * Bright * 0.2));
 							continue;
 						}
 					}

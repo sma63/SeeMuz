@@ -17,6 +17,7 @@ namespace SeeMuzic
 	class Param
 	{
 		public double Bright;
+		public double Gamma;
 		public int Interval;
 		public int Resample;
 		public double Leak;
@@ -45,6 +46,7 @@ namespace SeeMuzic
 		const string _ROTATE_ = "ROT";
 		const string _STRETCH_ = "STR";
 		const string _TRANSPARENCY_ = "TRA";
+		const string _GAMMA_ = "GAM";
 
 		static Param [] parm1;
 		static List<Param> ListParam = new List<Param> ();
@@ -53,6 +55,7 @@ namespace SeeMuzic
 		{
 			XElement parms1 = new XElement ("PARMS");
 			parms1.Add (new XElement (_BRIGHT_, Bright));
+			parms1.Add (new XElement (_GAMMA_, Gamma));
 			parms1.Add (new XElement (_INTERVAL_, Interval));
 			parms1.Add (new XElement (_RESAMPLE_, Resample));
 			parms1.Add (new XElement (_LEAK_, Leak));
@@ -72,6 +75,7 @@ namespace SeeMuzic
 				XElement item1 = new XElement
 				("L",
 					new XAttribute (_BRIGHT_, parm1 [i].Bright),
+					new XAttribute (_GAMMA_, parm1 [i].Gamma),
 					new XAttribute (_INTERVAL_, parm1 [i].Interval),
 					new XAttribute (_RESAMPLE_, parm1 [i].Resample),
 					new XAttribute (_LEAK_, parm1 [i].Leak),
@@ -102,6 +106,7 @@ namespace SeeMuzic
 						switch (parm.Name.ToString ().ToUpper ())
 						{
 							case _BRIGHT_: Bright = double.Parse (parm.Value); break;
+							case _GAMMA_: Gamma = double.Parse (parm.Value); break;
 							case _INTERVAL_: Interval = int.Parse (parm.Value); break;
 							case _RESAMPLE_: Resample = int.Parse (parm.Value); break;
 							case _LEAK_: Leak = int.Parse (parm.Value); break;
@@ -136,6 +141,7 @@ namespace SeeMuzic
 					{
 						Param p1 = new Param ();
 						try { p1.Bright = double.Parse (parm.Attribute (_BRIGHT_).Value); } catch { }
+						try { p1.Gamma = double.Parse (parm.Attribute (_GAMMA_).Value); } catch { }
 						try { p1.Interval = int.Parse (parm.Attribute (_INTERVAL_).Value); } catch { }
 						try { p1.Resample = int.Parse (parm.Attribute (_RESAMPLE_).Value); } catch { }
 						try { p1.Leak = int.Parse (parm.Attribute (_LEAK_).Value); } catch { }
