@@ -157,6 +157,33 @@ namespace SeeMuzic
 				Environment.Exit (0);
 			}
 
+			// чтение атрибутов аудиофайлов
+			//if (Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+			//{
+			//	for (int i = 0; i < Fnames.Length; i++)
+			//	{
+			//		int stream = Bass.BASS_StreamCreateFile (Fnames [i], 0, 0, BASSFlag.BASS_DEFAULT);
+			//		if (stream != 0)
+			//		{
+			//			Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (Fnames [i]);
+			//			if (tags != null)
+			//			{
+			//				StringBuilder sb1 = new StringBuilder ();
+			//				sb1.Append ("Artist = " + tags.artist);
+			//				sb1.Append ("\nTitle = " + tags.title);
+			//				sb1.Append ("\nAlbum = " + tags.album);
+			//				sb1.Append (String.Format ("\nBitrate = {0}", (uint)tags.bitrate));
+			//				double sec = Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
+			//				double min = Math.Floor (sec / 60.0); 
+			//				sb1.Append (String.Format ("\nLength = {0}:{1:00}", min, sec - min * 60.0));
+			//				MessageBox.Show (sb1.ToString ());
+			//			}
+			//			Bass.BASS_StreamFree (stream);
+			//		}
+			//	}
+			//	Bass.BASS_Free ();
+			//}
+
 			// Перетасовка
 			//for (int i = 0; i < Fnames.Length; i++)
 			//{
@@ -170,12 +197,26 @@ namespace SeeMuzic
 
 			// инициализация параметров просмотра
 			parm1 = new Param [Fnames.Length];
-			for (int i = 0; i < parm1.Length; i++)
+			if (Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 			{
-				if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
+				for (int i = 0; i < Fnames.Length; i++)
 				{
-					Parm_To_Tab (parm1 [i] = new Param ());
+					if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
+					{
+						Parm_To_Tab (parm1 [i] = new Param ());
+					}
+					Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (Fnames [i]);
+					if (tags != null)
+					{
+						int stream = Bass.BASS_StreamCreateFile (Fnames [i], 0, 0, BASSFlag.BASS_DEFAULT);
+						if (stream != 0)
+						{
+							parm1 [i].Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
+							Bass.BASS_StreamFree (stream);
+						}
+					}
 				}
+				Bass.BASS_Free ();
 			}
 
 			btn_M.Enabled = false;
@@ -285,31 +326,35 @@ namespace SeeMuzic
 
 		private static void Parm_To_Tab (Param tab1)
 		{
-			tab1.bInside = bInside;
 			tab1.Bright = Bright;
-			tab1.bRotate = bRotate;
-			tab1.bStretch = bStretch;
 			tab1.bEros = bEros;
 			tab1.iFilter = iFilter;
+			tab1.Gamma = Gamma;
+			tab1.bInside = bInside;
 			tab1.Interval = Interval;
 			tab1.Leak = Leak;
 			tab1.Palitra = Palitra;
 			tab1.Resample = Resample;
+			tab1.bRotate = bRotate;
+			tab1.bStretch = bStretch;
+			tab1.Volume = Volume;
 		}
 		// Parm_To_Tab
 
 		private static void Tab_To_Parm (Param tab1)
 		{
-			bInside = tab1.bInside;
 			Bright = tab1.Bright;
-			bRotate = tab1.bRotate;
-			bStretch = tab1.bStretch;
 			bEros = tab1.bEros;
 			iFilter = tab1.iFilter;
+			Gamma = tab1.Gamma;
+			bInside = tab1.bInside;
 			Interval = tab1.Interval;
 			Leak = tab1.Leak;
 			Palitra = tab1.Palitra;
 			Resample = tab1.Resample;
+			bRotate = tab1.bRotate;
+			bStretch = tab1.bStretch;
+			Volume = tab1.Volume;
 		}
 		// Tab_To_Parm
 

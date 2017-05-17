@@ -29,6 +29,7 @@
 		private void InitializeComponent ()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Panel));
 			this.trk_Bright = new System.Windows.Forms.TrackBar();
 			this.lab_Level = new System.Windows.Forms.Label();
@@ -53,8 +54,6 @@
 			this.btn_Prev = new System.Windows.Forms.Button();
 			this.trk_Volume = new System.Windows.Forms.TrackBar();
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
-			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.trk_Palitra = new System.Windows.Forms.TrackBar();
@@ -63,6 +62,9 @@
 			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
+			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -325,29 +327,14 @@
 			this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
-            this.Column2});
+            this.Column2,
+            this.Column3});
 			this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataGridView1.Location = new System.Drawing.Point(0, 0);
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.Size = new System.Drawing.Size(319, 137);
 			this.dataGridView1.TabIndex = 0;
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
-			// 
-			// Column1
-			// 
-			this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.Column1.FillWeight = 50F;
-			this.Column1.HeaderText = "Файл";
-			this.Column1.Name = "Column1";
-			this.Column1.ReadOnly = true;
-			// 
-			// Column2
-			// 
-			this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.Column2.FillWeight = 50F;
-			this.Column2.HeaderText = "Путь";
-			this.Column2.Name = "Column2";
-			this.Column2.ReadOnly = true;
 			// 
 			// tabPage1
 			// 
@@ -447,6 +434,34 @@
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
 			// 
+			// Column1
+			// 
+			this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			this.Column1.FillWeight = 66F;
+			this.Column1.HeaderText = "Файл";
+			this.Column1.Name = "Column1";
+			this.Column1.ReadOnly = true;
+			this.Column1.Width = 61;
+			// 
+			// Column2
+			// 
+			this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+			this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+			this.Column2.FillWeight = 17F;
+			this.Column2.HeaderText = "Время";
+			this.Column2.Name = "Column2";
+			this.Column2.Width = 65;
+			// 
+			// Column3
+			// 
+			this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			this.Column3.FillWeight = 17F;
+			this.Column3.HeaderText = "Путь";
+			this.Column3.Name = "Column3";
+			this.Column3.ReadOnly = true;
+			this.Column3.Width = 56;
+			// 
 			// Panel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -513,8 +528,6 @@
 		private System.Windows.Forms.Button btn_Play;
 		private System.Windows.Forms.Button btn_Prev;
 		private System.Windows.Forms.DataGridView dataGridView1;
-		private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
 		private System.Windows.Forms.Timer Panel_Timer;
 		public System.Windows.Forms.ProgressBar progress_Pos;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -524,5 +537,8 @@
 		private System.Windows.Forms.Label lab_Gamma;
 		private System.Windows.Forms.TrackBar trk_Filter;
 		private System.Windows.Forms.TrackBar trk_Palitra;
+		private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+		private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
 	}
 }

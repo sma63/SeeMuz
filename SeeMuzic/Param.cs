@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace SeeMuzic
 {
-	class Param
+	public class Param
 	{
 		public double Bright;
 		public bool bEros;
@@ -24,6 +24,7 @@ namespace SeeMuzic
 		public bool bInside;
 		public int Interval;
 		public double Leak;
+		public int Length;
 		public int Palitra;
 		public int Resample;
 		public bool bRotate;
@@ -42,6 +43,7 @@ namespace SeeMuzic
 		const string _INSIDE_ = "INS";
 		const string _INTERVAL_ = "INT";
 		const string _LEAK_ = "LEA";
+		const string _LENGTH_ = "LEN";
 		const string _PALITRA_ = "PAL";
 		const string _PAGE0_ = "PAGE0";
 		const string _RESAMPLE_ = "RES";
@@ -50,7 +52,7 @@ namespace SeeMuzic
 		const string _TRANSPARENCY_ = "TRA";
 		const string _VOLUME_ = "VOL";
 
-		static Param [] parm1;
+		public static Param [] parm1;
 		static List<Param> ListParam = new List<Param> ();
 
 		private void Save_Parms_Xml ()
@@ -85,6 +87,7 @@ namespace SeeMuzic
 					new XAttribute (_INTERVAL_, prm1.Interval),
 					new XAttribute (_INSIDE_, prm1.bInside),
 					new XAttribute (_LEAK_, prm1.Leak),
+					new XAttribute (_LENGTH_, prm1.Length),
 					new XAttribute (_PALITRA_, prm1.Palitra),
 					new XAttribute (_RESAMPLE_, prm1.Resample),
 					new XAttribute (_ROTATE_, prm1.bRotate),
@@ -152,6 +155,7 @@ namespace SeeMuzic
 						try { prm1.bInside = bool.Parse (parm.Attribute (_INSIDE_).Value); } catch { }
 						try { prm1.Interval = int.Parse (parm.Attribute (_INTERVAL_).Value); } catch { }
 						try { prm1.Leak = int.Parse (parm.Attribute (_LEAK_).Value); } catch { }
+						try { prm1.Length = int.Parse (parm.Attribute (_LENGTH_).Value); } catch { }
 						try { prm1.Palitra = int.Parse (parm.Attribute (_PALITRA_).Value); } catch { }
 						try { prm1.Resample = int.Parse (parm.Attribute (_RESAMPLE_).Value); } catch { }
 						try { prm1.bRotate = bool.Parse (parm.Attribute (_ROTATE_).Value); } catch { }

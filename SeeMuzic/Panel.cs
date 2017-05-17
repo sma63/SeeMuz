@@ -61,7 +61,8 @@ namespace SeeMuzic
 			for (int i = 0; i < Form1.Fnames.Length; i++)
 			{
 				int p1 = Form1.Fnames [i].LastIndexOf ('\\');
-				dataGridView1.Rows.Add (Form1.Fnames [i].Substring (p1 + 1), Form1.Fnames [i]);
+				int sec = Form1.parm1 [i].Length;
+				dataGridView1.Rows.Add (Form1.Fnames [i].Substring (p1 + 1), String.Format ("{0}:{1:00}", sec / 60, sec % 60), Form1.Fnames [i]);
 			}
 			iFnames = Form1.iFnames;
 			dataGridView1.Rows [iFnames].Selected = true;
