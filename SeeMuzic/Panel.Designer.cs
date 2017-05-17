@@ -36,7 +36,7 @@
 			this.trk_Interval = new System.Windows.Forms.TrackBar();
 			this.lab_Resample = new System.Windows.Forms.Label();
 			this.trk_Resample = new System.Windows.Forms.TrackBar();
-			this.lab_Front = new System.Windows.Forms.Label();
+			this.lab_Leak = new System.Windows.Forms.Label();
 			this.trk_Front = new System.Windows.Forms.TrackBar();
 			this.lab_Palitra = new System.Windows.Forms.Label();
 			this.lab_Filter = new System.Windows.Forms.Label();
@@ -140,16 +140,16 @@
 			this.trk_Resample.TabIndex = 3;
 			this.trk_Resample.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Resample.Value = 1;
-			this.trk_Resample.ValueChanged += new System.EventHandler(this.trk_Krat_ValueChanged);
+			this.trk_Resample.ValueChanged += new System.EventHandler(this.trk_Resample_ValueChanged);
 			// 
-			// lab_Front
+			// lab_Leak
 			// 
-			this.lab_Front.AutoSize = true;
-			this.lab_Front.Location = new System.Drawing.Point(111, 92);
-			this.lab_Front.Name = "lab_Front";
-			this.lab_Front.Size = new System.Drawing.Size(69, 13);
-			this.lab_Front.TabIndex = 5;
-			this.lab_Front.Text = "Накопление";
+			this.lab_Leak.AutoSize = true;
+			this.lab_Leak.Location = new System.Drawing.Point(111, 92);
+			this.lab_Leak.Name = "lab_Leak";
+			this.lab_Leak.Size = new System.Drawing.Size(69, 13);
+			this.lab_Leak.TabIndex = 5;
+			this.lab_Leak.Text = "Накопление";
 			// 
 			// trk_Front
 			// 
@@ -243,7 +243,7 @@
 			this.tabPage0.Location = new System.Drawing.Point(4, 22);
 			this.tabPage0.Name = "tabPage0";
 			this.tabPage0.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage0.Size = new System.Drawing.Size(325, 347);
+			this.tabPage0.Size = new System.Drawing.Size(325, 210);
 			this.tabPage0.TabIndex = 1;
 			this.tabPage0.Text = "Play List";
 			// 
@@ -266,7 +266,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-			this.splitContainer1.Size = new System.Drawing.Size(319, 341);
+			this.splitContainer1.Size = new System.Drawing.Size(319, 204);
 			this.splitContainer1.SplitterDistance = 63;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -318,6 +318,7 @@
 			this.trk_Volume.Size = new System.Drawing.Size(147, 45);
 			this.trk_Volume.TabIndex = 4;
 			this.trk_Volume.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Volume.ValueChanged += new System.EventHandler(this.trk_Volume_ValueChanged);
 			// 
 			// dataGridView1
 			// 
@@ -328,7 +329,7 @@
 			this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataGridView1.Location = new System.Drawing.Point(0, 0);
 			this.dataGridView1.Name = "dataGridView1";
-			this.dataGridView1.Size = new System.Drawing.Size(319, 274);
+			this.dataGridView1.Size = new System.Drawing.Size(319, 137);
 			this.dataGridView1.TabIndex = 0;
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
 			// 
@@ -372,7 +373,7 @@
 			this.groupBox1.Controls.Add(this.lab_Interval);
 			this.groupBox1.Controls.Add(this.lab_Gamma);
 			this.groupBox1.Controls.Add(this.lab_Resample);
-			this.groupBox1.Controls.Add(this.lab_Front);
+			this.groupBox1.Controls.Add(this.lab_Leak);
 			this.groupBox1.Controls.Add(this.lab_Palitra);
 			this.groupBox1.Controls.Add(this.lab_Level);
 			this.groupBox1.Controls.Add(this.chk_Transparency);
@@ -400,7 +401,8 @@
 			// trk_Gamma
 			// 
 			this.trk_Gamma.Location = new System.Drawing.Point(6, 134);
-			this.trk_Gamma.Maximum = 9;
+			this.trk_Gamma.Maximum = 7;
+			this.trk_Gamma.Minimum = -7;
 			this.trk_Gamma.Name = "trk_Gamma";
 			this.trk_Gamma.Size = new System.Drawing.Size(104, 45);
 			this.trk_Gamma.TabIndex = 17;
@@ -492,7 +494,7 @@
 		private System.Windows.Forms.Label lab_Interval;
 		private System.Windows.Forms.Label lab_Resample;
 		public System.Windows.Forms.Label lab_Level;
-		public System.Windows.Forms.Label lab_Front;
+		public System.Windows.Forms.Label lab_Leak;
 
 		private System.Windows.Forms.Label lab_Palitra;
 		private System.Windows.Forms.Label lab_Filter;

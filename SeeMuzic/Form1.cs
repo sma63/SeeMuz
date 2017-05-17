@@ -32,11 +32,12 @@ namespace SeeMuzic
 
 		private int _syncer = 0;
 		static SYNCPROC _syncProcEndStream;
-		static int Audio_Stream = 0;
+		public static int Audio_Stream = 0;
 
 		public static double Bright = 30.0;
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
 		public static int Resample = (MIN_RESAMPLE + MAX_RESAMPLE) / 2; // (44100 / 14 = 3150) / 25 = 126
+		public static int Volume = 5; // 0 .. 10
 		public static double Leak = 1.0;
 		public static int iFilter = 1, iFilter2 = 1;
 		public static int Palitra = 0;
@@ -173,7 +174,7 @@ namespace SeeMuzic
 			{
 				if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
 				{
-					Parm_To_Tab (i);
+					Parm_To_Tab (parm1 [i] = new Param ());
 				}
 			}
 
@@ -239,7 +240,7 @@ namespace SeeMuzic
 		{
 			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
-			Parm_To_Tab (iFnames);
+			Parm_To_Tab (parm1 [iFnames]);
 			Save_Parms_Xml ();
 		}
 		// Form1_FormClosed
@@ -276,15 +277,14 @@ namespace SeeMuzic
 			}
 			else
 			{
-				Tab_To_Parm (iFnames);
+				Tab_To_Parm (parm1 [iFnames]);
 				if (bPanel) Panel1.Reload ();
 			}
 		}
 		//Audio_Start
 
-		private static void Parm_To_Tab (int i)
+		private static void Parm_To_Tab (Param tab1)
 		{
-			Param tab1 = parm1 [i];
 			tab1.bInside = bInside;
 			tab1.Bright = Bright;
 			tab1.bRotate = bRotate;
@@ -298,9 +298,8 @@ namespace SeeMuzic
 		}
 		// Parm_To_Tab
 
-		private static void Tab_To_Parm (int i)
+		private static void Tab_To_Parm (Param tab1)
 		{
-			Param tab1 = parm1 [i];
 			bInside = tab1.bInside;
 			Bright = tab1.Bright;
 			bRotate = tab1.bRotate;
@@ -325,7 +324,7 @@ namespace SeeMuzic
 		{
 			if (idx < 0)
 			{
-				Parm_To_Tab (iFnames);
+				Parm_To_Tab (parm1 [iFnames]);
 				if (idx == -1)
 					iFnames = (iFnames + 1) % Fnames.Length;
 				else
@@ -334,7 +333,7 @@ namespace SeeMuzic
 			}
 			else if (idx != iFnames)
 			{
-				Tab_To_Parm (iFnames);
+				Tab_To_Parm (parm1 [iFnames]);
 				iFnames = idx;
 				bRestart = true;
 				if (bPanel) Panel1.Reload ();
@@ -380,12 +379,14 @@ namespace SeeMuzic
 				alpha = 4.0 * 2.0 * Math.PI * pct * pct;
 				x0 = Math.Cos (alpha);
 				y0 = Math.Sin (alpha);
+				kf = (bInside ? (Math.Abs (x0) + Math.Abs (y0)) : 1.0 / (Math.Abs (x0) + Math.Abs (y0)));
 			}
 			else
 			{
 				alpha = 0.0;
 				x0 = 1.0;
 				y0 = 0.0;
+				kf = 1.0;
 			}
 #endif
 			if (iFilter != iFilter2)
@@ -543,22 +544,21 @@ namespace SeeMuzic
 				}
 			}
 #else
-			// Решетка
-			if (bInside)
-				kf = 1.0 * (Math.Abs (x0) + Math.Abs (y0));
-			else
-				kf = 1.0 / (Math.Abs (x0) + Math.Abs (y0));
+			double kf1 = Palitra / 7.0;
+			double kf2 = Gamma * 0.1;
+			double kf3 = Bright * 0.2;
+
 			for (int x = 0; x < Okno; x++)
 			{
 				for (int y = 0; y < Okno; y++)
 				{
-					double x1 = (double)(x - Okno2) / Okno2; //if (0.0 < x1) x1 = 0.9 - x1; else x1 = -0.9 - x1;
-					double y1 = (double)(y - Okno2) / Okno2; //if (0.0 < y1) y1 = 0.9 - y1; else y1 = -0.9 - y1;
+					double x1 = (double)(x - Okno2) / Okno2;
+					double y1 = (double)(y - Okno2) / Okno2;
 
 					double x2 = (x0 * x1 + y0 * y1);
 					if (bEros)
 					{
-						x2 *= Math.Abs (x2); // x2 = (x2 < 0.0 ? -Math.Sqrt (-x2) : Math.Sqrt (x2)); // 
+						x2 *= Math.Abs (x2);
 						x2 = Okno2 + x2 * Okno2 * kf * kf;
 					}
 					else
@@ -571,7 +571,7 @@ namespace SeeMuzic
 						double y2 = (x0 * y1 - y0 * x1);
 						if (bEros)
 						{
-							y2 *= Math.Abs (y2); // y2 = (y2 < 0.0 ? -Math.Sqrt (-y2) : Math.Sqrt (y2)); // 
+							y2 *= Math.Abs (y2);
 							y2 = Okno2 + y2 * Okno2 * kf * kf;
 						}
 						else
@@ -585,8 +585,7 @@ namespace SeeMuzic
 							vcnt++;
 							if (0.0 < Power) v = v / Power;
 							v = Math.Sqrt (v);
-							//bmp1.SetPixel (x, y, Raduga (Palitra / 7.0 + v * 0.1 * Gamma, v * Bright * 0.2));
-							bmp1.SetPixel (x, y, Raduga (Palitra / 7.0 - v * 0.1 * Gamma, v * Bright * 0.2));
+							bmp1.SetPixel (x, y, Raduga (kf1 + v * kf2, v * kf3));
 							continue;
 						}
 					}
@@ -650,28 +649,6 @@ namespace SeeMuzic
 			}
 		}
 		// btn_Panel_Play_Click
-
-		public static Color H2Color (double h, double v) //цвет, яркость
-		{
-			//if (1.0 <= v) return Color.FromArgb (255, 255, 255); //
-
-			int z = 0;
-			if (v < 0.0) v = 0.0; else if (v < 1.0) v *= 255.0; else { v = 255.0; z = (int)((v - 1.0) * 64.0); if (255 < z) z = 255; }
-			double h6 = (h - Math.Floor (h)) * 6.0;
-			int a = (int)((h6 - Math.Floor (h6)) * v);
-			int b = (int)v;
-			int c = b - a;
-			switch ((int)h6)
-			{
-				case 0: return Color.FromArgb (b, a, z);
-				case 1: return Color.FromArgb (c, b, z);
-				case 2: return Color.FromArgb (z, b, a);
-				case 3: return Color.FromArgb (z, c, b);
-				case 4: return Color.FromArgb (a, z, b);
-				default: return Color.FromArgb (b, z, c);
-			}
-		}
-		// H2Color
 
 		// i = log2 (Resample) * 5.0;
 		public static int ResToIdx (int r)

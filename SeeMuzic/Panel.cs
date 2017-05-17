@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Un4seen.Bass;
 
 namespace SeeMuzic
 {
@@ -37,9 +38,10 @@ namespace SeeMuzic
 			trk_Bright.Value = Ranger10 (Form1.Bright / BRIGHT);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
 			trk_Resample.Value = Ranger10 (Form1.ResToIdx (Form1.Resample) - Form1.ResToIdx (Form1.MIN_RESAMPLE), 0.0, 9.0);
-			trk_Gamma.Value = Ranger10 (Form1.Gamma);
+			trk_Gamma.Value = Ranger10 (Form1.Gamma, -7.0, +7.0);
 			trk_Filter.Value = Ranger10 (Form1.iFilter, 1.0, 7.0);
 			trk_Palitra.Value = Ranger10 (Form1.Palitra, 0.0, 6.0);
+			trk_Volume.Value = Ranger10 (Form1.Volume, 0.0, 10.0);
 			bUpdate = true;
 
 			chk_Rotate.Checked = Form1.bRotate;
@@ -48,9 +50,9 @@ namespace SeeMuzic
 			chk_Eros.Checked = Form1.bEros;
 			chk_Transparency.Checked = Form1.bTrnsparency;
 
-			lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
+			lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
-			lab_Gamma.Text = String.Format ("Гамма = {0}", Form1.Gamma);
+			lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
 			lab_Interval.Text = String.Format ("Инт = {0} ms", Form1.Interval);
 			lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
 			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
@@ -87,7 +89,7 @@ namespace SeeMuzic
 			if (bUpdate)
 			{
 				Form1.Leak = trk_Front.Value * LEAK;
-				lab_Front.Text = String.Format ("Норма = {0}", Form1.Leak);
+				lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
 			}
 		}
 
@@ -109,7 +111,7 @@ namespace SeeMuzic
 			}
 		}
 
-		private void trk_Krat_ValueChanged (object sender, EventArgs e)
+		private void trk_Resample_ValueChanged (object sender, EventArgs e)
 		{
 			if (bUpdate)
 			{
@@ -123,7 +125,7 @@ namespace SeeMuzic
 			if (bUpdate)
 			{
 				Form1.Gamma = trk_Gamma.Value;
-				lab_Gamma.Text = String.Format ("Гамма = {0}", Form1.Gamma);
+				lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
 			}
 		}
 
@@ -142,6 +144,15 @@ namespace SeeMuzic
 			{
 				Form1.Palitra = trk_Palitra.Value;
 				lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
+			}
+		}
+
+		private void trk_Volume_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Volume = trk_Volume.Value;
+				Bass.BASS_ChannelSetAttribute (Form1.Audio_Stream, BASSAttribute.BASS_ATTRIB_VOL, (float)Form1.Volume / 10.0f);
 			}
 		}
 
