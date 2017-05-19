@@ -17,19 +17,14 @@ namespace SeeMuzic
 	public class Param
 	{
 		public double Bright;
-		public bool bEros;
 		public int iFilter;
 		public string Fname;
 		public double Gamma;
-		public bool bInside;
 		public int Interval;
 		public double Leak;
 		public int Length;
 		public int Palitra;
 		public int Resample;
-		public bool bRotate;
-		public bool bStretch;
-		public int Volume;
 	}
 
 	public partial class Form1 : Form
@@ -81,17 +76,13 @@ namespace SeeMuzic
 				XElement item1 = new XElement
 				("L",
 					new XAttribute (_BRIGHT_, prm1.Bright),
-					new XAttribute (_EROS_, prm1.bEros),
 					new XAttribute (_FILTER_, prm1.iFilter),
 					new XAttribute (_GAMMA_, prm1.Gamma),
 					new XAttribute (_INTERVAL_, prm1.Interval),
-					new XAttribute (_INSIDE_, prm1.bInside),
 					new XAttribute (_LEAK_, prm1.Leak),
 					new XAttribute (_LENGTH_, prm1.Length),
 					new XAttribute (_PALITRA_, prm1.Palitra),
 					new XAttribute (_RESAMPLE_, prm1.Resample),
-					new XAttribute (_ROTATE_, prm1.bRotate),
-					new XAttribute (_STRETCH_, prm1.bStretch),
 					new XAttribute (_FILE_, Fnames [i])
 				);
 				list1.Add (item1);
@@ -149,17 +140,13 @@ namespace SeeMuzic
 					{
 						Param prm1 = new Param ();
 						try { prm1.Bright = double.Parse (parm.Attribute (_BRIGHT_).Value); } catch { }
-						try { prm1.bEros = bool.Parse (parm.Attribute (_EROS_).Value); } catch { }
 						try { prm1.iFilter = int.Parse (parm.Attribute (_FILTER_).Value); } catch { }
 						try { prm1.Gamma = double.Parse (parm.Attribute (_GAMMA_).Value); } catch { }
-						try { prm1.bInside = bool.Parse (parm.Attribute (_INSIDE_).Value); } catch { }
 						try { prm1.Interval = int.Parse (parm.Attribute (_INTERVAL_).Value); } catch { }
 						try { prm1.Leak = int.Parse (parm.Attribute (_LEAK_).Value); } catch { }
 						try { prm1.Length = int.Parse (parm.Attribute (_LENGTH_).Value); } catch { }
 						try { prm1.Palitra = int.Parse (parm.Attribute (_PALITRA_).Value); } catch { }
 						try { prm1.Resample = int.Parse (parm.Attribute (_RESAMPLE_).Value); } catch { }
-						try { prm1.bRotate = bool.Parse (parm.Attribute (_ROTATE_).Value); } catch { }
-						try { prm1.bStretch = bool.Parse (parm.Attribute (_STRETCH_).Value); } catch { }
 						try { prm1.Fname = parm.Attribute (_FILE_).Value; } catch { prm1.Fname = string.Empty; }
 						ListParam.Add (prm1);
 					}

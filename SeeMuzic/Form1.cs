@@ -327,34 +327,24 @@ namespace SeeMuzic
 		private static void Parm_To_Tab (Param tab1)
 		{
 			tab1.Bright = Bright;
-			tab1.bEros = bEros;
 			tab1.iFilter = iFilter;
 			tab1.Gamma = Gamma;
-			tab1.bInside = bInside;
 			tab1.Interval = Interval;
 			tab1.Leak = Leak;
 			tab1.Palitra = Palitra;
 			tab1.Resample = Resample;
-			tab1.bRotate = bRotate;
-			tab1.bStretch = bStretch;
-			tab1.Volume = Volume;
 		}
 		// Parm_To_Tab
 
 		private static void Tab_To_Parm (Param tab1)
 		{
 			Bright = tab1.Bright;
-			bEros = tab1.bEros;
 			iFilter = tab1.iFilter;
 			Gamma = tab1.Gamma;
-			bInside = tab1.bInside;
 			Interval = tab1.Interval;
 			Leak = tab1.Leak;
 			Palitra = tab1.Palitra;
 			Resample = tab1.Resample;
-			bRotate = tab1.bRotate;
-			bStretch = tab1.bStretch;
-			Volume = tab1.Volume;
 		}
 		// Tab_To_Parm
 
