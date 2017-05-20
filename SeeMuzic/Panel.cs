@@ -183,14 +183,21 @@ namespace SeeMuzic
 			}
 		}
 
+		private void btn_Play_Click (object sender, EventArgs e)
+		{
+			btn_Play.BackgroundImage = (Form1.btn_Panel_Play_Click () ? SeeMuz.Properties.Resources.player_pause_6166 : SeeMuz.Properties.Resources.player_play_8474);
+		}
+
 		private void btn_Prev_Click (object sender, EventArgs e)
 		{
 			Form1.Audio_Next (-2);
+			btn_Play.BackgroundImage = SeeMuz.Properties.Resources.player_pause_6166;
 		}
 
 		private void btn_Next_Click (object sender, EventArgs e)
 		{
 			Form1.Audio_Next (-1);
+			btn_Play.BackgroundImage = SeeMuz.Properties.Resources.player_pause_6166;
 		}
 
 		private void dataGridView1_SelectionChanged (object sender, EventArgs e)
@@ -204,11 +211,6 @@ namespace SeeMuzic
 		private void chk_Eros_CheckedChanged (object sender, EventArgs e)
 		{
 			Form1.bEros = chk_Eros.Checked;
-		}
-
-		private void btn_Play_Click(object sender, EventArgs e)
-		{
-			btn_Play.Text = (Form1.btn_Panel_Play_Click () ? "| |" : ">");
 		}
 
 		private void chk_Transparency_Click (object sender, EventArgs e)

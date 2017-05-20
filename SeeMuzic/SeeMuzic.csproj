@@ -103,6 +103,12 @@
   <ItemGroup>
     <Content Include="music.ico" />
     <Content Include="music2.ico" />
+    <None Include="Resources\arrow_switch_2894.png" />
+    <None Include="Resources\kde-folder-saved-search_2702.png" />
+    <Content Include="Resources\player_pause_6166.png" />
+    <None Include="Resources\player_fwd_3377.png" />
+    <None Include="Resources\player_play_8474.png" />
+    <None Include="Resources\player_rew_9310.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

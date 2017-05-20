@@ -185,12 +185,12 @@ namespace SeeMuzic
 			//}
 
 			// Перетасовка
-			//for (int i = 0; i < Fnames.Length; i++)
-			//{
-			//	int j = rnd1.Next (Fnames.Length);
-			//	int k = rnd1.Next (Fnames.Length);
-			//	string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
-			//}
+			for (int i = 0; i < Fnames.Length; i++)
+			{
+				int j = rnd1.Next (Fnames.Length);
+				int k = rnd1.Next (Fnames.Length);
+				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
+			}
 
 			Palitra = rnd1.Next (14);
 			Load_Parms_Xml ();
