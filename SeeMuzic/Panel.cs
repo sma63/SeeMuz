@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using Un4seen.Bass;
 
 namespace SeeMuzic
@@ -42,7 +43,6 @@ namespace SeeMuzic
 			trk_Filter.Value = Ranger10 (Form1.iFilter, 1.0, 7.0);
 			trk_Palitra.Value = Ranger10 (Form1.Palitra, 0.0, 6.0);
 			trk_Volume.Value = Ranger10 (Form1.Volume, 0.0, 10.0);
-			bUpdate = true;
 
 			chk_Rotate.Checked = Form1.bRotate;
 			chk_Stretch.Checked = Form1.bStretch;
@@ -58,15 +58,18 @@ namespace SeeMuzic
 			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
 
-			for (int i = 0; i < Form1.Fnames.Length; i++)
+			for (int i = 0; i < Form1.ListParam.Count; i++)
 			{
-				int p1 = Form1.Fnames [i].LastIndexOf ('\\');
-				int sec = Form1.parm1 [i].Length;
-				dataGridView1.Rows.Add (Form1.Fnames [i].Substring (p1 + 1), String.Format ("{0}:{1:00}", sec / 60, sec % 60), Form1.Fnames [i]);
+				int p1 = Form1.ListParam [i].Fname.LastIndexOf ('\\');
+				int sec = Form1.ListParam [i].Length;
+				dataGridView1.Rows.Add (Form1.ListParam [i].Fname.Substring (p1 + 1), String.Format ("{0}:{1:00}", sec / 60, sec % 60), Form1.ListParam [i].Fname);
+				//dataGridView1.Rows [i].HeaderCell.Value = String.Format ("{0}:{1:00}", sec / 60, sec % 60);
+
 			}
 			iFnames = Form1.iFnames;
 			dataGridView1.Rows [iFnames].Selected = true;
 			dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
+			bUpdate = true;
 
 			Panel_Timer.Enabled = true;
 			//Form1.bPanel = true;
@@ -202,9 +205,12 @@ namespace SeeMuzic
 
 		private void dataGridView1_SelectionChanged (object sender, EventArgs e)
 		{
-			if (0 < dataGridView1.SelectedRows.Count)
+			if (bUpdate)
 			{
-				Form1.Audio_Next (dataGridView1.SelectedRows [0].Index);
+				if (0 < dataGridView1.SelectedRows.Count)
+				{
+					Form1.Audio_Next (dataGridView1.SelectedRows [0].Index);
+				}
 			}
 		}
 
@@ -216,6 +222,57 @@ namespace SeeMuzic
 		private void chk_Transparency_Click (object sender, EventArgs e)
 		{
 			Form1.bTrnsparency = chk_Transparency.Checked;
+		}
+
+		private void btn_Load_Click (object sender, EventArgs e)
+		{
+			// запускать только в режиме Pause
+			OpenFileDialog openFileDialog1 = new OpenFileDialog ();
+			openFileDialog1.InitialDirectory = Directory.GetCurrentDirectory (); ;
+			openFileDialog1.Filter = "mp3 files (*.mp3)|*.mp3|All files (*.*)|*.*";
+			openFileDialog1.FilterIndex = 0;
+			openFileDialog1.RestoreDirectory = true;
+			openFileDialog1.Multiselect = true;
+			if (openFileDialog1.ShowDialog () == DialogResult.OK)
+			{
+				if (Bass.BASS_Init (-1, Form1.SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+				{
+					Form1.ListParam.Clear ();
+					bUpdate = false;
+					dataGridView1.Rows.Clear ();
+					foreach (string fnam in openFileDialog1.FileNames)
+					{
+						Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (fnam);
+						if (tags != null)
+						{
+							int stream = Bass.BASS_StreamCreateFile (fnam, 0, 0, BASSFlag.BASS_DEFAULT);
+							if (stream != 0)
+							{
+								Param prm1 = new Param ();
+								prm1.Bright = Form1.Bright;
+								prm1.iFilter = Form1.iFilter;
+								prm1.Gamma = Form1.Gamma;
+								prm1.Interval = Form1.Interval;
+								prm1.Leak = Form1.Leak;
+								prm1.Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
+								prm1.Palitra = Form1.Palitra;
+								prm1.Resample = Form1.Resample;
+								prm1.Fname = fnam;
+								Form1.ListParam.Add (prm1);
+								Bass.BASS_StreamFree (stream);
+							}
+						}
+					}
+					Reload ();
+					dataGridView1.Refresh ();
+					Bass.BASS_Free ();
+				}
+			}
+		}
+
+		private void btn_Random_Click (object sender, EventArgs e)
+		{
+			// ..
 		}
 
 		private int Ranger10 (double v, double vmin = 1.0, double vmax = 10.0)

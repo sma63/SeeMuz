@@ -48,9 +48,17 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage0 = new System.Windows.Forms.TabPage();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.btn_Load = new System.Windows.Forms.Button();
+			this.btn_Random = new System.Windows.Forms.Button();
 			this.progress_Pos = new System.Windows.Forms.ProgressBar();
+			this.btn_Next = new System.Windows.Forms.Button();
+			this.btn_Play = new System.Windows.Forms.Button();
+			this.btn_Prev = new System.Windows.Forms.Button();
 			this.trk_Volume = new System.Windows.Forms.TrackBar();
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
+			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.trk_Palitra = new System.Windows.Forms.TrackBar();
@@ -59,14 +67,6 @@
 			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
-			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.button2 = new System.Windows.Forms.Button();
-			this.button1 = new System.Windows.Forms.Button();
-			this.btn_Next = new System.Windows.Forms.Button();
-			this.btn_Play = new System.Windows.Forms.Button();
-			this.btn_Prev = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -261,8 +261,8 @@
 			// 
 			// splitContainer1.Panel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.button2);
-			this.splitContainer1.Panel1.Controls.Add(this.button1);
+			this.splitContainer1.Panel1.Controls.Add(this.btn_Load);
+			this.splitContainer1.Panel1.Controls.Add(this.btn_Random);
 			this.splitContainer1.Panel1.Controls.Add(this.progress_Pos);
 			this.splitContainer1.Panel1.Controls.Add(this.btn_Next);
 			this.splitContainer1.Panel1.Controls.Add(this.btn_Play);
@@ -276,6 +276,28 @@
 			this.splitContainer1.SplitterDistance = 63;
 			this.splitContainer1.TabIndex = 0;
 			// 
+			// btn_Load
+			// 
+			this.btn_Load.BackgroundImage = global::SeeMuz.Properties.Resources.kde_folder_saved_search_2702;
+			this.btn_Load.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btn_Load.Location = new System.Drawing.Point(5, 4);
+			this.btn_Load.Name = "btn_Load";
+			this.btn_Load.Size = new System.Drawing.Size(32, 32);
+			this.btn_Load.TabIndex = 6;
+			this.btn_Load.UseVisualStyleBackColor = true;
+			this.btn_Load.Click += new System.EventHandler(this.btn_Load_Click);
+			// 
+			// btn_Random
+			// 
+			this.btn_Random.BackgroundImage = global::SeeMuz.Properties.Resources.arrow_switch_2894;
+			this.btn_Random.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btn_Random.Location = new System.Drawing.Point(43, 4);
+			this.btn_Random.Name = "btn_Random";
+			this.btn_Random.Size = new System.Drawing.Size(32, 32);
+			this.btn_Random.TabIndex = 5;
+			this.btn_Random.UseVisualStyleBackColor = true;
+			this.btn_Random.Click += new System.EventHandler(this.btn_Random_Click);
+			// 
 			// progress_Pos
 			// 
 			this.progress_Pos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -284,6 +306,39 @@
 			this.progress_Pos.Size = new System.Drawing.Size(309, 23);
 			this.progress_Pos.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progress_Pos.TabIndex = 3;
+			// 
+			// btn_Next
+			// 
+			this.btn_Next.BackgroundImage = global::SeeMuz.Properties.Resources.player_fwd_3377;
+			this.btn_Next.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btn_Next.Location = new System.Drawing.Point(157, 4);
+			this.btn_Next.Name = "btn_Next";
+			this.btn_Next.Size = new System.Drawing.Size(32, 32);
+			this.btn_Next.TabIndex = 2;
+			this.btn_Next.UseVisualStyleBackColor = true;
+			this.btn_Next.Click += new System.EventHandler(this.btn_Next_Click);
+			// 
+			// btn_Play
+			// 
+			this.btn_Play.BackgroundImage = global::SeeMuz.Properties.Resources.player_play_8474;
+			this.btn_Play.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btn_Play.Location = new System.Drawing.Point(119, 4);
+			this.btn_Play.Name = "btn_Play";
+			this.btn_Play.Size = new System.Drawing.Size(32, 32);
+			this.btn_Play.TabIndex = 1;
+			this.btn_Play.UseVisualStyleBackColor = true;
+			this.btn_Play.Click += new System.EventHandler(this.btn_Play_Click);
+			// 
+			// btn_Prev
+			// 
+			this.btn_Prev.BackgroundImage = global::SeeMuz.Properties.Resources.player_rew_9310;
+			this.btn_Prev.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btn_Prev.Location = new System.Drawing.Point(81, 4);
+			this.btn_Prev.Name = "btn_Prev";
+			this.btn_Prev.Size = new System.Drawing.Size(32, 32);
+			this.btn_Prev.TabIndex = 0;
+			this.btn_Prev.UseVisualStyleBackColor = true;
+			this.btn_Prev.Click += new System.EventHandler(this.btn_Prev_Click);
 			// 
 			// trk_Volume
 			// 
@@ -309,6 +364,34 @@
 			this.dataGridView1.Size = new System.Drawing.Size(319, 137);
 			this.dataGridView1.TabIndex = 0;
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
+			// 
+			// Column1
+			// 
+			this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			this.Column1.FillWeight = 66F;
+			this.Column1.HeaderText = "Song";
+			this.Column1.Name = "Column1";
+			this.Column1.ReadOnly = true;
+			this.Column1.Width = 57;
+			// 
+			// Column2
+			// 
+			this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+			this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+			this.Column2.FillWeight = 17F;
+			this.Column2.HeaderText = "Time";
+			this.Column2.Name = "Column2";
+			this.Column2.Width = 55;
+			// 
+			// Column3
+			// 
+			this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			this.Column3.FillWeight = 17F;
+			this.Column3.HeaderText = "Path";
+			this.Column3.Name = "Column3";
+			this.Column3.ReadOnly = true;
+			this.Column3.Width = 54;
 			// 
 			// tabPage1
 			// 
@@ -408,87 +491,6 @@
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
 			// 
-			// Column1
-			// 
-			this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-			this.Column1.FillWeight = 66F;
-			this.Column1.HeaderText = "Song";
-			this.Column1.Name = "Column1";
-			this.Column1.ReadOnly = true;
-			this.Column1.Width = 57;
-			// 
-			// Column2
-			// 
-			this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-			this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
-			this.Column2.FillWeight = 17F;
-			this.Column2.HeaderText = "Time";
-			this.Column2.Name = "Column2";
-			this.Column2.Width = 55;
-			// 
-			// Column3
-			// 
-			this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-			this.Column3.FillWeight = 17F;
-			this.Column3.HeaderText = "Path";
-			this.Column3.Name = "Column3";
-			this.Column3.ReadOnly = true;
-			this.Column3.Width = 54;
-			// 
-			// button2
-			// 
-			this.button2.BackgroundImage = global::SeeMuz.Properties.Resources.kde_folder_saved_search_2702;
-			this.button2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.button2.Location = new System.Drawing.Point(5, 4);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(32, 32);
-			this.button2.TabIndex = 6;
-			this.button2.UseVisualStyleBackColor = true;
-			// 
-			// button1
-			// 
-			this.button1.BackgroundImage = global::SeeMuz.Properties.Resources.arrow_switch_2894;
-			this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.button1.Location = new System.Drawing.Point(43, 4);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(32, 32);
-			this.button1.TabIndex = 5;
-			this.button1.UseVisualStyleBackColor = true;
-			// 
-			// btn_Next
-			// 
-			this.btn_Next.BackgroundImage = global::SeeMuz.Properties.Resources.player_fwd_3377;
-			this.btn_Next.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.btn_Next.Location = new System.Drawing.Point(157, 4);
-			this.btn_Next.Name = "btn_Next";
-			this.btn_Next.Size = new System.Drawing.Size(32, 32);
-			this.btn_Next.TabIndex = 2;
-			this.btn_Next.UseVisualStyleBackColor = true;
-			this.btn_Next.Click += new System.EventHandler(this.btn_Next_Click);
-			// 
-			// btn_Play
-			// 
-			this.btn_Play.BackgroundImage = global::SeeMuz.Properties.Resources.player_pause_6166;
-			this.btn_Play.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.btn_Play.Location = new System.Drawing.Point(119, 4);
-			this.btn_Play.Name = "btn_Play";
-			this.btn_Play.Size = new System.Drawing.Size(32, 32);
-			this.btn_Play.TabIndex = 1;
-			this.btn_Play.UseVisualStyleBackColor = true;
-			this.btn_Play.Click += new System.EventHandler(this.btn_Play_Click);
-			// 
-			// btn_Prev
-			// 
-			this.btn_Prev.BackgroundImage = global::SeeMuz.Properties.Resources.player_rew_9310;
-			this.btn_Prev.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.btn_Prev.Location = new System.Drawing.Point(81, 4);
-			this.btn_Prev.Name = "btn_Prev";
-			this.btn_Prev.Size = new System.Drawing.Size(32, 32);
-			this.btn_Prev.TabIndex = 0;
-			this.btn_Prev.UseVisualStyleBackColor = true;
-			this.btn_Prev.Click += new System.EventHandler(this.btn_Prev_Click);
-			// 
 			// Panel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -500,7 +502,7 @@
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(349, 274);
 			this.Name = "Panel";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "SeeMuz - Control";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Panel_FormClosed);
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).EndInit();
@@ -564,10 +566,10 @@
 		private System.Windows.Forms.Label lab_Gamma;
 		private System.Windows.Forms.TrackBar trk_Filter;
 		private System.Windows.Forms.TrackBar trk_Palitra;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button btn_Random;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.Button btn_Load;
 	}
 }

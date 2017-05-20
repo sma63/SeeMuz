@@ -40,14 +40,13 @@ namespace SeeMuzic
 		public static int Volume = 5; // 0 .. 10
 		public static double Leak = 1.0;
 		public static int iFilter = 1, iFilter2 = 1;
-		public static int Palitra = 0;
+		public static int Palitra = 5;
+		public static double Gamma = 2.0; // ширина цветовой гаммы
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
 		public static bool bEros = false; // гнуть
 		public static bool bTrnsparency = false; // прозрачность
-		public static double Gamma = 1.0; // ширина цветовой гаммы
-		public static string [] Fnames;
 
 		static int Resample2 = Resample; // контроль изменений Resample 
 		static double Power = 1.0;
@@ -140,21 +139,45 @@ namespace SeeMuzic
 		public static bool bPanel = false;
 		int btn_M_Visible_Cnt = 5; // видимость кнопки параметов [сек]
 
+		static Form1 himself = null;
+
 		public Form1 ()
 		{
+			himself = this;
+
 			InitializeComponent ();
 
 			pen2.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
 
 			iFnames = 0;
+
+			Palitra = rnd1.Next (14);
+			Load_Parms_Xml ();
+
+			btn_M.Enabled = false;
+			btn_M.Visible = false;
+		}
+		// Form1
+
+		private void Search_Audio_Files ()
+		{
+			// Поиск аудиофайлов в текущей директории
 			string curdir = Directory.GetCurrentDirectory ();
-			Fnames = Directory.GetFiles (curdir, "*.mp3", SearchOption.AllDirectories);
+			string [] Fnames = Directory.GetFiles (curdir, "*.mp3", SearchOption.AllDirectories);
 			//Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wma", SearchOption.AllDirectories)).ToArray ();
 			//Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wav", SearchOption.AllDirectories)).ToArray ();
 			if (Fnames.Length <= 0)
 			{
 				MessageBox.Show (curdir, "Не нашел *.mp3, *.wma, *.wav в текущей диретории");
 				Environment.Exit (0);
+			}
+
+			// Перетасовка
+			for (int i = 0; i < Fnames.Length; i++)
+			{
+				int j = rnd1.Next (Fnames.Length);
+				int k = rnd1.Next (Fnames.Length);
+				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
 			}
 
 			// чтение атрибутов аудиофайлов
@@ -184,45 +207,31 @@ namespace SeeMuzic
 			//	Bass.BASS_Free ();
 			//}
 
-			// Перетасовка
-			for (int i = 0; i < Fnames.Length; i++)
-			{
-				int j = rnd1.Next (Fnames.Length);
-				int k = rnd1.Next (Fnames.Length);
-				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
-			}
-
-			Palitra = rnd1.Next (14);
-			Load_Parms_Xml ();
-
 			// инициализация параметров просмотра
-			parm1 = new Param [Fnames.Length];
-			if (Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
-			{
-				for (int i = 0; i < Fnames.Length; i++)
-				{
-					if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
-					{
-						Parm_To_Tab (parm1 [i] = new Param ());
-					}
-					Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (Fnames [i]);
-					if (tags != null)
-					{
-						int stream = Bass.BASS_StreamCreateFile (Fnames [i], 0, 0, BASSFlag.BASS_DEFAULT);
-						if (stream != 0)
-						{
-							parm1 [i].Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
-							Bass.BASS_StreamFree (stream);
-						}
-					}
-				}
-				Bass.BASS_Free ();
-			}
-
-			btn_M.Enabled = false;
-			btn_M.Visible = false;
+			//parm1 = new Param [Fnames.Length];
+			//if (Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
+			//{
+			//	for (int i = 0; i < Fnames.Length; i++)
+			//	{
+			//		if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
+			//		{
+			//			Parm_To_Tab (parm1 [i] = new Param ());
+			//		}
+			//		Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (Fnames [i]);
+			//		if (tags != null)
+			//		{
+			//			int stream = Bass.BASS_StreamCreateFile (Fnames [i], 0, 0, BASSFlag.BASS_DEFAULT);
+			//			if (stream != 0)
+			//			{
+			//				parm1 [i].Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
+			//				Bass.BASS_StreamFree (stream);
+			//			}
+			//		}
+			//	}
+			//	Bass.BASS_Free ();
+			//}
 		}
-		// Form1
+		// Search_Audio_Files
 
 		static bool bTransparencyOn = false;
 
@@ -255,17 +264,15 @@ namespace SeeMuzic
 			TransparencyCtrl (false);
 
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
-			Audio_Start ();
+			//Audio_Start ();
+			Panel1 = new Panel ();
+			Panel1.Show (this);
 
 			for (int i = 0; i < Xrot.Length; i++)
 			{
 				Xrot [i] = 1.0;
 				Yrot [i] = 0.0;
 			}
-
-			timer1.Interval = Interval;
-			timer1.Enabled = true;
-			timer2.Enabled = true;
 		}
 		// Form1_Load
 
@@ -281,7 +288,7 @@ namespace SeeMuzic
 		{
 			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
-			Parm_To_Tab (parm1 [iFnames]);
+			Parm_To_Tab (ListParam [iFnames]);
 			Save_Parms_Xml ();
 		}
 		// Form1_FormClosed
@@ -300,8 +307,8 @@ namespace SeeMuzic
 				this.Close ();
 			}
 
-			Form1_Next_Title (Fnames [iFnames]);
-			Audio_Stream = Bass.BASS_StreamCreateFile (Fnames [iFnames], 0, 0, BASSFlag.BASS_DEFAULT);
+			Form1_Next_Title (ListParam [iFnames].Fname);
+			Audio_Stream = Bass.BASS_StreamCreateFile (ListParam [iFnames].Fname, 0, 0, BASSFlag.BASS_DEFAULT);
 			if (Audio_Stream == 0)
 			{
 				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
@@ -312,17 +319,50 @@ namespace SeeMuzic
 			_syncer = Bass.BASS_ChannelSetSync (Audio_Stream, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 			Bass.BASS_ChannelPlay (Audio_Stream, false);
 
-			if (parm1 [iFnames].Palitra < 0)
+			if (ListParam [iFnames].Palitra < 0)
 			{
 				Palitra = rnd1.Next (14);
 			}
 			else
 			{
-				Tab_To_Parm (parm1 [iFnames]);
+				Tab_To_Parm (ListParam [iFnames]);
 				if (bPanel) Panel1.Reload ();
 			}
+
+			timer1.Interval = Interval;
+			timer1.Enabled = true;
+			timer2.Enabled = true;
 		}
 		//Audio_Start
+
+		private void Audio_Stop ()
+		{
+			Bass.BASS_StreamFree (Audio_Stream);
+			Bass.BASS_Free ();
+			timer1.Enabled = false;
+			timer2.Enabled = false;
+		}
+		// Audio_Stop
+
+		public static void Audio_Next (int idx = -1)
+		{
+			if (idx < 0)
+			{
+				Parm_To_Tab (ListParam [iFnames]);
+				if (idx == -1)
+					iFnames = (iFnames + 1) % ListParam.Count;
+				else
+					iFnames = (iFnames - 1 + ListParam.Count) % ListParam.Count;
+			}
+			else if (idx != iFnames)
+			{
+				Tab_To_Parm (ListParam [iFnames]);
+				iFnames = idx;
+				if (bPanel) Panel1.Reload ();
+			}
+			if (Audio_Stream == 0) himself.Audio_Start (); else bRestart = true;
+		}
+		// Audio_Next
 
 		private static void Parm_To_Tab (Param tab1)
 		{
@@ -347,34 +387,6 @@ namespace SeeMuzic
 			Resample = tab1.Resample;
 		}
 		// Tab_To_Parm
-
-		private void Audio_Stop ()
-		{
-			Bass.BASS_StreamFree (Audio_Stream);
-			Bass.BASS_Free ();
-		}
-		// Audio_Stop
-
-		public static void Audio_Next (int idx = -1)
-		{
-			if (idx < 0)
-			{
-				Parm_To_Tab (parm1 [iFnames]);
-				if (idx == -1)
-					iFnames = (iFnames + 1) % Fnames.Length;
-				else
-					iFnames = (iFnames - 1 + Fnames.Length) % Fnames.Length;
-				bRestart = true;
-			}
-			else if (idx != iFnames)
-			{
-				Tab_To_Parm (parm1 [iFnames]);
-				iFnames = idx;
-				bRestart = true;
-				if (bPanel) Panel1.Reload ();
-			}
-		}
-		// Audio_Next
 
 		private void timer1_Tick (object sender, EventArgs e)
 		{
@@ -670,7 +682,12 @@ namespace SeeMuzic
 
 		public static bool btn_Panel_Play_Click ()
 		{
-			if (Bass.BASS_ChannelIsActive (Audio_Stream) == BASSActive.BASS_ACTIVE_PAUSED)
+			if (Audio_Stream == 0)
+			{
+				himself.Audio_Start ();
+				return true;
+			}
+			else if (Bass.BASS_ChannelIsActive (Audio_Stream) == BASSActive.BASS_ACTIVE_PAUSED)
 			{
 				Bass.BASS_ChannelPlay (Audio_Stream, false);
 				//timer1.Enabled = true;

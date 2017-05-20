@@ -47,8 +47,7 @@ namespace SeeMuzic
 		const string _TRANSPARENCY_ = "TRA";
 		const string _VOLUME_ = "VOL";
 
-		public static Param [] parm1;
-		static List<Param> ListParam = new List<Param> ();
+		public static List<Param> ListParam = new List<Param> ();
 
 		private void Save_Parms_Xml ()
 		{
@@ -70,9 +69,8 @@ namespace SeeMuzic
 			new XDocument (parms1).Save ("SeeMuz.xml");
 
 			XElement list1 = new XElement ("LIST");
-			for (int i = 0; i < Fnames.Length; i++)
+			foreach (Param prm1 in ListParam)
 			{
-				Param prm1 = parm1 [i];
 				XElement item1 = new XElement
 				("L",
 					new XAttribute (_BRIGHT_, prm1.Bright),
@@ -83,7 +81,7 @@ namespace SeeMuzic
 					new XAttribute (_LENGTH_, prm1.Length),
 					new XAttribute (_PALITRA_, prm1.Palitra),
 					new XAttribute (_RESAMPLE_, prm1.Resample),
-					new XAttribute (_FILE_, Fnames [i])
+					new XAttribute (_FILE_, prm1.Fname)
 				);
 				list1.Add (item1);
 			}
@@ -139,6 +137,16 @@ namespace SeeMuzic
 					if (parm.Name.ToString ().ToUpper () == "L")
 					{
 						Param prm1 = new Param ();
+
+						prm1.Bright = Bright;
+						prm1.iFilter = iFilter;
+						prm1.Gamma = Gamma;
+						prm1.Interval = Interval;
+						prm1.Leak = Leak;
+						prm1.Length = 0;
+						prm1.Palitra = Palitra;
+						prm1.Resample = Resample;
+
 						try { prm1.Bright = double.Parse (parm.Attribute (_BRIGHT_).Value); } catch { }
 						try { prm1.iFilter = int.Parse (parm.Attribute (_FILTER_).Value); } catch { }
 						try { prm1.Gamma = double.Parse (parm.Attribute (_GAMMA_).Value); } catch { }
@@ -147,7 +155,8 @@ namespace SeeMuzic
 						try { prm1.Length = int.Parse (parm.Attribute (_LENGTH_).Value); } catch { }
 						try { prm1.Palitra = int.Parse (parm.Attribute (_PALITRA_).Value); } catch { }
 						try { prm1.Resample = int.Parse (parm.Attribute (_RESAMPLE_).Value); } catch { }
-						try { prm1.Fname = parm.Attribute (_FILE_).Value; } catch { prm1.Fname = string.Empty; }
+						try { prm1.Fname = parm.Attribute (_FILE_).Value; } catch { continue; }
+
 						ListParam.Add (prm1);
 					}
 				}
