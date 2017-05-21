@@ -58,12 +58,13 @@ namespace SeeMuzic
 			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
 
+			dataGridView1.Rows.Clear ();
 			for (int i = 0; i < Form1.ListParam.Count; i++)
 			{
 				int p1 = Form1.ListParam [i].Fname.LastIndexOf ('\\');
 				int sec = Form1.ListParam [i].Length;
 				dataGridView1.Rows.Add (Form1.ListParam [i].Fname.Substring (p1 + 1), String.Format ("{0}:{1:00}", sec / 60, sec % 60), Form1.ListParam [i].Fname);
-				//dataGridView1.Rows [i].HeaderCell.Value = String.Format ("{0}:{1:00}", sec / 60, sec % 60);
+				dataGridView1.Rows [i].HeaderCell.Value = i.ToString ();
 
 			}
 			iFnames = Form1.iFnames;
@@ -272,7 +273,33 @@ namespace SeeMuzic
 
 		private void btn_Random_Click (object sender, EventArgs e)
 		{
-			// ..
+			int ifnames = -1;
+			try { ifnames = int.Parse (dataGridView1.SelectedRows [0].HeaderCell.Value.ToString ()); } catch { }
+			for (int i = 0; i < Form1.ListParam.Count; i++)
+			{
+				int j = Form1.rnd1.Next (i, Form1.ListParam.Count);
+				Param swap = Form1.ListParam [j]; Form1.ListParam [j] = Form1.ListParam [i]; Form1.ListParam [i] = swap;
+				if (j == ifnames) ifnames = i; else if (i == ifnames) ifnames = j;
+			}
+			Form1.iFnames = ifnames;
+			Reload ();
+			dataGridView1.Refresh ();
+		}
+
+		private void dataGridView1_ColumnHeaderMouseClick (object sender, DataGridViewCellMouseEventArgs e)
+		{
+			int ifnames = -1;
+			try { ifnames = int.Parse (dataGridView1.SelectedRows [0].HeaderCell.Value.ToString ()); } catch { }
+			List<Param> Lprm1 = new List<Param> ();
+			for (int i = 0; i < Form1.ListParam.Count; i++)
+			{
+				int j = int.Parse (dataGridView1.Rows [i].HeaderCell.Value.ToString ());
+				Lprm1.Add (Form1.ListParam [j]);
+				if (j == ifnames) Form1.iFnames = i;
+			}
+			Form1.ListParam = Lprm1;
+			Reload ();
+			dataGridView1.Refresh ();
 		}
 
 		private int Ranger10 (double v, double vmin = 1.0, double vmax = 10.0)

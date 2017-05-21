@@ -111,7 +111,7 @@ namespace SeeMuzic
 		const int PENW = 4;
 		static Pen pen2 = new Pen (Color.Yellow, PENW);
 
-		static Random rnd1 = new Random ();
+		public static Random rnd1 = new Random ();
 
 		static Font fnt1 = new Font ("Arial", 10.0f);
 
@@ -243,14 +243,14 @@ namespace SeeMuzic
 				if (bTransparencyOn)
 				{
 					this.FormBorderStyle = FormBorderStyle.None;
-					this.AllowTransparency = bTrnsparency;
+					//this.AllowTransparency = bTrnsparency;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
 				else
 				{
 					this.FormBorderStyle = FormBorderStyle.Sizable;
-					this.AllowTransparency = false;
+					//this.AllowTransparency = false;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
 					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
@@ -357,7 +357,7 @@ namespace SeeMuzic
 			else if (idx != iFnames)
 			{
 				Tab_To_Parm (ListParam [iFnames]);
-				iFnames = idx;
+				iFnames = idx % ListParam.Count;
 				if (bPanel) Panel1.Reload ();
 			}
 			if (Audio_Stream == 0) himself.Audio_Start (); else bRestart = true;
