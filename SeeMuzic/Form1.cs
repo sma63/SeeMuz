@@ -141,6 +141,8 @@ namespace SeeMuzic
 
 		static Form1 himself = null;
 
+		static double palitra0 = 0.0;
+
 		public Form1 ()
 		{
 			himself = this;
@@ -443,7 +445,7 @@ namespace SeeMuzic
 				Yfir = Mfir [iFilter, 1];
 			}
 
-			if (!bPanel)
+			if (!bPanel && (this.WindowState == FormWindowState.Normal))
 			{
 				if (0 < btn_M_Visible_Cnt)
 				{
@@ -456,6 +458,8 @@ namespace SeeMuzic
 				}
 			}
 
+			palitra0 = DateTime.Now.Ticks / 10000000 % 100 / 100.0;
+			
 			timer1.Interval = Interval;
 
 			//if (this.AllowTransparency != bTrnsparency)
@@ -489,6 +493,8 @@ namespace SeeMuzic
 
 		static double [] kor0 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
 		static double [] kor1 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
+
+		static Image img0 = null;
 
 		private void Form1_Paint (object sender, PaintEventArgs e)
 		{
@@ -549,7 +555,6 @@ namespace SeeMuzic
 			double vsum2 = 0.0;
 			Graphics g = e.Graphics;
 			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
-
 #if SPIRAL
 			// Спираль
 			int rrr = (int)(Okno2 * 1.4142);
@@ -591,7 +596,7 @@ namespace SeeMuzic
 				}
 			}
 #else
-			double kf1 = Palitra / 7.0;
+			double kf1 = palitra0; // pct; // Palitra / 7.0;
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
 
@@ -640,20 +645,41 @@ namespace SeeMuzic
 				}
 			}
 #endif
-			if (0 < vcnt) Power += (Math.Sqrt (vsum2 / vcnt) - Power) / Leak;
-
-			Image img1 = bmp1;
-			if (bStretch)
+			double pwr1 = 0.0;
+			if (0 < vcnt)
 			{
-				g.DrawImage (img1, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
+				pwr1 = Math.Sqrt (vsum2 / vcnt);
+				Power += (pwr1 - Power) / Leak;
 			}
-			else
+			//if (Power < pwr1)
 			{
-				int side = Math.Min (this.ClientSize.Width, this.ClientSize.Height);
-				g.DrawImage (img1, (this.ClientSize.Width - side) / 2, (this.ClientSize.Height - side) / 2, side, side);
+				Image img1 = bmp1;
+				if (bStretch)
+				{
+					g.DrawImage (img1, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
+				}
+				else
+				{
+					int side = Math.Min (this.ClientSize.Width, this.ClientSize.Height);
+					g.DrawImage (img1, (this.ClientSize.Width - side) / 2, (this.ClientSize.Height - side) / 2, side, side);
+				}
+				g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
+				img0 = img1;
 			}
-			g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
-			//g.DrawString (kf.ToString (), fnt1, Brushes.Yellow, 0.0f, 0.0f);
+			//else if (img0 != null)
+			//{
+			//	if (bStretch)
+			//	{
+			//		g.DrawImage (img0, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
+			//	}
+			//	else
+			//	{
+			//		int side = Math.Min (this.ClientSize.Width, this.ClientSize.Height);
+			//		g.DrawImage (img0, (this.ClientSize.Width - side) / 2, (this.ClientSize.Height - side) / 2, side, side);
+			//	}
+			//	g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
+			//}
+			g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 		}
 		// Form1_Paint
 
