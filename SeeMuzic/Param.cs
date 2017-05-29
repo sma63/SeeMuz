@@ -23,7 +23,7 @@ namespace SeeMuzic
 		public int Interval;
 		public double Leak;
 		public int Length;
-		public int Palitra;
+		public double Palitra;
 		public int Resample;
 	}
 
@@ -40,7 +40,7 @@ namespace SeeMuzic
 		const string _LEAK_ = "LEA";
 		const string _LENGTH_ = "LEN";
 		const string _PALITRA_ = "PAL";
-		const string _PAGE0_ = "PAGE0";
+		//const string _PAGE0_ = "PAGE0";
 		const string _RESAMPLE_ = "RES";
 		const string _ROTATE_ = "ROT";
 		const string _STRETCH_ = "STR";
@@ -53,13 +53,13 @@ namespace SeeMuzic
 		{
 			XElement parms1 = new XElement ("PARMS");
 			parms1.Add (new XElement (_BRIGHT_, Bright));
-			parms1.Add (new XElement (_EROS_, bEros));
+			parms1.Add (new XElement (_EROS_, bDistortion));
 			parms1.Add (new XElement (_FILTER_, iFilter));
 			parms1.Add (new XElement (_GAMMA_, Gamma));
 			parms1.Add (new XElement (_INSIDE_, bInside));
 			parms1.Add (new XElement (_INTERVAL_, Interval));
 			parms1.Add (new XElement (_LEAK_, Leak));
-			parms1.Add (new XElement (_PAGE0_, bLastPage0));
+			//parms1.Add (new XElement (_PAGE0_, bLastPage0));
 			parms1.Add (new XElement (_PALITRA_, Palitra));
 			parms1.Add (new XElement (_RESAMPLE_, Resample));
 			parms1.Add (new XElement (_ROTATE_, bRotate));
@@ -102,14 +102,13 @@ namespace SeeMuzic
 						switch (parm.Name.ToString ().ToUpper ())
 						{
 							case _BRIGHT_: Bright = double.Parse (parm.Value); break;
-							case _EROS_: bEros = bool.Parse (parm.Value); break;
+							case _EROS_: bDistortion = bool.Parse (parm.Value); break;
 							case _FILTER_: iFilter = int.Parse (parm.Value); break;
 							case _GAMMA_: Gamma = double.Parse (parm.Value); break;
 							case _INTERVAL_: Interval = int.Parse (parm.Value); break;
 							case _INSIDE_: bInside = bool.Parse (parm.Value); break;
 							case _LEAK_: Leak = int.Parse (parm.Value); break;
-							case _PAGE0_: bLastPage0 = bool.Parse (parm.Value); break;
-							case _PALITRA_: Palitra = int.Parse (parm.Value); break;
+							case _PALITRA_: Palitra = double.Parse (parm.Value); break;
 							case _RESAMPLE_: Resample = int.Parse (parm.Value); break;
 							case _ROTATE_: bRotate = bool.Parse (parm.Value); break;
 							case _STRETCH_: bStretch = bool.Parse (parm.Value); break;
@@ -153,7 +152,7 @@ namespace SeeMuzic
 						try { prm1.Interval = int.Parse (parm.Attribute (_INTERVAL_).Value); } catch { }
 						try { prm1.Leak = int.Parse (parm.Attribute (_LEAK_).Value); } catch { }
 						try { prm1.Length = int.Parse (parm.Attribute (_LENGTH_).Value); } catch { }
-						try { prm1.Palitra = int.Parse (parm.Attribute (_PALITRA_).Value); } catch { }
+						try { prm1.Palitra = double.Parse (parm.Attribute (_PALITRA_).Value); } catch { }
 						try { prm1.Resample = int.Parse (parm.Attribute (_RESAMPLE_).Value); } catch { }
 						try { prm1.Fname = parm.Attribute (_FILE_).Value; } catch { continue; }
 

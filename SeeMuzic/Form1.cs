@@ -40,13 +40,14 @@ namespace SeeMuzic
 		public static int Volume = 5; // 0 .. 10
 		public static double Leak = 1.0;
 		public static int iFilter = 1, iFilter2 = 1;
-		public static int Palitra = 5;
+		public static double Palitra = 0.0;
 		public static double Gamma = 2.0; // ширина цветовой гаммы
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
-		public static bool bEros = false; // гнуть
+		public static bool bDistortion = false; // гнуть
 		public static bool bTrnsparency = false; // прозрачность
+		public static bool bFlex = false; // дрейф палитры
 
 		static int Resample2 = Resample; // контроль изменений Resample 
 		static double Power = 1.0;
@@ -105,7 +106,7 @@ namespace SeeMuzic
 		static double x0 = 1.0, y0 = 0.0;
 		static double kf = 1.0;
 
-		static long fpos = 0, flen = 0;
+		static long fpos = 0, flen = long.MaxValue;
 		public static int iFnames = 0;
 
 		const int PENW = 4;
@@ -141,7 +142,7 @@ namespace SeeMuzic
 
 		static Form1 himself = null;
 
-		static double palitra0 = 0.0;
+		static double [] DistortionTab = new double [200];
 
 		public Form1 ()
 		{
@@ -149,11 +150,15 @@ namespace SeeMuzic
 
 			InitializeComponent ();
 
+			for (int i = 0; i < 200; i++)
+			{
+				DistortionTab [i] = 1.0;
+			}
+
 			pen2.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
 
 			iFnames = 0;
 
-			Palitra = rnd1.Next (14);
 			Load_Parms_Xml ();
 
 			btn_M.Enabled = false;
@@ -320,10 +325,11 @@ namespace SeeMuzic
 			flen = Bass.BASS_ChannelGetLength (Audio_Stream);
 			_syncer = Bass.BASS_ChannelSetSync (Audio_Stream, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
 			Bass.BASS_ChannelPlay (Audio_Stream, false);
+			Bass.BASS_ChannelSetAttribute (Form1.Audio_Stream, BASSAttribute.BASS_ATTRIB_VOL, (float)Volume / 10.0f);
 
 			if (ListParam [iFnames].Palitra < 0)
 			{
-				Palitra = rnd1.Next (14);
+				Palitra = rnd1.NextDouble ();
 			}
 			else
 			{
@@ -458,8 +464,20 @@ namespace SeeMuzic
 				}
 			}
 
-			palitra0 = DateTime.Now.Ticks / 10000000 % 100 / 100.0;
-			
+			if (bFlex)
+			{
+				Palitra = DateTime.Now.Ticks / 10000000 % 100 / 100.0; // дрейф палитры
+			}
+			if (bDistortion)
+			{
+				for (int i = 0; i < 200; i++)
+				{
+					DistortionTab [i] = Math.Pow ((double)(i + 1) / 100.0, pct); // выпуклость
+					//double x = (double)(i + 1) / 200.0;
+					//DistortionTab [i] = Math.Sin (x * Math.PI / 2.0);
+				}
+			}
+
 			timer1.Interval = Interval;
 
 			//if (this.AllowTransparency != bTrnsparency)
@@ -596,52 +614,43 @@ namespace SeeMuzic
 				}
 			}
 #else
-			double kf1 = palitra0; // pct; // Palitra / 7.0;
+			double kf1 = Palitra; // pct;
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
 
 			for (int x = 0; x < Okno; x++)
 			{
+				double x1 = (double)(x - Okno2) / Okno2;
 				for (int y = 0; y < Okno; y++)
 				{
-					double x1 = (double)(x - Okno2) / Okno2;
 					double y1 = (double)(y - Okno2) / Okno2;
 
 					double x2 = (x0 * x1 + y0 * y1);
-					if (bEros)
+					double y2 = (x0 * y1 - y0 * x1);
+
+					if (bDistortion)
 					{
-						x2 *= Math.Abs (x2);
-						x2 = Okno2 + x2 * Okno2 * kf * kf;
-					}
-					else
-					{
-						x2 = Okno2 + x2 * Okno2 * kf;
+						double r = (x2 * x2 + y2 * y2);
+						if (2.0 <= r) continue;
+						double r2 = DistortionTab [(int)(r * 100.0)];
+						x2 *= r2;
+						y2 *= r2;
 					}
 
-					if ((0 <= x2) && (x2 < Okno))
+					x2 = Okno2 + Okno2 * x2 * kf;
+					if ((0.0 <= x2) && (x2 < Okno))
 					{
-						double y2 = (x0 * y1 - y0 * x1);
-						if (bEros)
-						{
-							y2 *= Math.Abs (y2);
-							y2 = Okno2 + y2 * Okno2 * kf * kf;
-						}
-						else
-						{
-							y2 = Okno2 + y2 * Okno2 * kf;
-						}
-						if ((0 <= y2) && (y2 < Okno))
+						y2 = Okno2 + Okno2 * y2 * kf;
+						if ((0.0 <= y2) && (y2 < Okno))
 						{
 							double v = Math.Abs (Xbuf [(int)x2] + Ybuf [(int)y2]);
-							vsum2 += v * v;
-							vcnt++;
-							if (0.0 < Power) v = v / Power;
-							v = Math.Sqrt (v);
-							bmp1.SetPixel (x, y, Raduga (kf1 + v * kf2, v * kf3));
+							vsum2 += v * v; vcnt++;
+							if (0.0 < Power) v /= Power;
+							bmp1.SetPixel (x, y, TriColor (kf1 + v * kf2, v * kf3));
 							continue;
 						}
 					}
-					bmp1.SetPixel (x, y, Color.Black); // Color.White - для прозрачности
+					//Skip: bmp1.SetPixel (x, y, Color.Black);
 				}
 			}
 #endif
@@ -679,7 +688,7 @@ namespace SeeMuzic
 			//	}
 			//	g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
 			//}
-			g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
+			//g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 		}
 		// Form1_Paint
 

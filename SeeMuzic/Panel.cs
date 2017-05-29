@@ -36,22 +36,23 @@ namespace SeeMuzic
 		{
 			bUpdate = false;
 			trk_Front.Value = Ranger10 (Form1.Leak / LEAK);
-			trk_Bright.Value = Ranger10 (Form1.Bright / BRIGHT);
+			trk_Bright.Value = Ranger10 (Form1.Bright / BRIGHT, -10.0, +10.0);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
 			trk_Resample.Value = Ranger10 (Form1.ResToIdx (Form1.Resample) - Form1.ResToIdx (Form1.MIN_RESAMPLE), 0.0, 9.0);
 			trk_Gamma.Value = Ranger10 (Form1.Gamma, -7.0, +7.0);
 			trk_Filter.Value = Ranger10 (Form1.iFilter, 1.0, 7.0);
-			trk_Palitra.Value = Ranger10 (Form1.Palitra, 0.0, 6.0);
+			trk_Palitra.Value = Ranger10 (Form1.Palitra * 20.0, 0.0, 20.0);
 			trk_Volume.Value = Ranger10 (Form1.Volume, 0.0, 10.0);
 
 			chk_Rotate.Checked = Form1.bRotate;
 			chk_Stretch.Checked = Form1.bStretch;
 			chk_Inside.Checked = Form1.bInside;
-			chk_Eros.Checked = Form1.bEros;
+			chk_Distortion.Checked = Form1.bDistortion;
 			chk_Transparency.Checked = Form1.bTrnsparency;
+			chk_Flex.Checked = Form1.bFlex;
 
 			lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
-			lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
+			lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
 			lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
 			lab_Interval.Text = String.Format ("Инт = {0} ms", Form1.Interval);
 			lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
@@ -103,7 +104,7 @@ namespace SeeMuzic
 			if (bUpdate)
 			{
 				Form1.Bright = trk_Bright.Value * BRIGHT;
-				lab_Level.Text = String.Format ("Ярк = {0}", Form1.Bright);
+				lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
 			}
 		}
 
@@ -147,7 +148,7 @@ namespace SeeMuzic
 		{
 			if (bUpdate)
 			{
-				Form1.Palitra = trk_Palitra.Value;
+				Form1.Palitra = trk_Palitra.Value / 20.0;
 				lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			}
 		}
@@ -185,6 +186,10 @@ namespace SeeMuzic
 				dataGridView1.Rows [iFnames].Selected = true;
 				dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
 			}
+			if (Form1.bFlex)
+			{
+				trk_Palitra.Value = Ranger10 (Form1.Palitra * 20.0, 0.0, 20.0);
+			}
 		}
 
 		private void btn_Play_Click (object sender, EventArgs e)
@@ -217,12 +222,17 @@ namespace SeeMuzic
 
 		private void chk_Eros_CheckedChanged (object sender, EventArgs e)
 		{
-			Form1.bEros = chk_Eros.Checked;
+			Form1.bDistortion = chk_Distortion.Checked;
 		}
 
 		private void chk_Transparency_Click (object sender, EventArgs e)
 		{
 			Form1.bTrnsparency = chk_Transparency.Checked;
+		}
+
+		private void chk_Flex_Click (object sender, EventArgs e)
+		{
+			Form1.bFlex = chk_Flex.Checked;
 		}
 
 		private void btn_Load_Click (object sender, EventArgs e)

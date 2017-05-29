@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle ("SeeMuz")]
-[assembly: AssemblyDescription ("")]
+[assembly: AssemblyDescription ("Audio Visualization")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("")]
+[assembly: AssemblyCompany ("SATURN")]
 [assembly: AssemblyProduct ("SeeMuz")]
 [assembly: AssemblyCopyright ("Copyright ©  2017")]
 [assembly: AssemblyTrademark ("")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion ("1.0.0.0")]
-[assembly: AssemblyFileVersion ("1.0.0.0")]
+[assembly: AssemblyVersion ("2017.05.28.12")]
+[assembly: AssemblyFileVersion ("2017.05.28.12")]

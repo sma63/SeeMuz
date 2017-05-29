@@ -43,7 +43,7 @@
 			this.lab_Filter = new System.Windows.Forms.Label();
 			this.chk_Stretch = new System.Windows.Forms.CheckBox();
 			this.chk_Inside = new System.Windows.Forms.CheckBox();
-			this.chk_Eros = new System.Windows.Forms.CheckBox();
+			this.chk_Distortion = new System.Windows.Forms.CheckBox();
 			this.chk_Rotate = new System.Windows.Forms.CheckBox();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage0 = new System.Windows.Forms.TabPage();
@@ -67,6 +67,7 @@
 			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
+			this.chk_Flex = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -89,7 +90,7 @@
 			// trk_Bright
 			// 
 			this.trk_Bright.Location = new System.Drawing.Point(6, 111);
-			this.trk_Bright.Minimum = 1;
+			this.trk_Bright.Minimum = -10;
 			this.trk_Bright.Name = "trk_Bright";
 			this.trk_Bright.Size = new System.Drawing.Size(104, 45);
 			this.trk_Bright.TabIndex = 1;
@@ -187,7 +188,7 @@
 			// chk_Stretch
 			// 
 			this.chk_Stretch.AutoSize = true;
-			this.chk_Stretch.Location = new System.Drawing.Point(207, 113);
+			this.chk_Stretch.Location = new System.Drawing.Point(207, 91);
 			this.chk_Stretch.Name = "chk_Stretch";
 			this.chk_Stretch.Size = new System.Drawing.Size(61, 17);
 			this.chk_Stretch.TabIndex = 12;
@@ -198,7 +199,7 @@
 			// chk_Inside
 			// 
 			this.chk_Inside.AutoSize = true;
-			this.chk_Inside.Location = new System.Drawing.Point(207, 92);
+			this.chk_Inside.Location = new System.Drawing.Point(207, 68);
 			this.chk_Inside.Name = "chk_Inside";
 			this.chk_Inside.Size = new System.Drawing.Size(68, 17);
 			this.chk_Inside.TabIndex = 13;
@@ -206,21 +207,21 @@
 			this.chk_Inside.UseVisualStyleBackColor = true;
 			this.chk_Inside.CheckedChanged += new System.EventHandler(this.chk_Inside_CheckedChanged);
 			// 
-			// chk_Eros
+			// chk_Distortion
 			// 
-			this.chk_Eros.AutoSize = true;
-			this.chk_Eros.Location = new System.Drawing.Point(207, 136);
-			this.chk_Eros.Name = "chk_Eros";
-			this.chk_Eros.Size = new System.Drawing.Size(54, 17);
-			this.chk_Eros.TabIndex = 14;
-			this.chk_Eros.Text = "Гнуть";
-			this.chk_Eros.UseVisualStyleBackColor = true;
-			this.chk_Eros.CheckedChanged += new System.EventHandler(this.chk_Eros_CheckedChanged);
+			this.chk_Distortion.AutoSize = true;
+			this.chk_Distortion.Location = new System.Drawing.Point(207, 115);
+			this.chk_Distortion.Name = "chk_Distortion";
+			this.chk_Distortion.Size = new System.Drawing.Size(54, 17);
+			this.chk_Distortion.TabIndex = 14;
+			this.chk_Distortion.Text = "Гнуть";
+			this.chk_Distortion.UseVisualStyleBackColor = true;
+			this.chk_Distortion.CheckedChanged += new System.EventHandler(this.chk_Eros_CheckedChanged);
 			// 
 			// chk_Rotate
 			// 
 			this.chk_Rotate.AutoSize = true;
-			this.chk_Rotate.Location = new System.Drawing.Point(207, 70);
+			this.chk_Rotate.Location = new System.Drawing.Point(207, 45);
 			this.chk_Rotate.Name = "chk_Rotate";
 			this.chk_Rotate.Size = new System.Drawing.Size(66, 17);
 			this.chk_Rotate.TabIndex = 15;
@@ -408,6 +409,7 @@
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.chk_Flex);
 			this.groupBox1.Controls.Add(this.trk_Palitra);
 			this.groupBox1.Controls.Add(this.trk_Gamma);
 			this.groupBox1.Controls.Add(this.trk_Bright);
@@ -426,7 +428,7 @@
 			this.groupBox1.Controls.Add(this.chk_Rotate);
 			this.groupBox1.Controls.Add(this.chk_Inside);
 			this.groupBox1.Controls.Add(this.chk_Stretch);
-			this.groupBox1.Controls.Add(this.chk_Eros);
+			this.groupBox1.Controls.Add(this.chk_Distortion);
 			this.groupBox1.Location = new System.Drawing.Point(6, 5);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(311, 196);
@@ -436,7 +438,7 @@
 			// trk_Palitra
 			// 
 			this.trk_Palitra.Location = new System.Drawing.Point(6, 156);
-			this.trk_Palitra.Maximum = 6;
+			this.trk_Palitra.Maximum = 20;
 			this.trk_Palitra.Name = "trk_Palitra";
 			this.trk_Palitra.Size = new System.Drawing.Size(104, 45);
 			this.trk_Palitra.TabIndex = 20;
@@ -480,7 +482,7 @@
 			// chk_Transparency
 			// 
 			this.chk_Transparency.AutoSize = true;
-			this.chk_Transparency.Location = new System.Drawing.Point(207, 159);
+			this.chk_Transparency.Location = new System.Drawing.Point(207, 137);
 			this.chk_Transparency.Name = "chk_Transparency";
 			this.chk_Transparency.Size = new System.Drawing.Size(98, 17);
 			this.chk_Transparency.TabIndex = 16;
@@ -492,6 +494,17 @@
 			// 
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
+			// 
+			// chk_Flex
+			// 
+			this.chk_Flex.AutoSize = true;
+			this.chk_Flex.Location = new System.Drawing.Point(207, 159);
+			this.chk_Flex.Name = "chk_Flex";
+			this.chk_Flex.Size = new System.Drawing.Size(61, 17);
+			this.chk_Flex.TabIndex = 21;
+			this.chk_Flex.Text = "Дрейф";
+			this.chk_Flex.UseVisualStyleBackColor = true;
+			this.chk_Flex.Click += new System.EventHandler(this.chk_Flex_Click);
 			// 
 			// Panel
 			// 
@@ -547,7 +560,7 @@
 
 		private System.Windows.Forms.CheckBox chk_Stretch;
 		private System.Windows.Forms.CheckBox chk_Inside;
-		private System.Windows.Forms.CheckBox chk_Eros;
+		private System.Windows.Forms.CheckBox chk_Distortion;
 		private System.Windows.Forms.CheckBox chk_Rotate;
 
 		private System.Windows.Forms.TabControl tabControl1;
@@ -573,5 +586,6 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
 		private System.Windows.Forms.Button btn_Load;
+		private System.Windows.Forms.CheckBox chk_Flex;
 	}
 }

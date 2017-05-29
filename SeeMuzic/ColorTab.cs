@@ -38,14 +38,15 @@ namespace SeeMuzic
 		}
 		// H2Color
 
-		Color Raduga (double a, double b)
+		Color TriColor (double a, double b)
 		{
 			int i = (int)(a * 768.0) % 768;
 			if (i < 0) i += 768;
+			if (b < 0.0f) b += 1.0; //получение негатива
 			if (b < 0.0) b = 0.0; else if (1.0 < b) b = 1.0;
 			return Color.FromArgb ((int)(Tab [i, 0] * b), (int)(Tab [i, 1] * b), (int)(Tab [i, 2] * b));
 		}
-		// Raduga
+		// TriColor
 
 		/*
 		double step = Math.PI * 2.0 / 3.0;
