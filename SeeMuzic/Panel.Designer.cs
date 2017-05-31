@@ -61,13 +61,13 @@
 			this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.chk_Flex = new System.Windows.Forms.CheckBox();
 			this.trk_Palitra = new System.Windows.Forms.TrackBar();
 			this.trk_Gamma = new System.Windows.Forms.TrackBar();
 			this.trk_Filter = new System.Windows.Forms.TrackBar();
 			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
-			this.chk_Flex = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -212,9 +212,9 @@
 			this.chk_Distortion.AutoSize = true;
 			this.chk_Distortion.Location = new System.Drawing.Point(207, 115);
 			this.chk_Distortion.Name = "chk_Distortion";
-			this.chk_Distortion.Size = new System.Drawing.Size(54, 17);
+			this.chk_Distortion.Size = new System.Drawing.Size(61, 17);
 			this.chk_Distortion.TabIndex = 14;
-			this.chk_Distortion.Text = "Гнуть";
+			this.chk_Distortion.Text = "Пучить";
 			this.chk_Distortion.UseVisualStyleBackColor = true;
 			this.chk_Distortion.CheckedChanged += new System.EventHandler(this.chk_Eros_CheckedChanged);
 			// 
@@ -435,6 +435,17 @@
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
 			// 
+			// chk_Flex
+			// 
+			this.chk_Flex.AutoSize = true;
+			this.chk_Flex.Location = new System.Drawing.Point(207, 159);
+			this.chk_Flex.Name = "chk_Flex";
+			this.chk_Flex.Size = new System.Drawing.Size(61, 17);
+			this.chk_Flex.TabIndex = 21;
+			this.chk_Flex.Text = "Дрейф";
+			this.chk_Flex.UseVisualStyleBackColor = true;
+			this.chk_Flex.Click += new System.EventHandler(this.chk_Flex_Click);
+			// 
 			// trk_Palitra
 			// 
 			this.trk_Palitra.Location = new System.Drawing.Point(6, 156);
@@ -494,17 +505,6 @@
 			// 
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
-			// 
-			// chk_Flex
-			// 
-			this.chk_Flex.AutoSize = true;
-			this.chk_Flex.Location = new System.Drawing.Point(207, 159);
-			this.chk_Flex.Name = "chk_Flex";
-			this.chk_Flex.Size = new System.Drawing.Size(61, 17);
-			this.chk_Flex.TabIndex = 21;
-			this.chk_Flex.Text = "Дрейф";
-			this.chk_Flex.UseVisualStyleBackColor = true;
-			this.chk_Flex.Click += new System.EventHandler(this.chk_Flex_Click);
 			// 
 			// Panel
 			// 

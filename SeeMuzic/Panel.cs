@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -245,6 +246,7 @@ namespace SeeMuzic
 			openFileDialog1.Multiselect = true;
 			if (openFileDialog1.ShowDialog () == DialogResult.OK)
 			{
+				//this.Cursor = Cursors.WaitCursor; // не работает !!!
 				if (Bass.BASS_Init (-1, Form1.SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 				{
 					Form1.ListParam.Clear ();
@@ -277,6 +279,7 @@ namespace SeeMuzic
 					dataGridView1.Refresh ();
 					Bass.BASS_Free ();
 				}
+				//this.Cursor = Cursors.Default;
 			}
 		}
 

@@ -32,9 +32,10 @@ namespace SeeMuzic
 		const string SeeMuzXml = "SeeMuz.xml";
 		const string SeeMuzListXml = "SeeMuz.List.xml";
 		const string _BRIGHT_ = "BRI";
-		const string _EROS_ = "ERO";
+		const string _DISTORTION_ = "DST";
 		const string _FILE_ = "NAM";
 		const string _FILTER_ = "FLT";
+		const string _FLEX_ = "FLX";
 		const string _GAMMA_ = "GAM";
 		const string _INSIDE_ = "INS";
 		const string _INTERVAL_ = "INT";
@@ -53,13 +54,13 @@ namespace SeeMuzic
 		{
 			XElement parms1 = new XElement ("PARMS");
 			parms1.Add (new XElement (_BRIGHT_, Bright));
-			parms1.Add (new XElement (_EROS_, bDistortion));
+			parms1.Add (new XElement (_DISTORTION_, bDistortion));
 			parms1.Add (new XElement (_FILTER_, iFilter));
+			parms1.Add (new XElement (_FLEX_, bFlex));
 			parms1.Add (new XElement (_GAMMA_, Gamma));
 			parms1.Add (new XElement (_INSIDE_, bInside));
 			parms1.Add (new XElement (_INTERVAL_, Interval));
 			parms1.Add (new XElement (_LEAK_, Leak));
-			//parms1.Add (new XElement (_PAGE0_, bLastPage0));
 			parms1.Add (new XElement (_PALITRA_, Palitra));
 			parms1.Add (new XElement (_RESAMPLE_, Resample));
 			parms1.Add (new XElement (_ROTATE_, bRotate));
@@ -108,8 +109,9 @@ namespace SeeMuzic
 						switch (parm.Name.ToString ().ToUpper ())
 						{
 							case _BRIGHT_: Bright = double.Parse (parm.Value); break;
-							case _EROS_: bDistortion = bool.Parse (parm.Value); break;
+							case _DISTORTION_: bDistortion = bool.Parse (parm.Value); break;
 							case _FILTER_: iFilter = int.Parse (parm.Value); break;
+							case _FLEX_: bFlex = bool.Parse (parm.Value); break;
 							case _GAMMA_: Gamma = double.Parse (parm.Value); break;
 							case _INTERVAL_: Interval = int.Parse (parm.Value); break;
 							case _INSIDE_: bInside = bool.Parse (parm.Value); break;

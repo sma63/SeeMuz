@@ -43,6 +43,7 @@ namespace SeeMuzic
 		public static int iFilter = 1, iFilter2 = 1;
 		public static double Palitra = 0.0;
 		public static double Gamma = 2.0; // ширина цветовой гаммы
+
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
@@ -168,38 +169,14 @@ namespace SeeMuzic
 
 		static bool bTransparencyOn = false;
 
-		public void TransparencyCtrl (bool b)
-		{
-			if (bTransparencyOn != b)
-			{
-				bTransparencyOn = b;
-				if (bTransparencyOn)
-				{
-					this.FormBorderStyle = FormBorderStyle.None;
-					this.AllowTransparency = bTrnsparency;
-					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
-				}
-				else
-				{
-					this.FormBorderStyle = FormBorderStyle.Sizable;
-					this.AllowTransparency = false;
-					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
-				}
-			}
-		}
-		// TransparencyCtrl
-
 		private void Form1_Load (object sender, EventArgs e)
 		{
 			// Прозрачность
 			TransparencyCtrl (false);
 
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
-			//Audio_Start ();
-			Panel1 = new Panel ();
-			Panel1.Show (this);
+
+			btn_M_Click (null, null);
 
 			for (int i = 0; i < Xrot.Length; i++)
 			{
@@ -217,6 +194,29 @@ namespace SeeMuzic
 			Save_Parms_Xml ();
 		}
 		// Form1_FormClosed
+
+		public void TransparencyCtrl (bool b)
+		{
+			if (bTransparencyOn != b)
+			{
+				bTransparencyOn = b;
+				if (bTransparencyOn)
+				{
+					this.FormBorderStyle = FormBorderStyle.None;
+					this.AllowTransparency = bTrnsparency;
+					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
+					this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+				}
+				else
+				{
+					this.FormBorderStyle = FormBorderStyle.Sizable;
+					this.AllowTransparency = false;
+					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
+					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
+				}
+			}
+		}
+		// TransparencyCtrl
 
 		private void Form1_Next_Title (string s1)
 		{
@@ -328,11 +328,14 @@ namespace SeeMuzic
 			{
 				Palitra = DateTime.Now.Ticks / 10000000 % 100 / 100.0; // дрейф палитры
 			}
+
 			if (bDistortion)
 			{
-				double e1 = Math.Abs ((DateTime.Now.Ticks / 10000000 & 127) / 64.0 - 1.0); // дрейф палитры
+				double e1 = Math.Abs ((DateTime.Now.Ticks / 10000000 & 127) / 64.0 - 1.0); // дрейф искажения
 				for (int i = 0; i < DDD; i++)
+				{
 					DistortionTab [i] = (e1 - 0.5) * ((double)i / DDD - 0.5) + 0.75;
+				}
 			}
 
 			timer1.Interval = Interval;
@@ -482,6 +485,7 @@ namespace SeeMuzic
 				{
 					double y1 = (double)(y - Okno2) / Okno2;
 
+					// поворот
 					double x2 = (x0 * x1 + y0 * y1);
 					double y2 = (x0 * y1 - y0 * x1);
 
@@ -489,7 +493,7 @@ namespace SeeMuzic
 					{
 						double r = (x2 * x2 + y2 * y2);
 						if (2.0 <= r) continue;
-						double r2 = DistortionTab [(int)(r * DDD / 2.0)] * 1.41;
+						double r2 = DistortionTab [(int)(r * DDD / 2.0)] * 1.35;
 						x2 *= r2;
 						y2 *= r2;
 					}
@@ -547,19 +551,20 @@ namespace SeeMuzic
 			//}
 			//g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 
-			if (0 < DistortionTab.Length)
-			{
-				int x0 = 0;
-				int y0 = (int)(DistortionTab [0] * this.ClientSize.Height * 0.99);
-				for (int i = 1; i < DistortionTab.Length; i++)
-				{
-					int x1 = this.ClientSize.Width * i / DistortionTab.Length;
-					int y1 = (int)(DistortionTab [i] * this.ClientSize.Height * 0.99);
-					g.DrawLine (Pens.Yellow, x0, y0, x1, y1);
-					x0 = x1;
-					y0 = y1;
-				}
-			}
+			// кривая искажений
+			//if (0 < DistortionTab.Length)
+			//{
+			//	int x0 = 0;
+			//	int y0 = (int)(DistortionTab [0] * this.ClientSize.Height * 0.99);
+			//	for (int i = 1; i < DistortionTab.Length; i++)
+			//	{
+			//		int x1 = this.ClientSize.Width * i / DistortionTab.Length;
+			//		int y1 = (int)(DistortionTab [i] * this.ClientSize.Height * 0.99);
+			//		g.DrawLine (Pens.Yellow, x0, y0, x1, y1);
+			//		x0 = x1;
+			//		y0 = y1;
+			//	}
+			//}
 		}
 		// Form1_Paint
 
