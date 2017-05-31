@@ -74,7 +74,6 @@ namespace SeeMuzic
 			bUpdate = true;
 
 			Panel_Timer.Enabled = true;
-			//Form1.bPanel = true;
 
 			this.tabControl1.SelectedTab = (Form1.bLastPage0 ? this.tabPage0 : this.tabPage1);
 		}
@@ -260,14 +259,14 @@ namespace SeeMuzic
 							if (stream != 0)
 							{
 								Param prm1 = new Param ();
-								prm1.Bright = Form1.Bright;
-								prm1.iFilter = Form1.iFilter;
-								prm1.Gamma = Form1.Gamma;
-								prm1.Interval = Form1.Interval;
-								prm1.Leak = Form1.Leak;
+								prm1.Bright = 0.0;
+								prm1.iFilter = 0;
+								prm1.Gamma = 0.0;
+								prm1.Interval = 0;
+								prm1.Leak = 0.0;
 								prm1.Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
-								prm1.Palitra = Form1.Palitra;
-								prm1.Resample = Form1.Resample;
+								prm1.Palitra = 0.0;
+								prm1.Resample = 0;
 								prm1.Fname = fnam;
 								Form1.ListParam.Add (prm1);
 								Bass.BASS_StreamFree (stream);

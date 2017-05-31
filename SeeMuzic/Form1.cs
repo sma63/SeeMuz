@@ -22,13 +22,14 @@ namespace SeeMuzic
 {
 	public partial class Form1 : Form
 	{
-		public const int SAMPLERATE = 44100;//11025 и 22050 - под сомнением
+		public const int SAMPLERATE = 44100; //11025 и 22050 - под сомнением
 		public const int MIN_RESAMPLE = 10;
 		const int MAX_RESAMPLE = 42;
 		const int MAX_INTERVAL = 100; // [ms] 
 		const int SAMPLE_BYTES = sizeof (Int32); // число байт в сампле
 		const int AUDIO_SAMPLES = (MAX_INTERVAL * SAMPLERATE + 999) / 1000; // Длина аудиобуффера в самплах
 		const int AUDIO_BYTES = AUDIO_SAMPLES * SAMPLE_BYTES; // .. в байтах
+		const int DDD = 200; // таблица искажений
 
 		private int _syncer = 0;
 		static SYNCPROC _syncProcEndStream;
@@ -132,12 +133,11 @@ namespace SeeMuzic
 		};
 
 		static bool bRestart = false;
-		//public static bool bPanel = false;
+		public static bool bPanel = false;
 
 		public static bool bLastPage0 = true; // последняя открытая страница в диалоге параметров
 
 		static Panel Panel1;
-		public static bool bPanel = false;
 		int btn_M_Visible_Cnt = 5; // видимость кнопки параметов [сек]
 
 		static Form1 himself = null;
@@ -166,80 +166,6 @@ namespace SeeMuzic
 		}
 		// Form1
 
-		private void Search_Audio_Files ()
-		{
-			// Поиск аудиофайлов в текущей директории
-			string curdir = Directory.GetCurrentDirectory ();
-			string [] Fnames = Directory.GetFiles (curdir, "*.mp3", SearchOption.AllDirectories);
-			//Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wma", SearchOption.AllDirectories)).ToArray ();
-			//Fnames = Fnames.Union (Directory.GetFiles (curdir, "*.wav", SearchOption.AllDirectories)).ToArray ();
-			if (Fnames.Length <= 0)
-			{
-				MessageBox.Show (curdir, "Не нашел *.mp3, *.wma, *.wav в текущей диретории");
-				Environment.Exit (0);
-			}
-
-			// Перетасовка
-			for (int i = 0; i < Fnames.Length; i++)
-			{
-				int j = rnd1.Next (Fnames.Length);
-				int k = rnd1.Next (Fnames.Length);
-				string swap = Fnames [j]; Fnames [j] = Fnames [k]; Fnames [k] = swap;
-			}
-
-			// чтение атрибутов аудиофайлов
-			//if (Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
-			//{
-			//	for (int i = 0; i < Fnames.Length; i++)
-			//	{
-			//		int stream = Bass.BASS_StreamCreateFile (Fnames [i], 0, 0, BASSFlag.BASS_DEFAULT);
-			//		if (stream != 0)
-			//		{
-			//			Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (Fnames [i]);
-			//			if (tags != null)
-			//			{
-			//				StringBuilder sb1 = new StringBuilder ();
-			//				sb1.Append ("Artist = " + tags.artist);
-			//				sb1.Append ("\nTitle = " + tags.title);
-			//				sb1.Append ("\nAlbum = " + tags.album);
-			//				sb1.Append (String.Format ("\nBitrate = {0}", (uint)tags.bitrate));
-			//				double sec = Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
-			//				double min = Math.Floor (sec / 60.0); 
-			//				sb1.Append (String.Format ("\nLength = {0}:{1:00}", min, sec - min * 60.0));
-			//				MessageBox.Show (sb1.ToString ());
-			//			}
-			//			Bass.BASS_StreamFree (stream);
-			//		}
-			//	}
-			//	Bass.BASS_Free ();
-			//}
-
-			// инициализация параметров просмотра
-			//parm1 = new Param [Fnames.Length];
-			//if (Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
-			//{
-			//	for (int i = 0; i < Fnames.Length; i++)
-			//	{
-			//		if ((parm1 [i] = ListParam.Find (x => x.Fname.Contains (Fnames [i]))) == null)
-			//		{
-			//			Parm_To_Tab (parm1 [i] = new Param ());
-			//		}
-			//		Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (Fnames [i]);
-			//		if (tags != null)
-			//		{
-			//			int stream = Bass.BASS_StreamCreateFile (Fnames [i], 0, 0, BASSFlag.BASS_DEFAULT);
-			//			if (stream != 0)
-			//			{
-			//				parm1 [i].Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
-			//				Bass.BASS_StreamFree (stream);
-			//			}
-			//		}
-			//	}
-			//	Bass.BASS_Free ();
-			//}
-		}
-		// Search_Audio_Files
-
 		static bool bTransparencyOn = false;
 
 		public void TransparencyCtrl (bool b)
@@ -250,14 +176,14 @@ namespace SeeMuzic
 				if (bTransparencyOn)
 				{
 					this.FormBorderStyle = FormBorderStyle.None;
-					//this.AllowTransparency = bTrnsparency;
+					this.AllowTransparency = bTrnsparency;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
 					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
 				else
 				{
 					this.FormBorderStyle = FormBorderStyle.Sizable;
-					//this.AllowTransparency = false;
+					this.AllowTransparency = false;
 					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
 					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
 				}
@@ -283,14 +209,6 @@ namespace SeeMuzic
 		}
 		// Form1_Load
 
-		private void Form1_Next_Title (string s1)
-		{
-			int p1 = 0, p2 = s1.IndexOf ('\\');
-			while (0 <= p2) p2 = s1.IndexOf ('\\', p1 = p2 + 1); // удаление полного пути
-			this.Text = s1.Substring (p1);
-		}
-		// Form1_Next_Title
-
 		private void Form1_FormClosed (object sender, FormClosedEventArgs e)
 		{
 			Bass.BASS_StreamFree (Audio_Stream);
@@ -300,77 +218,19 @@ namespace SeeMuzic
 		}
 		// Form1_FormClosed
 
+		private void Form1_Next_Title (string s1)
+		{
+			int p1 = 0, p2 = s1.IndexOf ('\\');
+			while (0 <= p2) p2 = s1.IndexOf ('\\', p1 = p2 + 1); // удаление полного пути
+			this.Text = s1.Substring (p1);
+		}
+		// Form1_Next_Title
+
 		private void SyncMethodEndStream (int handle, int channel, int data, IntPtr user)
 		{
 			Audio_Next (-1);
 		}
 		// SyncMethodEndStream
-
-		private void Audio_Start ()
-		{
-			if (!Bass.BASS_Init (-1, SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
-			{
-				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
-				this.Close ();
-			}
-
-			Form1_Next_Title (ListParam [iFnames].Fname);
-			Audio_Stream = Bass.BASS_StreamCreateFile (ListParam [iFnames].Fname, 0, 0, BASSFlag.BASS_DEFAULT);
-			if (Audio_Stream == 0)
-			{
-				MessageBox.Show (String.Format ("Stream error: {0}", Bass.BASS_ErrorGetCode ()), "Error");
-				this.Close ();
-			}
-
-			flen = Bass.BASS_ChannelGetLength (Audio_Stream);
-			_syncer = Bass.BASS_ChannelSetSync (Audio_Stream, BASSSync.BASS_SYNC_END, 0, _syncProcEndStream, IntPtr.Zero);
-			Bass.BASS_ChannelPlay (Audio_Stream, false);
-			Bass.BASS_ChannelSetAttribute (Form1.Audio_Stream, BASSAttribute.BASS_ATTRIB_VOL, (float)Volume / 10.0f);
-
-			if (ListParam [iFnames].Palitra < 0)
-			{
-				Palitra = rnd1.NextDouble ();
-			}
-			else
-			{
-				Tab_To_Parm (ListParam [iFnames]);
-				if (bPanel) Panel1.Reload ();
-			}
-
-			timer1.Interval = Interval;
-			timer1.Enabled = true;
-			timer2.Enabled = true;
-		}
-		//Audio_Start
-
-		private void Audio_Stop ()
-		{
-			Bass.BASS_StreamFree (Audio_Stream);
-			Bass.BASS_Free ();
-			timer1.Enabled = false;
-			timer2.Enabled = false;
-		}
-		// Audio_Stop
-
-		public static void Audio_Next (int idx = -1)
-		{
-			if (idx < 0)
-			{
-				Parm_To_Tab (ListParam [iFnames]);
-				if (idx == -1)
-					iFnames = (iFnames + 1) % ListParam.Count;
-				else
-					iFnames = (iFnames - 1 + ListParam.Count) % ListParam.Count;
-			}
-			else if (idx != iFnames)
-			{
-				Tab_To_Parm (ListParam [iFnames]);
-				iFnames = idx % ListParam.Count;
-				if (bPanel) Panel1.Reload ();
-			}
-			if (Audio_Stream == 0) himself.Audio_Start (); else bRestart = true;
-		}
-		// Audio_Next
 
 		private static void Parm_To_Tab (Param tab1)
 		{
@@ -470,20 +330,17 @@ namespace SeeMuzic
 			}
 			if (bDistortion)
 			{
-				for (int i = 0; i < 200; i++)
-				{
-					DistortionTab [i] = Math.Pow ((double)(i + 1) / 100.0, pct); // выпуклость
-					//double x = (double)(i + 1) / 200.0;
-					//DistortionTab [i] = Math.Sin (x * Math.PI / 2.0);
-				}
+				double e1 = Math.Abs ((DateTime.Now.Ticks / 10000000 & 127) / 64.0 - 1.0); // дрейф палитры
+				for (int i = 0; i < DDD; i++)
+					DistortionTab [i] = (e1 - 0.5) * ((double)i / DDD - 0.5) + 0.75;
 			}
 
 			timer1.Interval = Interval;
 
-			//if (this.AllowTransparency != bTrnsparency)
-			//{
-			//	TransparencyCtrl (bTrnsparency);
-			//}
+			if (this.AllowTransparency != bTrnsparency)
+			{
+				TransparencyCtrl (bTrnsparency);
+			}
 		}
 		// timer2_Tick
 
@@ -632,7 +489,7 @@ namespace SeeMuzic
 					{
 						double r = (x2 * x2 + y2 * y2);
 						if (2.0 <= r) continue;
-						double r2 = DistortionTab [(int)(r * 100.0)];
+						double r2 = DistortionTab [(int)(r * DDD / 2.0)] * 1.41;
 						x2 *= r2;
 						y2 *= r2;
 					}
@@ -689,6 +546,20 @@ namespace SeeMuzic
 			//	g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
 			//}
 			//g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
+
+			if (0 < DistortionTab.Length)
+			{
+				int x0 = 0;
+				int y0 = (int)(DistortionTab [0] * this.ClientSize.Height * 0.99);
+				for (int i = 1; i < DistortionTab.Length; i++)
+				{
+					int x1 = this.ClientSize.Width * i / DistortionTab.Length;
+					int y1 = (int)(DistortionTab [i] * this.ClientSize.Height * 0.99);
+					g.DrawLine (Pens.Yellow, x0, y0, x1, y1);
+					x0 = x1;
+					y0 = y1;
+				}
+			}
 		}
 		// Form1_Paint
 

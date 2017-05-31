@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioWork.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Cic.cs" />
     <Compile Include="ColorTab.cs">
       <SubType>Form</SubType>

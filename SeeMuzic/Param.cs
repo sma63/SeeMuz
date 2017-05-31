@@ -29,18 +29,18 @@ namespace SeeMuzic
 
 	public partial class Form1 : Form
 	{
-
+		const string SeeMuzXml = "SeeMuz.xml";
+		const string SeeMuzListXml = "SeeMuz.List.xml";
 		const string _BRIGHT_ = "BRI";
 		const string _EROS_ = "ERO";
 		const string _FILE_ = "NAM";
-		const string _FILTER_ = "FIL";
+		const string _FILTER_ = "FLT";
 		const string _GAMMA_ = "GAM";
 		const string _INSIDE_ = "INS";
 		const string _INTERVAL_ = "INT";
 		const string _LEAK_ = "LEA";
 		const string _LENGTH_ = "LEN";
 		const string _PALITRA_ = "PAL";
-		//const string _PAGE0_ = "PAGE0";
 		const string _RESAMPLE_ = "RES";
 		const string _ROTATE_ = "ROT";
 		const string _STRETCH_ = "STR";
@@ -66,26 +66,32 @@ namespace SeeMuzic
 			parms1.Add (new XElement (_STRETCH_, bStretch));
 			parms1.Add (new XElement (_TRANSPARENCY_, bTrnsparency));
 			parms1.Add (new XElement (_VOLUME_, Volume));
-			new XDocument (parms1).Save ("SeeMuz.xml");
+			new XDocument (parms1).Save (SeeMuzXml);
 
 			XElement list1 = new XElement ("LIST");
 			foreach (Param prm1 in ListParam)
 			{
-				XElement item1 = new XElement
-				("L",
-					new XAttribute (_BRIGHT_, prm1.Bright),
-					new XAttribute (_FILTER_, prm1.iFilter),
-					new XAttribute (_GAMMA_, prm1.Gamma),
-					new XAttribute (_INTERVAL_, prm1.Interval),
-					new XAttribute (_LEAK_, prm1.Leak),
-					new XAttribute (_LENGTH_, prm1.Length),
-					new XAttribute (_PALITRA_, prm1.Palitra),
-					new XAttribute (_RESAMPLE_, prm1.Resample),
-					new XAttribute (_FILE_, prm1.Fname)
-				);
-				list1.Add (item1);
+				if (prm1.Resample <= 0)
+				{
+					list1.Add (new XElement ("L", new XAttribute (_FILE_, prm1.Fname)));
+				}
+				else
+				{
+					list1.Add (new XElement
+					("L",
+						new XAttribute (_BRIGHT_, prm1.Bright),
+						new XAttribute (_FILTER_, prm1.iFilter),
+						new XAttribute (_GAMMA_, prm1.Gamma),
+						new XAttribute (_INTERVAL_, prm1.Interval),
+						new XAttribute (_LEAK_, prm1.Leak),
+						new XAttribute (_LENGTH_, prm1.Length),
+						new XAttribute (_PALITRA_, prm1.Palitra),
+						new XAttribute (_RESAMPLE_, prm1.Resample),
+						new XAttribute (_FILE_, prm1.Fname)
+					));
+				}
 			}
-			new XDocument (list1).Save ("SeeMuzList.xml");
+			new XDocument (list1).Save (SeeMuzListXml);
 		}
 		// Save_Parms_Xml
 
@@ -93,7 +99,7 @@ namespace SeeMuzic
 		{
 			try
 			{
-				XDocument xdoc = XDocument.Load ("SeeMuz.xml");
+				XDocument xdoc = XDocument.Load (SeeMuzXml);
 				IEnumerable<XElement> parms = from f in (from p in xdoc.Elements () where p.Name.ToString ().ToUpper () == "PARMS" select p).Elements () select f;
 				foreach (XElement parm in parms)
 				{
@@ -129,7 +135,7 @@ namespace SeeMuzic
 			ListParam.Clear ();
 			try
 			{
-				XDocument xdoc2 = XDocument.Load ("SeeMuzList.xml");
+				XDocument xdoc2 = XDocument.Load (SeeMuzListXml);
 				IEnumerable<XElement> parms2 = from f in (from p in xdoc2.Elements () where p.Name.ToString ().ToUpper () == "LIST" select p).Elements () select f;
 				foreach (XElement parm in parms2)
 				{
@@ -137,14 +143,14 @@ namespace SeeMuzic
 					{
 						Param prm1 = new Param ();
 
-						prm1.Bright = Bright;
-						prm1.iFilter = iFilter;
-						prm1.Gamma = Gamma;
-						prm1.Interval = Interval;
-						prm1.Leak = Leak;
+						prm1.Bright = 0.0;
+						prm1.iFilter = 0;
+						prm1.Gamma = 0.0;
+						prm1.Interval = 0;
+						prm1.Leak = 0.0;
 						prm1.Length = 0;
-						prm1.Palitra = Palitra;
-						prm1.Resample = Resample;
+						prm1.Palitra = 0.0;
+						prm1.Resample = 0;
 
 						try { prm1.Bright = double.Parse (parm.Attribute (_BRIGHT_).Value); } catch { }
 						try { prm1.iFilter = int.Parse (parm.Attribute (_FILTER_).Value); } catch { }
