@@ -14,6 +14,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
+//using System.Runtime.InteropServices;
 
 using Un4seen.Bass;
 using audio_sma;
@@ -186,12 +187,15 @@ namespace SeeMuzic
 		}
 		// Form1_Load
 
+		//BinaryWriter bw = new BinaryWriter (File.Open ("test.pcm", FileMode.Create));
+
 		private void Form1_FormClosed (object sender, FormClosedEventArgs e)
 		{
 			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
 			Parm_To_Tab (ListParam [iFnames]);
 			Save_Parms_Xml ();
+			//bw.Close ();
 		}
 		// Form1_FormClosed
 
@@ -373,6 +377,7 @@ namespace SeeMuzic
 		static double [] kor1 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
 
 		static Image img0 = null;
+		static float Xnorm = 0.0f, Ynorm = 0.0f;
 
 		private void Form1_Paint (object sender, PaintEventArgs e)
 		{
@@ -380,9 +385,15 @@ namespace SeeMuzic
 			cic = Mcic [ResToIdx (Resample)];
 			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (Audio_Stream, Interval / 1000.0); // текущая длина аудиобуффера в байтах
 			int samples = Bass.BASS_ChannelGetData (Audio_Stream, audiobuf, audio_bytes) / SAMPLE_BYTES; // число самплов в аудиобуффере
-			for (int i = 0, j = 0; i < samples; i++, j += 2)
+			for (int i = 0, j = 0; i < samples; i++)
 			{
-				if (cic.Decimate ((int)audiobuf [j], (int)audiobuf [j + 1]))
+				// нормализатор нуля
+				float x = (float)audiobuf [j++];
+				float y = (float)audiobuf [j++];
+				x -= (Xnorm += (x - Xnorm) * 0.0001f);
+				y -= (Ynorm += (y - Ynorm) * 0.0001f);
+
+				if (cic.Decimate ((int)x, (int)y))
 				{
 					if (iFilter2 < 2)
 					{
@@ -400,6 +411,18 @@ namespace SeeMuzic
 			if (Okno == 0) return;
 
 			int Okno2 = Okno / 2; // центр окна
+
+			{
+				//int cnt = 0;
+				//byte [] OutBytes = new byte [Okno * 2 * sizeof (short)];
+				//for (int i = 0; i < Okno; i++)
+				//{
+				//	Array.Copy (BitConverter.GetBytes ((short)Xbuf [i]), 0, OutBytes, cnt, sizeof (short)); cnt += sizeof (short);
+				//	Array.Copy (BitConverter.GetBytes ((short)Ybuf [i]), 0, OutBytes, cnt, sizeof (short)); cnt += sizeof (short);
+				//}
+				//bw.Write (OutBytes, 0, cnt);
+			}
+
 
 #if KORELAT
 			// кореляция
@@ -433,47 +456,7 @@ namespace SeeMuzic
 			double vsum2 = 0.0;
 			Graphics g = e.Graphics;
 			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
-#if SPIRAL
-			// Спираль
-			int rrr = (int)(Okno2 * 1.4142);
-			kf = (Math.Abs (Xrot [rrr]) + Math.Abs (Yrot [rrr])); // внутрь
-			//kf = 0.7071 / (Math.Abs (Xrot [rrr]) + Math.Abs (Yrot [rrr])); // вширь
-			for (int x = 0; x < Okno; x++)
-			{
-				for (int y = 0; y < Okno; y++)
-				{
-					double x1 = (x - Okno2) * kf;
-					double y1 = (y - Okno2) * kf;
-					int r = (int)Math.Sqrt (x1 * x1 + y1 * y1);
-					double x0 = Xrot [r];
-					double y0 = Yrot [r];
-					int x2 = (int)(x0 * x1 + y0 * y1) + Okno2;
-					if ((0 <= x2) && (x2 < Okno))
-					{
-						int y2 = (int)(x0 * y1 - y0 * x1) + Okno2;
-						if ((0 <= y2) && (y2 < Okno))
-						{
-							int v = Math.Abs (Xbuf [x2] + Ybuf [y2]);
-							vsum2 += v * v;
-							vcnt++;
-							v = (int)(v * Bright / Power);
-							if (v < 0) v = 0;
 
-							if (Palitra < 6)
-								bmp1.SetPixel (x, y, H2Color (Palitra * 60.0 + v, 1.0, (v < Bright ? v / Bright : 1.0)));
-							else if (Palitra < 12)
-								bmp1.SetPixel (x, y, H2Color (720.0 - (Palitra * 60.0 + v), 1.0, (v < Bright ? v / Bright : 1.0)));
-							else if (Palitra < 13)
-								bmp1.SetPixel (x, y, H2Color (720.0 * pct + v, 1.0, (v < Bright ? v / Bright : 1.0)));
-							else
-								bmp1.SetPixel (x, y, H2Color (720.0 - (720.0 * (1.0 - pct) + v), 1.0, (v < Bright ? v / Bright : 1.0)));
-							continue;
-						}
-					}
-					bmp1.SetPixel (x, y, Color.Black);
-				}
-			}
-#else
 			double kf1 = Palitra; // pct;
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
@@ -514,12 +497,13 @@ namespace SeeMuzic
 					//Skip: bmp1.SetPixel (x, y, Color.Black);
 				}
 			}
-#endif
+
 			double pwr1 = 0.0;
 			if (0 < vcnt)
 			{
 				pwr1 = Math.Sqrt (vsum2 / vcnt);
 				Power += (pwr1 - Power) / Leak;
+				//bw.Write (BitConverter.GetBytes ((short)1000.0 * Power3), 0, sizeof (short));
 			}
 			//if (Power < pwr1)
 			{
@@ -550,6 +534,7 @@ namespace SeeMuzic
 			//	g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
 			//}
 			//g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
+			//g.DrawString (String.Format ("{0}", Power), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 
 			// кривая искажений
 			//if (0 < DistortionTab.Length)
@@ -627,4 +612,14 @@ namespace SeeMuzic
 			return (r < MIN_RESAMPLE ? MIN_RESAMPLE : (MAX_RESAMPLE < r ? MAX_RESAMPLE : r));
 		}
 	}
+
+	//[StructLayout (LayoutKind.Explicit)]
+	//public unsafe struct GetData
+	//{
+	//	public const int GET_DATA_LENGTH = 1024;
+	//	[FieldOffset (0)]
+	//	public fixed short w [GET_DATA_LENGTH];
+	//	[FieldOffset (0)]
+	//	public fixed byte b [GET_DATA_LENGTH * 2];
+	//}
 }
