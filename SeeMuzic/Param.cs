@@ -44,6 +44,7 @@ namespace SeeMuzic
 		const string _PALITRA_ = "PAL";
 		const string _RESAMPLE_ = "RES";
 		const string _ROTATE_ = "ROT";
+		const string _SPIRAL_ = "SPI";
 		const string _STRETCH_ = "STR";
 		const string _TRANSPARENCY_ = "TRA";
 		const string _VOLUME_ = "VOL";
@@ -64,6 +65,7 @@ namespace SeeMuzic
 			parms1.Add (new XElement (_PALITRA_, Palitra));
 			parms1.Add (new XElement (_RESAMPLE_, Resample));
 			parms1.Add (new XElement (_ROTATE_, bRotate));
+			parms1.Add (new XElement (_SPIRAL_, bSpiral));
 			parms1.Add (new XElement (_STRETCH_, bStretch));
 			parms1.Add (new XElement (_TRANSPARENCY_, bTrnsparency));
 			parms1.Add (new XElement (_VOLUME_, Volume));
@@ -119,6 +121,7 @@ namespace SeeMuzic
 							case _PALITRA_: Palitra = double.Parse (parm.Value); break;
 							case _RESAMPLE_: Resample = int.Parse (parm.Value); break;
 							case _ROTATE_: bRotate = bool.Parse (parm.Value); break;
+							case _SPIRAL_: bSpiral = bool.Parse (parm.Value); break;
 							case _STRETCH_: bStretch = bool.Parse (parm.Value); break;
 							case _TRANSPARENCY_: bTrnsparency = bool.Parse (parm.Value); break;
 							case _VOLUME_: Volume = int.Parse (parm.Value); break;

@@ -51,6 +51,7 @@ namespace SeeMuzic
 			chk_Distortion.Checked = Form1.bDistortion;
 			chk_Transparency.Checked = Form1.bTrnsparency;
 			chk_Flex.Checked = Form1.bFlex;
+			chk_Spiral.Checked = Form1.bSpiral;
 
 			lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
@@ -233,6 +234,11 @@ namespace SeeMuzic
 		private void chk_Flex_Click (object sender, EventArgs e)
 		{
 			Form1.bFlex = chk_Flex.Checked;
+		}
+
+		private void chk_Spiral_Click (object sender, EventArgs e)
+		{
+			Form1.bSpiral = chk_Spiral.Checked;
 		}
 
 		private void btn_Load_Click (object sender, EventArgs e)

@@ -68,6 +68,7 @@
 			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Transparency = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
+			this.chk_Spiral = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -237,7 +238,7 @@
 			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(333, 236);
+			this.tabControl1.Size = new System.Drawing.Size(333, 244);
 			this.tabControl1.TabIndex = 16;
 			this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
 			// 
@@ -250,7 +251,7 @@
 			this.tabPage0.Padding = new System.Windows.Forms.Padding(3);
 			this.tabPage0.Size = new System.Drawing.Size(325, 210);
 			this.tabPage0.TabIndex = 1;
-			this.tabPage0.Text = "Play List";
+			this.tabPage0.Text = "List";
 			// 
 			// splitContainer1
 			// 
@@ -403,12 +404,13 @@
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(325, 210);
+			this.tabPage1.Size = new System.Drawing.Size(325, 218);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "View";
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.chk_Spiral);
 			this.groupBox1.Controls.Add(this.chk_Flex);
 			this.groupBox1.Controls.Add(this.trk_Palitra);
 			this.groupBox1.Controls.Add(this.trk_Gamma);
@@ -431,7 +433,7 @@
 			this.groupBox1.Controls.Add(this.chk_Distortion);
 			this.groupBox1.Location = new System.Drawing.Point(6, 5);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(311, 196);
+			this.groupBox1.Size = new System.Drawing.Size(311, 205);
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
 			// 
@@ -506,16 +508,27 @@
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
 			// 
+			// chk_Spiral
+			// 
+			this.chk_Spiral.AutoSize = true;
+			this.chk_Spiral.Location = new System.Drawing.Point(207, 181);
+			this.chk_Spiral.Name = "chk_Spiral";
+			this.chk_Spiral.Size = new System.Drawing.Size(69, 17);
+			this.chk_Spiral.TabIndex = 22;
+			this.chk_Spiral.Text = "Спираль";
+			this.chk_Spiral.UseVisualStyleBackColor = true;
+			this.chk_Spiral.Click += new System.EventHandler(this.chk_Spiral_Click);
+			// 
 			// Panel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(333, 236);
+			this.ClientSize = new System.Drawing.Size(333, 244);
 			this.Controls.Add(this.tabControl1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(349, 274);
+			this.MinimumSize = new System.Drawing.Size(349, 282);
 			this.Name = "Panel";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "SeeMuz - Control";
@@ -587,5 +600,6 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
 		private System.Windows.Forms.Button btn_Load;
 		private System.Windows.Forms.CheckBox chk_Flex;
+		private System.Windows.Forms.CheckBox chk_Spiral;
 	}
 }

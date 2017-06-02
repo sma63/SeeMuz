@@ -1,4 +1,4 @@
-﻿//#define SPIRAL
+﻿#define SPIRAL
 #define KORELAT
 
 using System;
@@ -51,6 +51,7 @@ namespace SeeMuzic
 		public static bool bDistortion = false; // гнуть
 		public static bool bTrnsparency = false; // прозрачность
 		public static bool bFlex = false; // дрейф палитры
+		public static bool bSpiral = false; // закручивать в спираль
 
 		static int Resample2 = Resample; // контроль изменений Resample 
 		static double Power = 1.0;
@@ -62,9 +63,9 @@ namespace SeeMuzic
 		static int [] Xbuf = new int [XYBUF];
 		static int [] Ybuf = new int [XYBUF];
 
-		const int XYROT = (AUDIO_SAMPLES + MIN_RESAMPLE * 2 - 1) / (MIN_RESAMPLE * 2);
-		static double [] Xrot = new double [XYROT];
-		static double [] Yrot = new double [XYROT];
+		//const int XYROT = (AUDIO_SAMPLES + MIN_RESAMPLE * 2 - 1) / (MIN_RESAMPLE * 2);
+		//static double [] Xrot = new double [XYROT];
+		//static double [] Yrot = new double [XYROT];
 
 		// Resample = 2 ^ (i / 5.0); i = log2 (Resample) * 5.0;
 		static audio_sma.Cic [] Mcic = new audio_sma.Cic []
@@ -144,7 +145,9 @@ namespace SeeMuzic
 
 		static Form1 himself = null;
 
-		static double [] DistortionTab = new double [200];
+		static double [] DistortionTab = new double [DDD];
+		static double [] Xrot = new double [DDD];
+		static double [] Yrot = new double [DDD];
 
 		public Form1 ()
 		{
@@ -152,9 +155,11 @@ namespace SeeMuzic
 
 			InitializeComponent ();
 
-			for (int i = 0; i < 200; i++)
+			for (int i = 0; i < DDD; i++)
 			{
 				DistortionTab [i] = 1.0;
+				Xrot [i] = 1.0;
+				Yrot [i] = 0.0;
 			}
 
 			pen2.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
@@ -174,16 +179,8 @@ namespace SeeMuzic
 		{
 			// Прозрачность
 			TransparencyCtrl (false);
-
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
-
 			btn_M_Click (null, null);
-
-			for (int i = 0; i < Xrot.Length; i++)
-			{
-				Xrot [i] = 1.0;
-				Yrot [i] = 0.0;
-			}
 		}
 		// Form1_Load
 
@@ -277,22 +274,6 @@ namespace SeeMuzic
 
 			pct = (double)(fpos = Bass.BASS_ChannelGetPosition (Audio_Stream)) / flen;
 
-#if SPIRAL
-			alpha = 1.0 * Math.PI * pct;
-			double a = 0.0;
-			int nnn = (int)(audio_bytes / SAMPLE_BYTES / Resample / 1.4142);
-			for (int i = 0; i < nnn; i++)
-			{
-				a = alpha * i / nnn; //внутрь
-				//a = alpha * (nnn - 1 - i) / nnn; //вширь
-				Xrot [i] = Math.Cos (a);
-				Yrot [i] = Math.Sin (a);
-			}
-			x0 = Math.Cos (alpha); // внутрь
-			y0 = Math.Sin (alpha);
-			//x0 = 1.0; // вширь
-			//y0 = 0.0; 
-#else
 			if (bRotate)
 			{
 				alpha = 4.0 * 2.0 * Math.PI * pct * pct;
@@ -307,7 +288,19 @@ namespace SeeMuzic
 				y0 = 0.0;
 				kf = 1.0;
 			}
-#endif
+
+			if (bSpiral)
+			{
+				//double spiral = pct * Math.PI * 0.5;
+				double spiral = Math.Sin ((DateTime.Now.Ticks / 10000000 % 61) / 61.0 * Math.PI * 2.0); //31,61,101
+				for (int i = 0; i < DDD; i++)
+				{
+					double a = alpha + spiral * Math.Sqrt ((double)i / DDD);
+					Xrot [i] = Math.Cos (a);
+					Yrot [i] = Math.Sin (a);
+				}
+			}
+
 			if (iFilter != iFilter2)
 			{
 				iFilter2 = iFilter;
@@ -411,19 +404,6 @@ namespace SeeMuzic
 			if (Okno == 0) return;
 
 			int Okno2 = Okno / 2; // центр окна
-
-			{
-				//int cnt = 0;
-				//byte [] OutBytes = new byte [Okno * 2 * sizeof (short)];
-				//for (int i = 0; i < Okno; i++)
-				//{
-				//	Array.Copy (BitConverter.GetBytes ((short)Xbuf [i]), 0, OutBytes, cnt, sizeof (short)); cnt += sizeof (short);
-				//	Array.Copy (BitConverter.GetBytes ((short)Ybuf [i]), 0, OutBytes, cnt, sizeof (short)); cnt += sizeof (short);
-				//}
-				//bw.Write (OutBytes, 0, cnt);
-			}
-
-
 #if KORELAT
 			// кореляция
 			for (int i = 0; i < Okno; i++)
@@ -461,16 +441,29 @@ namespace SeeMuzic
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
 
+			double x1, y1, x2, y2;
+
 			for (int x = 0; x < Okno; x++)
 			{
-				double x1 = (double)(x - Okno2) / Okno2;
+				x1 = (double)(x - Okno2) / Okno2;
 				for (int y = 0; y < Okno; y++)
 				{
-					double y1 = (double)(y - Okno2) / Okno2;
+					y1 = (double)(y - Okno2) / Okno2;
 
 					// поворот
-					double x2 = (x0 * x1 + y0 * y1);
-					double y2 = (x0 * y1 - y0 * x1);
+					if (bSpiral)
+					{
+						double r0 = (x1 * x1 + y1 * y1);
+						if (2.0 <= r0) continue;
+						int ir = (int)(r0 * DDD / 2.0);
+						x2 = (Xrot [ir] * x1 + Yrot [ir] * y1);
+						y2 = (Xrot [ir] * y1 - Yrot [ir] * x1);
+					}
+					else
+					{
+						x2 = (x0 * x1 + y0 * y1);
+						y2 = (x0 * y1 - y0 * x1);
+					}
 
 					if (bDistortion)
 					{
