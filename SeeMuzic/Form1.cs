@@ -276,7 +276,8 @@ namespace SeeMuzic
 
 			if (bRotate)
 			{
-				alpha = 4.0 * 2.0 * Math.PI * pct * pct;
+				//alpha = 4.0 * 2.0 * Math.PI * pct * pct;
+				alpha = (DateTime.Now.Ticks / 10000000 % 311) / 311.0 * Math.PI * 2.0; //31,61,101,199
 				x0 = Math.Cos (alpha);
 				y0 = Math.Sin (alpha);
 				kf = (bInside ? (Math.Abs (x0) + Math.Abs (y0)) : 1.0 / (Math.Abs (x0) + Math.Abs (y0)));
@@ -291,13 +292,15 @@ namespace SeeMuzic
 
 			if (bSpiral)
 			{
-				//double spiral = pct * Math.PI * 0.5;
-				double spiral = Math.Sin ((DateTime.Now.Ticks / 10000000 % 61) / 61.0 * Math.PI * 2.0); //31,61,101
+				double eee = (DateTime.Now.Ticks / 10000000 % 61) / 61.0; //31,61,101
+				double spiral = Math.Sin (Math.PI * 2.0 * eee);
+				double kkk = (bInside ? 1.0 + Math.Abs (spiral) / 9.0 : 1.0 - Math.Abs (spiral) / 18.0);
 				for (int i = 0; i < DDD; i++)
 				{
-					double a = alpha + spiral * Math.Sqrt ((double)i / DDD);
-					Xrot [i] = Math.Cos (a);
-					Yrot [i] = Math.Sin (a);
+					double a = (double)(DDD - 1 - i) / DDD;
+					a = alpha + spiral * a * a;
+					Xrot [i] = Math.Cos (a) * kkk;
+					Yrot [i] = Math.Sin (a) * kkk;
 				}
 			}
 
@@ -328,10 +331,12 @@ namespace SeeMuzic
 
 			if (bDistortion)
 			{
-				double e1 = Math.Abs ((DateTime.Now.Ticks / 10000000 & 127) / 64.0 - 1.0); // дрейф искажения
+				//double k = pct - 0.5;
+				double k = 0.5 * Math.Sin (2.0 * Math.PI *(DateTime.Now.Ticks / 10000000 & 127) / 127.0); // дрейф искажения
+				double kk = (bInside ? (k < 0.0 ? 0.0 : Math.Abs (k) / 2.0) : (k < 0.0 ? -Math.Abs (k) / 2.0 : 0.0));
 				for (int i = 0; i < DDD; i++)
 				{
-					DistortionTab [i] = (e1 - 0.5) * ((double)i / DDD - 0.5) + 0.75;
+					DistortionTab [i] = k * ((double)i / DDD - 1.0) + 1.0 + kk;
 				}
 			}
 
@@ -441,32 +446,34 @@ namespace SeeMuzic
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
 
-			if (bInside)
-			{
-				//kf = 1.4142;
-				if (bSpiral)
-				{
-					double x22 = (Xrot [DDD - 1] + Yrot [DDD - 1]);
-					double y22 = (Xrot [DDD - 1] - Yrot [DDD - 1]);
-					kf = Math.Max (Math.Abs (x22), Math.Abs (y22)) * 1.1;
-				}
-				else
-				{
-					kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
-				}
-				if (bDistortion)
-				{
-					kf *= 1.5;
-				}
-			}
-			else
-			{
-				//kf = 0.7071;
-				kf = 1.0 / Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
-				if (bSpiral) kf *= 0.72;
-				if (bDistortion) kf *= 1.1;
-				//if (bSpiral) if (bDistortion) kf *= 0.75;
-			}
+			//kf = 1.0;
+			kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
+			if (!bInside) kf = 1.0 / kf;
+			//if (bInside)
+			//{
+			//	//kf = 1.4142;
+			//	if (bSpiral)
+			//	{
+			//		double x22 = (Xrot [DDD - 1] + Yrot [DDD - 1]);
+			//		double y22 = (Xrot [DDD - 1] - Yrot [DDD - 1]);
+			//		kf = Math.Max (Math.Abs (x22), Math.Abs (y22)) * 1.1;
+			//	}
+			//	else
+			//	{
+			//		kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
+			//	}
+			//	if (bDistortion)
+			//	{
+			//		kf *= 1.5;
+			//	}
+			//}
+			//else
+			//{
+			//	//kf = 0.7071;
+			//	kf = 1.0 / Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
+			//	if (bSpiral) kf *= 0.72;
+			//	if (bDistortion) kf *= 1.1;
+			//}
 
 			double x1, y1, x2, y2;
 			for (int x = 0; x < Okno; x++)
@@ -478,9 +485,7 @@ namespace SeeMuzic
 
 					if (bSpiral)
 					{
-						double r0 = (x1 * x1 + y1 * y1);
-						int ir = (int)(r0 * DDD / 2.0);
-						if (DDD <= ir) ir = DDD - 1;
+						int ir = (int)((x1 * x1 + y1 * y1) * DDD / 2.0); if (DDD <= ir) ir = DDD - 1;
 						x2 = (Xrot [ir] * x1 + Yrot [ir] * y1);
 						y2 = (Xrot [ir] * y1 - Yrot [ir] * x1);
 					}
@@ -492,9 +497,7 @@ namespace SeeMuzic
 
 					if (bDistortion)
 					{
-						double r = (x2 * x2 + y2 * y2);
-						int ir = (int)(r * DDD / 2.0);
-						if (DDD <= ir) ir = DDD - 1;
+						int ir = (int)((x2 * x2 + y2 * y2) * DDD / 2.0); if (DDD <= ir) ir = DDD - 1;
 						double r2 = DistortionTab [ir];
 						x2 *= r2;
 						y2 *= r2;
@@ -558,15 +561,15 @@ namespace SeeMuzic
 			// кривая искажений
 			//if (0 < DistortionTab.Length)
 			//{
-			//	int x0 = 0;
-			//	int y0 = (int)(DistortionTab [0] * this.ClientSize.Height * 0.99);
+			//	int x00 = 0;
+			//	int y00 = (int)(DistortionTab [0] * this.ClientSize.Height * 0.5);
 			//	for (int i = 1; i < DistortionTab.Length; i++)
 			//	{
-			//		int x1 = this.ClientSize.Width * i / DistortionTab.Length;
-			//		int y1 = (int)(DistortionTab [i] * this.ClientSize.Height * 0.99);
-			//		g.DrawLine (Pens.Yellow, x0, y0, x1, y1);
-			//		x0 = x1;
-			//		y0 = y1;
+			//		int x11 = this.ClientSize.Width * i / DistortionTab.Length;
+			//		int y11 = (int)(DistortionTab [i] * this.ClientSize.Height * 0.5);
+			//		g.DrawLine (Pens.Yellow, x00, y00, x11, y11);
+			//		x00 = x11;
+			//		y00 = y11;
 			//	}
 			//}
 		}
