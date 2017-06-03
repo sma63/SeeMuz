@@ -441,8 +441,34 @@ namespace SeeMuzic
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
 
-			double x1, y1, x2, y2;
+			if (bInside)
+			{
+				//kf = 1.4142;
+				if (bSpiral)
+				{
+					double x22 = (Xrot [DDD - 1] + Yrot [DDD - 1]);
+					double y22 = (Xrot [DDD - 1] - Yrot [DDD - 1]);
+					kf = Math.Max (Math.Abs (x22), Math.Abs (y22)) * 1.1;
+				}
+				else
+				{
+					kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
+				}
+				if (bDistortion)
+				{
+					kf *= 1.5;
+				}
+			}
+			else
+			{
+				//kf = 0.7071;
+				kf = 1.0 / Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
+				if (bSpiral) kf *= 0.72;
+				if (bDistortion) kf *= 1.1;
+				//if (bSpiral) if (bDistortion) kf *= 0.75;
+			}
 
+			double x1, y1, x2, y2;
 			for (int x = 0; x < Okno; x++)
 			{
 				x1 = (double)(x - Okno2) / Okno2;
@@ -450,12 +476,11 @@ namespace SeeMuzic
 				{
 					y1 = (double)(y - Okno2) / Okno2;
 
-					// поворот
 					if (bSpiral)
 					{
 						double r0 = (x1 * x1 + y1 * y1);
-						if (2.0 <= r0) continue;
 						int ir = (int)(r0 * DDD / 2.0);
+						if (DDD <= ir) ir = DDD - 1;
 						x2 = (Xrot [ir] * x1 + Yrot [ir] * y1);
 						y2 = (Xrot [ir] * y1 - Yrot [ir] * x1);
 					}
@@ -468,8 +493,9 @@ namespace SeeMuzic
 					if (bDistortion)
 					{
 						double r = (x2 * x2 + y2 * y2);
-						if (2.0 <= r) continue;
-						double r2 = DistortionTab [(int)(r * DDD / 2.0)] * 1.35;
+						int ir = (int)(r * DDD / 2.0);
+						if (DDD <= ir) ir = DDD - 1;
+						double r2 = DistortionTab [ir];
 						x2 *= r2;
 						y2 *= r2;
 					}
@@ -527,7 +553,7 @@ namespace SeeMuzic
 			//	g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
 			//}
 			//g.DrawString (String.Format ("{0}", palitra0), fnt1, Brushes.Yellow, 0.0f, 0.0f);
-			//g.DrawString (String.Format ("{0}", Power), fnt1, Brushes.Yellow, 0.0f, 0.0f);
+			//g.DrawString (String.Format ("{0} {1}", Okno, x2max), fnt1, Brushes.Yellow, 0.0f, 0.0f);
 
 			// кривая искажений
 			//if (0 < DistortionTab.Length)

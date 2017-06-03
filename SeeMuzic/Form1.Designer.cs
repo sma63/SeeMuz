@@ -67,7 +67,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(5F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Black;
-			this.ClientSize = new System.Drawing.Size(284, 276);
+			this.ClientSize = new System.Drawing.Size(284, 285);
 			this.Controls.Add(this.btn_M);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
