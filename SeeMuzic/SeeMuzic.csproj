@@ -67,6 +67,13 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gradusnik.cs">
+      <SubType>Form</SubType>
+      <CustomToolNamespace>SeeMuzic</CustomToolNamespace>
+    </Compile>
+    <Compile Include="Gradusnik.Designer.cs">
+      <DependentUpon>Gradusnik.cs</DependentUpon>
+    </Compile>
     <Compile Include="Panel.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,6 +85,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gradusnik.resx">
+      <DependentUpon>Gradusnik.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Panel.resx">
       <DependentUpon>Panel.cs</DependentUpon>

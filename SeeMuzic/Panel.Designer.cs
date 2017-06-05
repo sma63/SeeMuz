@@ -355,6 +355,8 @@
 			// 
 			// dataGridView1
 			// 
+			this.dataGridView1.AllowUserToAddRows = false;
+			this.dataGridView1.AllowUserToDeleteRows = false;
 			this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
@@ -362,7 +364,9 @@
             this.Column3});
 			this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataGridView1.Location = new System.Drawing.Point(0, 0);
+			this.dataGridView1.MultiSelect = false;
 			this.dataGridView1.Name = "dataGridView1";
+			this.dataGridView1.ReadOnly = true;
 			this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
 			this.dataGridView1.Size = new System.Drawing.Size(319, 145);
 			this.dataGridView1.TabIndex = 0;
@@ -386,6 +390,7 @@
 			this.Column2.FillWeight = 17F;
 			this.Column2.HeaderText = "Time";
 			this.Column2.Name = "Column2";
+			this.Column2.ReadOnly = true;
 			this.Column2.Width = 55;
 			// 
 			// Column3

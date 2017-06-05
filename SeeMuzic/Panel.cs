@@ -18,15 +18,10 @@ namespace SeeMuzic
 		const double LEAK = 10.0;
 		const double BRIGHT = 1.0;
 		const int INTERVAL = 10, INTERVAL2 = 0; //1-10,2-20,3-30,4-40,5-50,6-60,7-70,8-80,9-90,10-100
-		//const int RESAMPLE = Form1.MIN_RESAMPLE - 1;
 
 		int iFnames = 0;
 		bool bUpdate = false;
 		bool bPlay = false;
-
-		//
-		// После загрузки новой мелодии обновлять панель (если она активна)
-		// 
 
 		public Panel ()
 		{
@@ -246,7 +241,7 @@ namespace SeeMuzic
 		private void btn_Load_Click (object sender, EventArgs e)
 		{
 			// запускать только в режиме Pause
-			DialogResult dr1 = MessageBox.Show ("Предварительно очистить плейлист?", "Вопрос", MessageBoxButtons.YesNoCancel);
+			DialogResult dr1 = MessageBox.Show ("Очистить старый плейлист?", "Вопрос", MessageBoxButtons.YesNoCancel);
 			if (dr1 == DialogResult.Cancel) return;
 
 			OpenFileDialog openFileDialog1 = new OpenFileDialog ();
@@ -262,6 +257,10 @@ namespace SeeMuzic
 					btn_Play_Click (null, null);
 					Form1.himself.Audio_Stop ();
 				}
+
+				Gradusnik Gradusnik1 = new Gradusnik ();
+				Gradusnik1.Show ();
+				//this.Cursor = Cursors.WaitCursor;
 				if (Bass.BASS_Init (-1, Form1.SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 				{
 					bUpdate = false;
@@ -270,12 +269,13 @@ namespace SeeMuzic
 						Form1.ListParam.Clear ();
 						dataGridView1.Rows.Clear ();
 					}
-					foreach (string fnam in openFileDialog1.FileNames)
+					for (int i = 0; i < openFileDialog1.FileNames.Length; i++)
 					{
-						Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (fnam);
+						Gradusnik1.progressBar1.Value = Gradusnik1.progressBar1.Maximum * i / openFileDialog1.FileNames.Length;
+						Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (openFileDialog1.FileNames [i]);
 						if (tags != null)
 						{
-							int stream = Bass.BASS_StreamCreateFile (fnam, 0, 0, BASSFlag.BASS_DEFAULT);
+							int stream = Bass.BASS_StreamCreateFile (openFileDialog1.FileNames [i], 0, 0, BASSFlag.BASS_DEFAULT);
 							if (stream != 0)
 							{
 								Param prm1 = new Param ();
@@ -287,7 +287,7 @@ namespace SeeMuzic
 								prm1.Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
 								prm1.Palitra = 0.0;
 								prm1.Resample = 0;
-								prm1.Fname = fnam;
+								prm1.Fname = openFileDialog1.FileNames [i];
 								Form1.ListParam.Add (prm1);
 								Bass.BASS_StreamFree (stream);
 							}
@@ -297,6 +297,8 @@ namespace SeeMuzic
 					dataGridView1.Refresh ();
 					Bass.BASS_Free ();
 				}
+				Gradusnik1.progressBar1.Value = Gradusnik1.progressBar1.Maximum;
+				Gradusnik1.Close ();
 				//this.Cursor = Cursors.Default;
 			}
 		}

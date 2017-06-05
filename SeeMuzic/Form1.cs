@@ -14,7 +14,6 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
-//using System.Runtime.InteropServices;
 
 using Un4seen.Bass;
 using audio_sma;
@@ -173,7 +172,7 @@ namespace SeeMuzic
 		{
 			Form1.himself.TopMost = bTopmost;
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
-			//btn_M_Click (null, null);
+			Start_Panel ();
 		}
 		// Form1_Load
 
@@ -521,16 +520,6 @@ namespace SeeMuzic
 		}
 		// Form1_Paint
 
-		//private void Form1_MouseMove (object sender, MouseEventArgs e)
-		//{
-		//}
-		// Form1_MouseMove
-		//private void btn_M_Click (object sender, EventArgs e)
-		//{
-		//}
-		// btn_M_Click
-
-
 		private void Form1_MouseDown (object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left)
@@ -544,15 +533,21 @@ namespace SeeMuzic
 			}
 			else if (e.Button == MouseButtons.Right)
 			{
-				if (!bPanel)
-				{
-					Panel1 = new Panel ();
-					Panel1.Show (this);
-					bPanel = true;
-				}
+				Start_Panel ();
 			}
 		}
 		// Form1_MouseDown
+
+		private void Start_Panel ()
+		{
+			if (!bPanel)
+			{
+				Panel1 = new Panel ();
+				Panel1.Show (this);
+				bPanel = true;
+			}
+		}
+		// Start_Panel
 
 		public static bool btn_Panel_Play_Click ()
 		{
