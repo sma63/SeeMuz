@@ -124,10 +124,11 @@ namespace SeeMuzic
 		}
 		//Audio_Start
 
-		private void Audio_Stop ()
+		public void Audio_Stop ()
 		{
 			Bass.BASS_StreamFree (Audio_Stream);
 			Bass.BASS_Free ();
+			Audio_Stream = 0;
 			timer1.Enabled = false;
 			timer2.Enabled = false;
 		}

@@ -22,6 +22,7 @@ namespace SeeMuzic
 
 		int iFnames = 0;
 		bool bUpdate = false;
+		bool bPlay = false;
 
 		//
 		// После загрузки новой мелодии обновлять панель (если она активна)
@@ -49,7 +50,7 @@ namespace SeeMuzic
 			chk_Stretch.Checked = Form1.bStretch;
 			chk_Inside.Checked = Form1.bInside;
 			chk_Distortion.Checked = Form1.bDistortion;
-			chk_Transparency.Checked = Form1.bTrnsparency;
+			chk_Topmost.Checked = Form1.bTopmost;
 			chk_Flex.Checked = Form1.bFlex;
 			chk_Spiral.Checked = Form1.bSpiral;
 
@@ -195,7 +196,8 @@ namespace SeeMuzic
 
 		private void btn_Play_Click (object sender, EventArgs e)
 		{
-			btn_Play.BackgroundImage = (Form1.btn_Panel_Play_Click () ? SeeMuz.Properties.Resources.player_pause_6166 : SeeMuz.Properties.Resources.player_play_8474);
+			bPlay = Form1.btn_Panel_Play_Click ();
+			btn_Play.BackgroundImage = (bPlay ? SeeMuz.Properties.Resources.player_pause_6166 : SeeMuz.Properties.Resources.player_play_8474);
 		}
 
 		private void btn_Prev_Click (object sender, EventArgs e)
@@ -226,9 +228,9 @@ namespace SeeMuzic
 			Form1.bDistortion = chk_Distortion.Checked;
 		}
 
-		private void chk_Transparency_Click (object sender, EventArgs e)
+		private void chk_Topmost_Click (object sender, EventArgs e)
 		{
-			Form1.bTrnsparency = chk_Transparency.Checked;
+			Form1.himself.TopMost = Form1.bTopmost = chk_Topmost.Checked;
 		}
 
 		private void chk_Flex_Click (object sender, EventArgs e)
@@ -244,6 +246,9 @@ namespace SeeMuzic
 		private void btn_Load_Click (object sender, EventArgs e)
 		{
 			// запускать только в режиме Pause
+			DialogResult dr1 = MessageBox.Show ("Предварительно очистить плейлист?", "Вопрос", MessageBoxButtons.YesNoCancel);
+			if (dr1 == DialogResult.Cancel) return;
+
 			OpenFileDialog openFileDialog1 = new OpenFileDialog ();
 			openFileDialog1.InitialDirectory = Directory.GetCurrentDirectory (); ;
 			openFileDialog1.Filter = "mp3 files (*.mp3)|*.mp3|All files (*.*)|*.*";
@@ -252,12 +257,19 @@ namespace SeeMuzic
 			openFileDialog1.Multiselect = true;
 			if (openFileDialog1.ShowDialog () == DialogResult.OK)
 			{
-				//this.Cursor = Cursors.WaitCursor; // не работает !!!
+				if (bPlay)
+				{
+					btn_Play_Click (null, null);
+					Form1.himself.Audio_Stop ();
+				}
 				if (Bass.BASS_Init (-1, Form1.SAMPLERATE, BASSInit.BASS_DEVICE_DEFAULT | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
 				{
-					Form1.ListParam.Clear ();
 					bUpdate = false;
-					dataGridView1.Rows.Clear ();
+					if (dr1 == DialogResult.Yes)
+					{
+						Form1.ListParam.Clear ();
+						dataGridView1.Rows.Clear ();
+					}
 					foreach (string fnam in openFileDialog1.FileNames)
 					{
 						Un4seen.Bass.AddOn.Tags.TAG_INFO tags = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile (fnam);

@@ -49,7 +49,7 @@ namespace SeeMuzic
 		public static bool bStretch = false; // растянуть
 		public static bool bInside = true; // вписать
 		public static bool bDistortion = false; // гнуть
-		public static bool bTrnsparency = false; // прозрачность
+		public static bool bTopmost = false; // поверх всех
 		public static bool bFlex = false; // дрейф палитры
 		public static bool bSpiral = false; // закручивать в спираль
 
@@ -141,9 +141,8 @@ namespace SeeMuzic
 		public static bool bLastPage0 = true; // последняя открытая страница в диалоге параметров
 
 		static Panel Panel1;
-		int btn_M_Visible_Cnt = 5; // видимость кнопки параметов [сек]
 
-		static Form1 himself = null;
+		public static Form1 himself = null;
 
 		static double [] DistortionTab = new double [DDD];
 		static double [] Xrot = new double [DDD];
@@ -167,20 +166,14 @@ namespace SeeMuzic
 			iFnames = 0;
 
 			Load_Parms_Xml ();
-
-			btn_M.Enabled = false;
-			btn_M.Visible = false;
 		}
 		// Form1
 
-		static bool bTransparencyOn = false;
-
 		private void Form1_Load (object sender, EventArgs e)
 		{
-			// Прозрачность
-			TransparencyCtrl (false);
+			Form1.himself.TopMost = bTopmost;
 			_syncProcEndStream = new SYNCPROC (SyncMethodEndStream);
-			btn_M_Click (null, null);
+			//btn_M_Click (null, null);
 		}
 		// Form1_Load
 
@@ -195,29 +188,6 @@ namespace SeeMuzic
 			//bw.Close ();
 		}
 		// Form1_FormClosed
-
-		public void TransparencyCtrl (bool b)
-		{
-			if (bTransparencyOn != b)
-			{
-				bTransparencyOn = b;
-				if (bTransparencyOn)
-				{
-					this.FormBorderStyle = FormBorderStyle.None;
-					this.AllowTransparency = bTrnsparency;
-					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
-				}
-				else
-				{
-					this.FormBorderStyle = FormBorderStyle.Sizable;
-					this.AllowTransparency = false;
-					//this.BackColor = Color.Black; // AliceBlue;//цвет фона  
-					//this.TransparencyKey = this.BackColor; //он же будет заменен на прозрачный цвет
-				}
-			}
-		}
-		// TransparencyCtrl
 
 		private void Form1_Next_Title (string s1)
 		{
@@ -311,19 +281,6 @@ namespace SeeMuzic
 				Yfir = Mfir [iFilter, 1];
 			}
 
-			if (!bPanel && (this.WindowState == FormWindowState.Normal))
-			{
-				if (0 < btn_M_Visible_Cnt)
-				{
-					if (--btn_M_Visible_Cnt <= 0)
-					{
-						btn_M.Visible = false;
-						btn_M.Enabled = false;
-						TransparencyCtrl (true);
-					}
-				}
-			}
-
 			if (bFlex)
 			{
 				Palitra = DateTime.Now.Ticks / 10000000 % 100 / 100.0; // дрейф палитры
@@ -341,11 +298,6 @@ namespace SeeMuzic
 			}
 
 			timer1.Interval = Interval;
-
-			if (this.AllowTransparency != bTrnsparency)
-			{
-				TransparencyCtrl (bTrnsparency);
-			}
 		}
 		// timer2_Tick
 
@@ -358,19 +310,6 @@ namespace SeeMuzic
 		}
 		// Form1_SizeChanged
 
-		private void Form1_MouseDown (object sender, MouseEventArgs e)
-		{
-			this.FormBorderStyle = FormBorderStyle.Sizable;
-			this.AllowTransparency = false;
-
-			if (this.WindowState == FormWindowState.Maximized)
-			{
-				this.WindowState = FormWindowState.Normal;
-				this.FormBorderStyle = FormBorderStyle.Sizable; // возвращаю заголовок в полноэкранном режиме
-			}
-		}
-		// Form1_MouseDown
-
 		static double [] kor0 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
 		static double [] kor1 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
 
@@ -379,9 +318,16 @@ namespace SeeMuzic
 
 		private void Form1_Paint (object sender, PaintEventArgs e)
 		{
+			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (Audio_Stream, Interval / 1000.0); // текущая длина аудиобуффера в байтах
+			if (audio_bytes <= 0)
+			{
+				// при первом запуске когда нет проигрывателя
+				e.Graphics.DrawString ("Press right mouse button.", fnt1, Brushes.Yellow, this.ClientSize.Width / 2 - (64 + 16), this.ClientSize.Height / 2 - 16);
+				return;
+			}
+
 			int Okno = 0;
 			cic = Mcic [ResToIdx (Resample)];
-			audio_bytes = (int)Bass.BASS_ChannelSeconds2Bytes (Audio_Stream, Interval / 1000.0); // текущая длина аудиобуффера в байтах
 			int samples = Bass.BASS_ChannelGetData (Audio_Stream, audiobuf, audio_bytes) / SAMPLE_BYTES; // число самплов в аудиобуффере
 			for (int i = 0, j = 0; i < samples; i++)
 			{
@@ -575,28 +521,38 @@ namespace SeeMuzic
 		}
 		// Form1_Paint
 
-		private void Form1_MouseMove (object sender, MouseEventArgs e)
+		//private void Form1_MouseMove (object sender, MouseEventArgs e)
+		//{
+		//}
+		// Form1_MouseMove
+		//private void btn_M_Click (object sender, EventArgs e)
+		//{
+		//}
+		// btn_M_Click
+
+
+		private void Form1_MouseDown (object sender, MouseEventArgs e)
 		{
-			if (!bPanel)
+			if (e.Button == MouseButtons.Left)
 			{
-				btn_M.Visible = true;
-				btn_M.Enabled = true;
-				btn_M_Visible_Cnt = 5;
-				TransparencyCtrl (false);
+				this.FormBorderStyle = FormBorderStyle.Sizable;
+				if (this.WindowState == FormWindowState.Maximized)
+				{
+					this.WindowState = FormWindowState.Normal;
+					this.FormBorderStyle = FormBorderStyle.Sizable; // возвращаю заголовок в полноэкранном режиме
+				}
+			}
+			else if (e.Button == MouseButtons.Right)
+			{
+				if (!bPanel)
+				{
+					Panel1 = new Panel ();
+					Panel1.Show (this);
+					bPanel = true;
+				}
 			}
 		}
-		// Form1_MouseMove
-
-		private void btn_M_Click (object sender, EventArgs e)
-		{
-			btn_M.Enabled = false;
-			btn_M.Visible = false;
-			TransparencyCtrl (true);
-			Panel1 = new Panel ();
-			Panel1.Show (this);
-			bPanel = true;
-		}
-		// btn_M_Click
+		// Form1_MouseDown
 
 		public static bool btn_Panel_Play_Click ()
 		{
@@ -608,13 +564,15 @@ namespace SeeMuzic
 			else if (Bass.BASS_ChannelIsActive (Audio_Stream) == BASSActive.BASS_ACTIVE_PAUSED)
 			{
 				Bass.BASS_ChannelPlay (Audio_Stream, false);
-				//timer1.Enabled = true;
+				himself.timer1.Enabled = true;
+				himself.timer2.Enabled = true;
 				return true;
 			}
 			else
 			{
 				Bass.BASS_ChannelPause (Audio_Stream);
-				//timer1.Enabled = false;
+				himself.timer1.Enabled = false;
+				himself.timer2.Enabled = false;
 				return false;
 			}
 		}

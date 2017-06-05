@@ -61,14 +61,14 @@
 			this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.chk_Spiral = new System.Windows.Forms.CheckBox();
 			this.chk_Flex = new System.Windows.Forms.CheckBox();
 			this.trk_Palitra = new System.Windows.Forms.TrackBar();
 			this.trk_Gamma = new System.Windows.Forms.TrackBar();
 			this.trk_Filter = new System.Windows.Forms.TrackBar();
 			this.lab_Gamma = new System.Windows.Forms.Label();
-			this.chk_Transparency = new System.Windows.Forms.CheckBox();
+			this.chk_Topmost = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
-			this.chk_Spiral = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -94,7 +94,7 @@
 			this.trk_Bright.Minimum = -10;
 			this.trk_Bright.Name = "trk_Bright";
 			this.trk_Bright.Size = new System.Drawing.Size(104, 45);
-			this.trk_Bright.TabIndex = 1;
+			this.trk_Bright.TabIndex = 4;
 			this.trk_Bright.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Bright.Value = 1;
 			this.trk_Bright.ValueChanged += new System.EventHandler(this.trk_Level_ValueChanged);
@@ -105,7 +105,7 @@
 			this.lab_Level.Location = new System.Drawing.Point(111, 115);
 			this.lab_Level.Name = "lab_Level";
 			this.lab_Level.Size = new System.Drawing.Size(50, 13);
-			this.lab_Level.TabIndex = 6;
+			this.lab_Level.TabIndex = 18;
 			this.lab_Level.Text = "Яркость";
 			// 
 			// lab_Interval
@@ -114,7 +114,7 @@
 			this.lab_Interval.Location = new System.Drawing.Point(111, 45);
 			this.lab_Interval.Name = "lab_Interval";
 			this.lab_Interval.Size = new System.Drawing.Size(56, 13);
-			this.lab_Interval.TabIndex = 7;
+			this.lab_Interval.TabIndex = 15;
 			this.lab_Interval.Text = "Интервал";
 			// 
 			// trk_Interval
@@ -123,7 +123,7 @@
 			this.trk_Interval.Minimum = 1;
 			this.trk_Interval.Name = "trk_Interval";
 			this.trk_Interval.Size = new System.Drawing.Size(104, 45);
-			this.trk_Interval.TabIndex = 2;
+			this.trk_Interval.TabIndex = 1;
 			this.trk_Interval.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Interval.Value = 1;
 			this.trk_Interval.ValueChanged += new System.EventHandler(this.trk_Interval_ValueChanged);
@@ -134,7 +134,7 @@
 			this.lab_Resample.Location = new System.Drawing.Point(111, 19);
 			this.lab_Resample.Name = "lab_Resample";
 			this.lab_Resample.Size = new System.Drawing.Size(49, 13);
-			this.lab_Resample.TabIndex = 8;
+			this.lab_Resample.TabIndex = 14;
 			this.lab_Resample.Text = "Частота";
 			// 
 			// trk_Resample
@@ -143,7 +143,7 @@
 			this.trk_Resample.Maximum = 9;
 			this.trk_Resample.Name = "trk_Resample";
 			this.trk_Resample.Size = new System.Drawing.Size(104, 45);
-			this.trk_Resample.TabIndex = 3;
+			this.trk_Resample.TabIndex = 0;
 			this.trk_Resample.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Resample.Value = 1;
 			this.trk_Resample.ValueChanged += new System.EventHandler(this.trk_Resample_ValueChanged);
@@ -154,7 +154,7 @@
 			this.lab_Leak.Location = new System.Drawing.Point(111, 92);
 			this.lab_Leak.Name = "lab_Leak";
 			this.lab_Leak.Size = new System.Drawing.Size(69, 13);
-			this.lab_Leak.TabIndex = 5;
+			this.lab_Leak.TabIndex = 17;
 			this.lab_Leak.Text = "Накопление";
 			// 
 			// trk_Front
@@ -163,7 +163,7 @@
 			this.trk_Front.Minimum = 1;
 			this.trk_Front.Name = "trk_Front";
 			this.trk_Front.Size = new System.Drawing.Size(104, 45);
-			this.trk_Front.TabIndex = 0;
+			this.trk_Front.TabIndex = 3;
 			this.trk_Front.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Front.Value = 1;
 			this.trk_Front.ValueChanged += new System.EventHandler(this.trk_Front_ValueChanged);
@@ -174,7 +174,7 @@
 			this.lab_Palitra.Location = new System.Drawing.Point(111, 160);
 			this.lab_Palitra.Name = "lab_Palitra";
 			this.lab_Palitra.Size = new System.Drawing.Size(50, 13);
-			this.lab_Palitra.TabIndex = 9;
+			this.lab_Palitra.TabIndex = 20;
 			this.lab_Palitra.Text = "Палитра";
 			// 
 			// lab_Filter
@@ -183,7 +183,7 @@
 			this.lab_Filter.Location = new System.Drawing.Point(112, 68);
 			this.lab_Filter.Name = "lab_Filter";
 			this.lab_Filter.Size = new System.Drawing.Size(47, 13);
-			this.lab_Filter.TabIndex = 11;
+			this.lab_Filter.TabIndex = 16;
 			this.lab_Filter.Text = "Фильтр";
 			// 
 			// chk_Stretch
@@ -191,9 +191,9 @@
 			this.chk_Stretch.AutoSize = true;
 			this.chk_Stretch.Location = new System.Drawing.Point(207, 91);
 			this.chk_Stretch.Name = "chk_Stretch";
-			this.chk_Stretch.Size = new System.Drawing.Size(61, 17);
-			this.chk_Stretch.TabIndex = 12;
-			this.chk_Stretch.Text = "Тянуть";
+			this.chk_Stretch.Size = new System.Drawing.Size(78, 17);
+			this.chk_Stretch.TabIndex = 9;
+			this.chk_Stretch.Text = "Растянуть";
 			this.chk_Stretch.UseVisualStyleBackColor = true;
 			this.chk_Stretch.CheckedChanged += new System.EventHandler(this.chk_Stretch_CheckedChanged);
 			// 
@@ -203,7 +203,7 @@
 			this.chk_Inside.Location = new System.Drawing.Point(207, 68);
 			this.chk_Inside.Name = "chk_Inside";
 			this.chk_Inside.Size = new System.Drawing.Size(68, 17);
-			this.chk_Inside.TabIndex = 13;
+			this.chk_Inside.TabIndex = 8;
 			this.chk_Inside.Text = "Вписать";
 			this.chk_Inside.UseVisualStyleBackColor = true;
 			this.chk_Inside.CheckedChanged += new System.EventHandler(this.chk_Inside_CheckedChanged);
@@ -214,7 +214,7 @@
 			this.chk_Distortion.Location = new System.Drawing.Point(207, 115);
 			this.chk_Distortion.Name = "chk_Distortion";
 			this.chk_Distortion.Size = new System.Drawing.Size(61, 17);
-			this.chk_Distortion.TabIndex = 14;
+			this.chk_Distortion.TabIndex = 10;
 			this.chk_Distortion.Text = "Пучить";
 			this.chk_Distortion.UseVisualStyleBackColor = true;
 			this.chk_Distortion.CheckedChanged += new System.EventHandler(this.chk_Eros_CheckedChanged);
@@ -225,7 +225,7 @@
 			this.chk_Rotate.Location = new System.Drawing.Point(207, 45);
 			this.chk_Rotate.Name = "chk_Rotate";
 			this.chk_Rotate.Size = new System.Drawing.Size(66, 17);
-			this.chk_Rotate.TabIndex = 15;
+			this.chk_Rotate.TabIndex = 7;
 			this.chk_Rotate.Text = "Крутить";
 			this.chk_Rotate.UseVisualStyleBackColor = true;
 			this.chk_Rotate.CheckedChanged += new System.EventHandler(this.chk_Rotate_CheckedChanged);
@@ -249,7 +249,7 @@
 			this.tabPage0.Location = new System.Drawing.Point(4, 22);
 			this.tabPage0.Name = "tabPage0";
 			this.tabPage0.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage0.Size = new System.Drawing.Size(325, 210);
+			this.tabPage0.Size = new System.Drawing.Size(325, 218);
 			this.tabPage0.TabIndex = 1;
 			this.tabPage0.Text = "List";
 			// 
@@ -274,7 +274,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-			this.splitContainer1.Size = new System.Drawing.Size(319, 204);
+			this.splitContainer1.Size = new System.Drawing.Size(319, 212);
 			this.splitContainer1.SplitterDistance = 63;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -364,7 +364,7 @@
 			this.dataGridView1.Location = new System.Drawing.Point(0, 0);
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-			this.dataGridView1.Size = new System.Drawing.Size(319, 137);
+			this.dataGridView1.Size = new System.Drawing.Size(319, 145);
 			this.dataGridView1.TabIndex = 0;
 			this.dataGridView1.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
@@ -426,7 +426,7 @@
 			this.groupBox1.Controls.Add(this.lab_Leak);
 			this.groupBox1.Controls.Add(this.lab_Palitra);
 			this.groupBox1.Controls.Add(this.lab_Level);
-			this.groupBox1.Controls.Add(this.chk_Transparency);
+			this.groupBox1.Controls.Add(this.chk_Topmost);
 			this.groupBox1.Controls.Add(this.chk_Rotate);
 			this.groupBox1.Controls.Add(this.chk_Inside);
 			this.groupBox1.Controls.Add(this.chk_Stretch);
@@ -437,13 +437,24 @@
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
 			// 
+			// chk_Spiral
+			// 
+			this.chk_Spiral.AutoSize = true;
+			this.chk_Spiral.Location = new System.Drawing.Point(207, 137);
+			this.chk_Spiral.Name = "chk_Spiral";
+			this.chk_Spiral.Size = new System.Drawing.Size(72, 17);
+			this.chk_Spiral.TabIndex = 11;
+			this.chk_Spiral.Text = "Скрутить";
+			this.chk_Spiral.UseVisualStyleBackColor = true;
+			this.chk_Spiral.Click += new System.EventHandler(this.chk_Spiral_Click);
+			// 
 			// chk_Flex
 			// 
 			this.chk_Flex.AutoSize = true;
 			this.chk_Flex.Location = new System.Drawing.Point(207, 159);
 			this.chk_Flex.Name = "chk_Flex";
 			this.chk_Flex.Size = new System.Drawing.Size(61, 17);
-			this.chk_Flex.TabIndex = 21;
+			this.chk_Flex.TabIndex = 12;
 			this.chk_Flex.Text = "Дрейф";
 			this.chk_Flex.UseVisualStyleBackColor = true;
 			this.chk_Flex.Click += new System.EventHandler(this.chk_Flex_Click);
@@ -454,7 +465,7 @@
 			this.trk_Palitra.Maximum = 20;
 			this.trk_Palitra.Name = "trk_Palitra";
 			this.trk_Palitra.Size = new System.Drawing.Size(104, 45);
-			this.trk_Palitra.TabIndex = 20;
+			this.trk_Palitra.TabIndex = 6;
 			this.trk_Palitra.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Palitra.Value = 1;
 			this.trk_Palitra.ValueChanged += new System.EventHandler(this.trk_Palitra_ValueChanged);
@@ -466,7 +477,7 @@
 			this.trk_Gamma.Minimum = -7;
 			this.trk_Gamma.Name = "trk_Gamma";
 			this.trk_Gamma.Size = new System.Drawing.Size(104, 45);
-			this.trk_Gamma.TabIndex = 17;
+			this.trk_Gamma.TabIndex = 5;
 			this.trk_Gamma.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Gamma.Value = 1;
 			this.trk_Gamma.ValueChanged += new System.EventHandler(this.trk_Gamma_ValueChanged);
@@ -478,7 +489,7 @@
 			this.trk_Filter.Minimum = 1;
 			this.trk_Filter.Name = "trk_Filter";
 			this.trk_Filter.Size = new System.Drawing.Size(104, 45);
-			this.trk_Filter.TabIndex = 19;
+			this.trk_Filter.TabIndex = 2;
 			this.trk_Filter.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.trk_Filter.Value = 1;
 			this.trk_Filter.ValueChanged += new System.EventHandler(this.trk_Filter_ValueChanged);
@@ -489,35 +500,24 @@
 			this.lab_Gamma.Location = new System.Drawing.Point(111, 138);
 			this.lab_Gamma.Name = "lab_Gamma";
 			this.lab_Gamma.Size = new System.Drawing.Size(41, 13);
-			this.lab_Gamma.TabIndex = 18;
+			this.lab_Gamma.TabIndex = 19;
 			this.lab_Gamma.Text = "Гамма";
 			// 
-			// chk_Transparency
+			// chk_Topmost
 			// 
-			this.chk_Transparency.AutoSize = true;
-			this.chk_Transparency.Location = new System.Drawing.Point(207, 137);
-			this.chk_Transparency.Name = "chk_Transparency";
-			this.chk_Transparency.Size = new System.Drawing.Size(98, 17);
-			this.chk_Transparency.TabIndex = 16;
-			this.chk_Transparency.Text = "Прозрачность";
-			this.chk_Transparency.UseVisualStyleBackColor = true;
-			this.chk_Transparency.Click += new System.EventHandler(this.chk_Transparency_Click);
+			this.chk_Topmost.AutoSize = true;
+			this.chk_Topmost.Location = new System.Drawing.Point(207, 182);
+			this.chk_Topmost.Name = "chk_Topmost";
+			this.chk_Topmost.Size = new System.Drawing.Size(87, 17);
+			this.chk_Topmost.TabIndex = 13;
+			this.chk_Topmost.Text = "ПоверхВсех";
+			this.chk_Topmost.UseVisualStyleBackColor = true;
+			this.chk_Topmost.Click += new System.EventHandler(this.chk_Topmost_Click);
 			// 
 			// Panel_Timer
 			// 
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
-			// 
-			// chk_Spiral
-			// 
-			this.chk_Spiral.AutoSize = true;
-			this.chk_Spiral.Location = new System.Drawing.Point(207, 181);
-			this.chk_Spiral.Name = "chk_Spiral";
-			this.chk_Spiral.Size = new System.Drawing.Size(69, 17);
-			this.chk_Spiral.TabIndex = 22;
-			this.chk_Spiral.Text = "Спираль";
-			this.chk_Spiral.UseVisualStyleBackColor = true;
-			this.chk_Spiral.Click += new System.EventHandler(this.chk_Spiral_Click);
 			// 
 			// Panel
 			// 
@@ -588,7 +588,7 @@
 		private System.Windows.Forms.Timer Panel_Timer;
 		public System.Windows.Forms.ProgressBar progress_Pos;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.CheckBox chk_Transparency;
+		private System.Windows.Forms.CheckBox chk_Topmost;
 		private System.Windows.Forms.TrackBar trk_Volume;
 		private System.Windows.Forms.TrackBar trk_Gamma;
 		private System.Windows.Forms.Label lab_Gamma;
