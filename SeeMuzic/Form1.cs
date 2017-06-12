@@ -56,7 +56,7 @@ namespace SeeMuzic
 		static double Power = 1.0;
 
 		static int audio_bytes = 0;
-		static short [] audiobuf = new short [AUDIO_BYTES];
+		static short [] audiobuf = new short [AUDIO_BYTES]; // больше в 2 раза чем нужно
 
 		const int XYBUF = (AUDIO_SAMPLES + MIN_RESAMPLE - 1) / MIN_RESAMPLE;
 		static int [] Xbuf = new int [XYBUF];
@@ -309,8 +309,9 @@ namespace SeeMuzic
 		}
 		// Form1_SizeChanged
 
-		static double [] kor0 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
-		static double [] kor1 = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
+		// корелятор
+		static double [] Xkor = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
+		static double [] Ykor = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
 
 		static Image img0 = null;
 		static float Xnorm = 0.0f, Ynorm = 0.0f;
@@ -352,36 +353,37 @@ namespace SeeMuzic
 				}
 			}
 			if (Okno == 0) return;
-
-			int Okno2 = Okno / 2; // центр окна
 #if KORELAT
-			// кореляция
-			for (int i = 0; i < Okno; i++)
+			// Коррелятор для пущего стробоскопического эффекта
+			int Okno34 = Okno * 3 / 4;
+			int ix = 0, iy = 0;
+			double kx = 0.0f, ky = 0.0f;
+			for (int i = 0; i < Okno / 4; i++)
 			{
-				kor0 [i] = Math.Abs (Xbuf [i]);
-			}
-			int imax = 0;
-			double si = double.MinValue;
-			for (int i = 0; i < Okno / 2; i++)
-			{
-				double sj = 0.0;
-				for (int j = 0; j < Okno; j++)
+				double kxx = 0.0f, kyy = 0.0f;
+				for (int j = 0, k = i; k < Okno34; j++, k++)
 				{
-					sj += Math.Abs (kor0 [j] + kor1 [(i + j) % Okno]);
+					kxx += Math.Abs (Xbuf [k] * Xkor [j]);
+					kyy += Math.Abs (Ybuf [k] * Ykor [j]);
 				}
-				if (si < sj)
-				{
-					si = sj;
-					imax = i;
-				}
+				if (kx < kxx) { ix = i; kx = kxx; }
+				if (ky < kyy) { iy = i; ky = kyy; }
 			}
-			for (int i = 0, j = imax; j < Okno; i++, j++)
+			for (int i = 0; i < Okno34; i++)
 			{
-				Xbuf [i] = Xbuf [j];
-				Ybuf [i] = Ybuf [j];
+				Xbuf [i] = Xbuf [ix++];
+				Ybuf [i] = Xbuf [iy++];
 			}
-			double [] swap = kor0; kor0 = kor1; kor1 = swap;
+			const double CORR_LEAK = 0.125;
+			for (int i = 0; i < Okno34; i++)
+			{
+				Xkor [i] += (Math.Abs (Xbuf [i]) - Xkor [i]) * CORR_LEAK; // обучение интегратора коррелятора
+				Ykor [i] += (Math.Abs (Ybuf [i]) - Ykor [i]) * CORR_LEAK;
+			}
+			Okno = Okno34;
 #endif
+			int Okno2 = Okno / 2; // центр окна
+
 			int vcnt = 0;
 			double vsum2 = 0.0;
 			Graphics g = e.Graphics;
