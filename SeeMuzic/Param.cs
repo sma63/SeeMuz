@@ -39,6 +39,7 @@ namespace SeeMuzic
 		const string _GAMMA_ = "GAM";
 		const string _INSIDE_ = "INS";
 		const string _INTERVAL_ = "INT";
+		const string _ISOBAR_ = "ISO";
 		const string _LEAK_ = "LEA";
 		const string _LENGTH_ = "LEN";
 		const string _PALITRA_ = "PAL";
@@ -61,6 +62,7 @@ namespace SeeMuzic
 			parms1.Add (new XElement (_GAMMA_, Gamma));
 			parms1.Add (new XElement (_INSIDE_, bInside));
 			parms1.Add (new XElement (_INTERVAL_, Interval));
+			parms1.Add (new XElement (_ISOBAR_, bIsobar));
 			parms1.Add (new XElement (_LEAK_, Leak));
 			parms1.Add (new XElement (_PALITRA_, Palitra));
 			parms1.Add (new XElement (_RESAMPLE_, Resample));
@@ -117,6 +119,7 @@ namespace SeeMuzic
 							case _GAMMA_: Gamma = double.Parse (parm.Value); break;
 							case _INTERVAL_: Interval = int.Parse (parm.Value); break;
 							case _INSIDE_: bInside = bool.Parse (parm.Value); break;
+							case _ISOBAR_: bIsobar = bool.Parse (parm.Value); break;
 							case _LEAK_: Leak = int.Parse (parm.Value); break;
 							case _PALITRA_: Palitra = double.Parse (parm.Value); break;
 							case _RESAMPLE_: Resample = int.Parse (parm.Value); break;

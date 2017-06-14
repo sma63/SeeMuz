@@ -52,6 +52,7 @@ namespace SeeMuzic
 		public static bool bTopmost = false; // поверх всех
 		public static bool bFlex = false; // дрейф палитры
 		public static bool bSpiral = false; // закручивать в спираль
+		public static bool bIsobar = false; // режим представления в изобарах
 
 		static int Resample2 = Resample; // контроль изменений Resample 
 		static double Power = 1.0;
@@ -233,6 +234,8 @@ namespace SeeMuzic
 		}
 		// timer1_Tick
 
+		private double kDistortion = 0.0;
+
 		private void timer2_Tick (object sender, EventArgs e)
 		{
 			if (bRestart)
@@ -243,22 +246,6 @@ namespace SeeMuzic
 			}
 
 			pct = (double)(fpos = Bass.BASS_ChannelGetPosition (Audio_Stream)) / flen;
-
-			if (bRotate)
-			{
-				//alpha = 4.0 * 2.0 * Math.PI * pct * pct;
-				alpha = (DateTime.Now.Ticks / 10000000 % 311) / 311.0 * Math.PI * 2.0; //31,61,101,199
-				x0 = Math.Cos (alpha);
-				y0 = Math.Sin (alpha);
-				kf = (bInside ? (Math.Abs (x0) + Math.Abs (y0)) : 1.0 / (Math.Abs (x0) + Math.Abs (y0)));
-			}
-			else
-			{
-				alpha = 0.0;
-				x0 = 1.0;
-				y0 = 0.0;
-				kf = 1.0;
-			}
 
 			if (bSpiral)
 			{
@@ -288,12 +275,11 @@ namespace SeeMuzic
 
 			if (bDistortion)
 			{
-				//double k = pct - 0.5;
-				double k = 0.5 * Math.Sin (2.0 * Math.PI *(DateTime.Now.Ticks / 10000000 & 127) / 127.0); // дрейф искажения
-				double kk = (bInside ? (k < 0.0 ? 0.0 : Math.Abs (k) / 2.0) : (k < 0.0 ? -Math.Abs (k) / 2.0 : 0.0));
+				kDistortion = 0.5 * Math.Sin (2.0 * Math.PI *(System.Environment.TickCount / 1000 & 127) / 127.0); // дрейф искажения
+				double kk = (bInside ? (kDistortion < 0.0 ? 0.0 : Math.Abs (kDistortion) / 2.0) : (kDistortion < 0.0 ? -Math.Abs (kDistortion) / 2.0 : 0.0));
 				for (int i = 0; i < DDD; i++)
 				{
-					DistortionTab [i] = k * ((double)i / DDD - 1.0) + 1.0 + kk;
+					DistortionTab [i] = kDistortion * ((double)i / DDD - 1.0) + 1.0 + kk;
 				}
 			}
 
@@ -392,40 +378,31 @@ namespace SeeMuzic
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
 
-			//kf = 1.0;
-			kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
-			if (!bInside) kf = 1.0 / kf;
-			//if (bInside)
-			//{
-			//	//kf = 1.4142;
-			//	if (bSpiral)
-			//	{
-			//		double x22 = (Xrot [DDD - 1] + Yrot [DDD - 1]);
-			//		double y22 = (Xrot [DDD - 1] - Yrot [DDD - 1]);
-			//		kf = Math.Max (Math.Abs (x22), Math.Abs (y22)) * 1.1;
-			//	}
-			//	else
-			//	{
-			//		kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
-			//	}
-			//	if (bDistortion)
-			//	{
-			//		kf *= 1.5;
-			//	}
-			//}
-			//else
-			//{
-			//	//kf = 0.7071;
-			//	kf = 1.0 / Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
-			//	if (bSpiral) kf *= 0.72;
-			//	if (bDistortion) kf *= 1.1;
-			//}
+
+			int sec = System.Environment.TickCount / 1000 / 15; // раз в 15 сек
+
+			if (bRotate)
+			{
+				alpha = -(System.Environment.TickCount & 16383) / 32768.0 * Math.PI;
+				x0 = Math.Cos (alpha);
+				y0 = Math.Sin (alpha);
+				kf = Math.Max (Math.Abs (x0 + y0), Math.Abs (x0 - y0));
+				if (!bInside) kf = 1.0 / kf;
+			}
+			else
+			{
+				alpha = 0.0;
+				x0 = 1.0;
+				y0 = 0.0;
+				kf = 1.0;
+			}
 
 			Graphics g = e.Graphics;
 			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
 			var Fbmp1 = new FastBitmap (bmp1);
 			// FastBmp.ResetFirstPixel (); // вызывается в конструкторе
 
+			Color color1 = new Color ();
 			double x1, y1, x2, y2;
 			for (int x = 0; x < Okno; x++)
 			{
@@ -460,17 +437,32 @@ namespace SeeMuzic
 						y2 = Okno2 + Okno2 * y2 * kf;
 						if ((0.0 <= y2) && (y2 < Okno))
 						{
-							double v = Math.Abs (Xbuf [(int)x2] + Ybuf [(int)y2]);
+							double v = Xbuf [(int)x2] + Ybuf [(int)y2];
 							vsum2 += v * v; vcnt++;
 							if (0.0 < Power) v /= Power;
-							//bmp1.SetPixel (x, y, TriColor (kf1 + v * kf2, v * kf3));
-							//Fbmp1.SetPixel (x, y, TriColor (kf1 + v * kf2, v * kf3));
-							Fbmp1.SetNextPixel (TriColor (kf1 + v * kf2, v * kf3));
+							if (bIsobar)
+							{
+								int va = (int)(v * 64.0 * Gamma) & 255;
+								int vb = ((sec & 1) == 0 ? va : -va & 255);
+								switch ((sec >> 1) % 6)
+								{
+									case 0: color1 = (0.0f < v ? Color.FromArgb (va, 0, 0) : Color.FromArgb (0, vb, 0)); break;
+									case 1: color1 = (0.0f < v ? Color.FromArgb (va, 0, 0) : Color.FromArgb (0, 0, vb)); break;
+									case 2: color1 = (0.0f < v ? Color.FromArgb (0, va, 0) : Color.FromArgb (0, 0, vb)); break;
+									case 3: color1 = (0.0f < v ? Color.FromArgb (0, va, 0) : Color.FromArgb (vb, 0, 0)); break;
+									case 4: color1 = (0.0f < v ? Color.FromArgb (0, 0, va) : Color.FromArgb (vb, 0, 0)); break;
+									case 5: color1 = (0.0f < v ? Color.FromArgb (0, 0, va) : Color.FromArgb (0, vb, 0)); break;
+								}
+							}
+							else
+							{
+								v = Math.Abs (v);
+								color1 = TriColor (kf1 + v * kf2, v * kf3);
+							}
+							Fbmp1.SetNextPixel (color1);
 							continue;
 						}
 					}
-					//Skip: bmp1.SetPixel (x, y, Color.Black);
-					//FastBmp.SetPixel (x, y, Color.Black);
 					Fbmp1.SetNextPixel (Color.Black);
 				}
 			}

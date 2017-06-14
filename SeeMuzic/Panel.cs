@@ -48,6 +48,7 @@ namespace SeeMuzic
 			chk_Topmost.Checked = Form1.bTopmost;
 			chk_Flex.Checked = Form1.bFlex;
 			chk_Spiral.Checked = Form1.bSpiral;
+			chk_Isobar.Checked = Form1.bIsobar;
 
 			lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
 			lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
@@ -239,6 +240,11 @@ namespace SeeMuzic
 		private void chk_Spiral_Click (object sender, EventArgs e)
 		{
 			Form1.bSpiral = chk_Spiral.Checked;
+		}
+
+		private void chk_Isobar_Click (object sender, EventArgs e)
+		{
+			Form1.bIsobar = chk_Isobar.Checked;
 		}
 
 		private void btn_Load_Click (object sender, EventArgs e)
