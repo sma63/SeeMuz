@@ -32,7 +32,7 @@ namespace SeeMuzic
 		public void Reload ()
 		{
 			bUpdate = false;
-			trk_Front.Value = Ranger10 (Form1.Leak / LEAK);
+			trk_Front.Value = Ranger10 (Form1.PowerLeak / LEAK);
 			trk_Bright.Value = Ranger10 (Form1.Bright / BRIGHT, -10.0, +10.0);
 			trk_Interval.Value = Ranger10 ((Form1.Interval - INTERVAL2) / INTERVAL);
 			trk_Resample.Value = Ranger10 (Form1.ResToIdx (Form1.Resample) - Form1.ResToIdx (Form1.MIN_RESAMPLE), 0.0, 9.0);
@@ -40,6 +40,7 @@ namespace SeeMuzic
 			trk_Filter.Value = Ranger10 (Form1.iFilter, 1.0, 7.0);
 			trk_Palitra.Value = Ranger10 (Form1.Palitra * 20.0, 0.0, 20.0);
 			trk_Volume.Value = Ranger10 (Form1.Volume, 0.0, 10.0);
+			trk_Screen.Value = Ranger10 (Form1.ScreenLeak * 10.0, 1.0, 10.0);
 
 			chk_Rotate.Checked = Form1.bRotate;
 			chk_Stretch.Checked = Form1.bStretch;
@@ -50,13 +51,14 @@ namespace SeeMuzic
 			chk_Spiral.Checked = Form1.bSpiral;
 			chk_Isobar.Checked = Form1.bIsobar;
 
-			lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
+			lab_Leak.Text = String.Format ("Норма = {0}", Form1.PowerLeak);
 			lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
 			lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
 			lab_Interval.Text = String.Format ("Инт = {0} ms", Form1.Interval);
 			lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
 			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
+			lab_Screen.Text = String.Format ("Инерция = {0}", Form1.ScreenLeak);
 
 			dataGridView1.Rows.Clear ();
 			for (int i = 0; i < Form1.ListParam.Count; i++)
@@ -95,8 +97,8 @@ namespace SeeMuzic
 		{
 			if (bUpdate)
 			{
-				Form1.Leak = trk_Front.Value * LEAK;
-				lab_Leak.Text = String.Format ("Норма = {0}", Form1.Leak);
+				Form1.PowerLeak = trk_Front.Value * LEAK;
+				lab_Leak.Text = String.Format ("Норма = {0}", Form1.PowerLeak);
 			}
 		}
 
@@ -161,6 +163,12 @@ namespace SeeMuzic
 				Form1.Volume = trk_Volume.Value;
 				Bass.BASS_ChannelSetAttribute (Form1.Audio_Stream, BASSAttribute.BASS_ATTRIB_VOL, (float)Form1.Volume / 10.0f);
 			}
+		}
+
+		private void trk_Screen_ValueChanged (object sender, EventArgs e)
+		{
+			Form1.ScreenLeak = trk_Screen.Value / 10.0;
+			lab_Screen.Text = String.Format ("Инерция = {0}", Form1.ScreenLeak);
 		}
 
 		private void chk_Rotate_CheckedChanged (object sender, EventArgs e)
@@ -292,7 +300,7 @@ namespace SeeMuzic
 								prm1.iFilter = 0;
 								prm1.Gamma = 0.0;
 								prm1.Interval = 0;
-								prm1.Leak = 0.0;
+								prm1.PowerLeak = 0.0;
 								prm1.Length = (int)Bass.BASS_ChannelBytes2Seconds (stream, Bass.BASS_ChannelGetLength (stream));
 								prm1.Palitra = 0.0;
 								prm1.Resample = 0;

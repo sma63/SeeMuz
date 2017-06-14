@@ -21,16 +21,18 @@ namespace SeeMuzic
 		public string Fname;
 		public double Gamma;
 		public int Interval;
-		public double Leak;
+		public double PowerLeak;
 		public int Length;
 		public double Palitra;
 		public int Resample;
+		public double ScreenLeak;
 	}
 
 	public partial class Form1 : Form
 	{
 		const string SeeMuzXml = "SeeMuz.xml";
 		const string SeeMuzListXml = "SeeMuz.List.xml";
+
 		const string _BRIGHT_ = "BRI";
 		const string _DISTORTION_ = "DST";
 		const string _FILE_ = "NAM";
@@ -45,6 +47,7 @@ namespace SeeMuzic
 		const string _PALITRA_ = "PAL";
 		const string _RESAMPLE_ = "RES";
 		const string _ROTATE_ = "ROT";
+		const string _SCREEN_ = "SCR";
 		const string _SPIRAL_ = "SPI";
 		const string _STRETCH_ = "STR";
 		const string _TOPMOST_ = "TOP";
@@ -63,10 +66,11 @@ namespace SeeMuzic
 			parms1.Add (new XElement (_INSIDE_, bInside));
 			parms1.Add (new XElement (_INTERVAL_, Interval));
 			parms1.Add (new XElement (_ISOBAR_, bIsobar));
-			parms1.Add (new XElement (_LEAK_, Leak));
+			parms1.Add (new XElement (_LEAK_, PowerLeak));
 			parms1.Add (new XElement (_PALITRA_, Palitra));
 			parms1.Add (new XElement (_RESAMPLE_, Resample));
 			parms1.Add (new XElement (_ROTATE_, bRotate));
+			parms1.Add (new XElement (_SCREEN_, ScreenLeak));
 			parms1.Add (new XElement (_SPIRAL_, bSpiral));
 			parms1.Add (new XElement (_STRETCH_, bStretch));
 			parms1.Add (new XElement (_TOPMOST_, bTopmost));
@@ -88,10 +92,11 @@ namespace SeeMuzic
 						new XAttribute (_FILTER_, prm1.iFilter),
 						new XAttribute (_GAMMA_, prm1.Gamma),
 						new XAttribute (_INTERVAL_, prm1.Interval),
-						new XAttribute (_LEAK_, prm1.Leak),
+						new XAttribute (_LEAK_, prm1.PowerLeak),
 						new XAttribute (_LENGTH_, prm1.Length),
 						new XAttribute (_PALITRA_, prm1.Palitra),
 						new XAttribute (_RESAMPLE_, prm1.Resample),
+						new XAttribute (_SCREEN_, prm1.ScreenLeak),
 						new XAttribute (_FILE_, prm1.Fname)
 					));
 				}
@@ -120,10 +125,11 @@ namespace SeeMuzic
 							case _INTERVAL_: Interval = int.Parse (parm.Value); break;
 							case _INSIDE_: bInside = bool.Parse (parm.Value); break;
 							case _ISOBAR_: bIsobar = bool.Parse (parm.Value); break;
-							case _LEAK_: Leak = int.Parse (parm.Value); break;
+							case _LEAK_: PowerLeak = int.Parse (parm.Value); break;
 							case _PALITRA_: Palitra = double.Parse (parm.Value); break;
 							case _RESAMPLE_: Resample = int.Parse (parm.Value); break;
 							case _ROTATE_: bRotate = bool.Parse (parm.Value); break;
+							case _SCREEN_: ScreenLeak = double.Parse (parm.Value); break;
 							case _SPIRAL_: bSpiral = bool.Parse (parm.Value); break;
 							case _STRETCH_: bStretch = bool.Parse (parm.Value); break;
 							case _TOPMOST_: bTopmost = bool.Parse (parm.Value); break;
@@ -155,7 +161,7 @@ namespace SeeMuzic
 						prm1.iFilter = 0;
 						prm1.Gamma = 0.0;
 						prm1.Interval = 0;
-						prm1.Leak = 0.0;
+						prm1.PowerLeak = 0.0;
 						prm1.Length = 0;
 						prm1.Palitra = 0.0;
 						prm1.Resample = 0;
@@ -164,10 +170,11 @@ namespace SeeMuzic
 						try { prm1.iFilter = int.Parse (parm.Attribute (_FILTER_).Value); } catch { }
 						try { prm1.Gamma = double.Parse (parm.Attribute (_GAMMA_).Value); } catch { }
 						try { prm1.Interval = int.Parse (parm.Attribute (_INTERVAL_).Value); } catch { }
-						try { prm1.Leak = int.Parse (parm.Attribute (_LEAK_).Value); } catch { }
+						try { prm1.PowerLeak = int.Parse (parm.Attribute (_LEAK_).Value); } catch { }
 						try { prm1.Length = int.Parse (parm.Attribute (_LENGTH_).Value); } catch { }
 						try { prm1.Palitra = double.Parse (parm.Attribute (_PALITRA_).Value); } catch { }
 						try { prm1.Resample = int.Parse (parm.Attribute (_RESAMPLE_).Value); } catch { }
+						try { prm1.ScreenLeak = double.Parse (parm.Attribute (_SCREEN_).Value); } catch { }
 						try { prm1.Fname = parm.Attribute (_FILE_).Value; } catch { continue; }
 
 						ListParam.Add (prm1);

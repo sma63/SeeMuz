@@ -30,20 +30,21 @@ namespace SeeMuzic
 		const int SAMPLE_BYTES = sizeof (Int32); // число байт в сампле
 		const int AUDIO_SAMPLES = (MAX_INTERVAL * SAMPLERATE + 999) / 1000; // Длина аудиобуффера в самплах
 		const int AUDIO_BYTES = AUDIO_SAMPLES * SAMPLE_BYTES; // .. в байтах
-		const int DDD = 200; // таблица искажений
+		const int DISTORTION = 200; // таблица искажений
 
 		private int _syncer = 0;
 		static SYNCPROC _syncProcEndStream;
 		public static int Audio_Stream = 0;
 
-		public static double Bright = 30.0;
+		public static double Bright = 30.0; // яркость
 		public static int Interval = 40; // 1000 / 40 = 25 кадров в сек.
 		public static int Resample = (MIN_RESAMPLE + MAX_RESAMPLE) / 2; // (44100 / 14 = 3150) / 25 = 126
-		public static int Volume = 5; // 0 .. 10
-		public static double Leak = 1.0;
+		public static int Volume = 5; // 0 .. 10 // Уровень громкости
+		public static double PowerLeak = 1.0; // интегратор мощности
 		public static int iFilter = 1, iFilter2 = 1;
 		public static double Palitra = 0.0;
 		public static double Gamma = 2.0; // ширина цветовой гаммы
+		public static double ScreenLeak = 1.0; // утечка интегратора экрана
 
 		public static bool bRotate = true; // крутить
 		public static bool bStretch = false; // растянуть
@@ -145,17 +146,33 @@ namespace SeeMuzic
 
 		public static Form1 himself = null;
 
-		static double [] DistortionTab = new double [DDD];
-		static double [] Xrot = new double [DDD];
-		static double [] Yrot = new double [DDD];
+		static double [] DistortionTab = new double [DISTORTION];
+		static double [] Xrot = new double [DISTORTION];
+		static double [] Yrot = new double [DISTORTION];
+
+		// корелятор
+		static double [] Xkor = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
+		static double [] Ykor = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
+
+		static Image img0 = null;
+		static float Xnorm = 0.0f, Ynorm = 0.0f;
+
+		const int SCRSIDE = 512; // 44100 / 10 * 100 / 1000 = 441
+		static double [,] Screen = new double [SCRSIDE, SCRSIDE];
 
 		public Form1 ()
 		{
 			himself = this;
 
+			double test = Math.Pow (2.0, Math.Ceiling (Math.Log (SAMPLERATE / MIN_RESAMPLE * MAX_INTERVAL / 1000) / Math.Log (2.0)));
+			if (test < SCRSIDE)
+			{
+				MessageBox.Show ("SCRSIDE out range!", "Error!");
+			}
+
 			InitializeComponent ();
 
-			for (int i = 0; i < DDD; i++)
+			for (int i = 0; i < DISTORTION; i++)
 			{
 				DistortionTab [i] = 1.0;
 				Xrot [i] = 1.0;
@@ -210,9 +227,10 @@ namespace SeeMuzic
 			tab1.iFilter = iFilter;
 			tab1.Gamma = Gamma;
 			tab1.Interval = Interval;
-			tab1.Leak = Leak;
+			tab1.PowerLeak = PowerLeak;
 			tab1.Palitra = Palitra;
 			tab1.Resample = Resample;
+			tab1.ScreenLeak = ScreenLeak;
 		}
 		// Parm_To_Tab
 
@@ -222,9 +240,10 @@ namespace SeeMuzic
 			iFilter = tab1.iFilter;
 			Gamma = tab1.Gamma;
 			Interval = tab1.Interval;
-			Leak = tab1.Leak;
+			PowerLeak = tab1.PowerLeak;
 			Palitra = tab1.Palitra;
 			Resample = tab1.Resample;
+			ScreenLeak = tab1.ScreenLeak;
 		}
 		// Tab_To_Parm
 
@@ -252,9 +271,9 @@ namespace SeeMuzic
 				double eee = (DateTime.Now.Ticks / 10000000 % 61) / 61.0; //31,61,101
 				double spiral = Math.Sin (Math.PI * 2.0 * eee);
 				double kkk = (bInside ? 1.0 + Math.Abs (spiral) / 9.0 : 1.0 - Math.Abs (spiral) / 18.0);
-				for (int i = 0; i < DDD; i++)
+				for (int i = 0; i < DISTORTION; i++)
 				{
-					double a = (double)(DDD - 1 - i) / DDD;
+					double a = (double)(DISTORTION - 1 - i) / DISTORTION;
 					a = alpha + spiral * a * a;
 					Xrot [i] = Math.Cos (a) * kkk;
 					Yrot [i] = Math.Sin (a) * kkk;
@@ -277,9 +296,9 @@ namespace SeeMuzic
 			{
 				kDistortion = 0.5 * Math.Sin (2.0 * Math.PI *(System.Environment.TickCount / 1000 & 127) / 127.0); // дрейф искажения
 				double kk = (bInside ? (kDistortion < 0.0 ? 0.0 : Math.Abs (kDistortion) / 2.0) : (kDistortion < 0.0 ? -Math.Abs (kDistortion) / 2.0 : 0.0));
-				for (int i = 0; i < DDD; i++)
+				for (int i = 0; i < DISTORTION; i++)
 				{
-					DistortionTab [i] = kDistortion * ((double)i / DDD - 1.0) + 1.0 + kk;
+					DistortionTab [i] = kDistortion * ((double)i / DISTORTION - 1.0) + 1.0 + kk;
 				}
 			}
 
@@ -295,13 +314,6 @@ namespace SeeMuzic
 			}
 		}
 		// Form1_SizeChanged
-
-		// корелятор
-		static double [] Xkor = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
-		static double [] Ykor = new double [AUDIO_SAMPLES / MIN_RESAMPLE];
-
-		static Image img0 = null;
-		static float Xnorm = 0.0f, Ynorm = 0.0f;
 
 		private void Form1_Paint (object sender, PaintEventArgs e)
 		{
@@ -340,7 +352,7 @@ namespace SeeMuzic
 				}
 			}
 			if (Okno == 0) return;
-#if KORELAT
+
 			// Коррелятор для пущего стробоскопического эффекта
 			int Okno34 = Okno * 3 / 4;
 			int ix = 0, iy = 0;
@@ -368,7 +380,7 @@ namespace SeeMuzic
 				Ykor [i] += (Math.Abs (Ybuf [i]) - Ykor [i]) * CORR_LEAK;
 			}
 			Okno = Okno34;
-#endif
+
 			int Okno2 = Okno / 2; // центр окна
 
 			int vcnt = 0;
@@ -377,7 +389,6 @@ namespace SeeMuzic
 			double kf1 = Palitra; // pct;
 			double kf2 = Gamma * 0.1;
 			double kf3 = Bright * 0.2;
-
 
 			int sec = System.Environment.TickCount / 1000 / 15; // раз в 15 сек
 
@@ -400,7 +411,6 @@ namespace SeeMuzic
 			Graphics g = e.Graphics;
 			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
 			var Fbmp1 = new FastBitmap (bmp1);
-			// FastBmp.ResetFirstPixel (); // вызывается в конструкторе
 
 			Color color1 = new Color ();
 			double x1, y1, x2, y2;
@@ -413,7 +423,8 @@ namespace SeeMuzic
 
 					if (bSpiral)
 					{
-						int ir = (int)((x1 * x1 + y1 * y1) * DDD / 2.0); if (DDD <= ir) ir = DDD - 1;
+						int ir = (int)((x1 * x1 + y1 * y1) * DISTORTION / 2.0);
+						if (DISTORTION <= ir) ir = DISTORTION - 1;
 						x2 = (Xrot [ir] * x1 + Yrot [ir] * y1);
 						y2 = (Xrot [ir] * y1 - Yrot [ir] * x1);
 					}
@@ -425,10 +436,10 @@ namespace SeeMuzic
 
 					if (bDistortion)
 					{
-						int ir = (int)((x2 * x2 + y2 * y2) * DDD / 2.0); if (DDD <= ir) ir = DDD - 1;
-						double r2 = DistortionTab [ir];
-						x2 *= r2;
-						y2 *= r2;
+						int ir = (int)((x2 * x2 + y2 * y2) * DISTORTION / 2.0);
+						if (DISTORTION <= ir) ir = DISTORTION - 1;
+						x2 *= DistortionTab [ir];
+						y2 *= DistortionTab [ir];
 					}
 
 					x2 = Okno2 + Okno2 * x2 * kf;
@@ -438,6 +449,7 @@ namespace SeeMuzic
 						if ((0.0 <= y2) && (y2 < Okno))
 						{
 							double v = Xbuf [(int)x2] + Ybuf [(int)y2];
+							if (ScreenLeak < 1.0) v = Screen [x, y] += (v - Screen [x, y]) * ScreenLeak;
 							vsum2 += v * v; vcnt++;
 							if (0.0 < Power) v /= Power;
 							if (bIsobar)
@@ -472,7 +484,7 @@ namespace SeeMuzic
 			if (0 < vcnt)
 			{
 				pwr1 = Math.Sqrt (vsum2 / vcnt);
-				Power += (pwr1 - Power) / Leak;
+				Power += (pwr1 - Power) / PowerLeak;
 				//bw.Write (BitConverter.GetBytes ((short)1000.0 * Power3), 0, sizeof (short));
 			}
 
@@ -491,6 +503,7 @@ namespace SeeMuzic
 				g.DrawLine (pen2, (int)(this.ClientSize.Width * fpos / flen), this.ClientSize.Height - PENW, 0, this.ClientSize.Height - PENW);
 				img0 = img1;
 			}
+
 			//else if (img0 != null)
 			//{
 			//	if (bStretch)

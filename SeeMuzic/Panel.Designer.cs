@@ -61,6 +61,7 @@
 			this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.chk_Isobar = new System.Windows.Forms.CheckBox();
 			this.chk_Spiral = new System.Windows.Forms.CheckBox();
 			this.chk_Flex = new System.Windows.Forms.CheckBox();
 			this.trk_Palitra = new System.Windows.Forms.TrackBar();
@@ -69,7 +70,8 @@
 			this.lab_Gamma = new System.Windows.Forms.Label();
 			this.chk_Topmost = new System.Windows.Forms.CheckBox();
 			this.Panel_Timer = new System.Windows.Forms.Timer(this.components);
-			this.chk_Isobar = new System.Windows.Forms.CheckBox();
+			this.trk_Screen = new System.Windows.Forms.TrackBar();
+			this.lab_Screen = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Bright)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Interval)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Resample)).BeginInit();
@@ -87,6 +89,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.trk_Palitra)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Gamma)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Filter)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Screen)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// trk_Bright
@@ -239,7 +242,7 @@
 			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(333, 248);
+			this.tabControl1.Size = new System.Drawing.Size(333, 271);
 			this.tabControl1.TabIndex = 16;
 			this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
 			// 
@@ -250,7 +253,7 @@
 			this.tabPage0.Location = new System.Drawing.Point(4, 22);
 			this.tabPage0.Name = "tabPage0";
 			this.tabPage0.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage0.Size = new System.Drawing.Size(325, 218);
+			this.tabPage0.Size = new System.Drawing.Size(325, 222);
 			this.tabPage0.TabIndex = 1;
 			this.tabPage0.Text = "List";
 			// 
@@ -275,7 +278,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-			this.splitContainer1.Size = new System.Drawing.Size(319, 212);
+			this.splitContainer1.Size = new System.Drawing.Size(319, 216);
 			this.splitContainer1.SplitterDistance = 63;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -369,7 +372,7 @@
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.ReadOnly = true;
 			this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-			this.dataGridView1.Size = new System.Drawing.Size(319, 145);
+			this.dataGridView1.Size = new System.Drawing.Size(319, 149);
 			this.dataGridView1.TabIndex = 0;
 			this.dataGridView1.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
@@ -410,12 +413,14 @@
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(325, 222);
+			this.tabPage1.Size = new System.Drawing.Size(325, 245);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "View";
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.trk_Screen);
+			this.groupBox1.Controls.Add(this.lab_Screen);
 			this.groupBox1.Controls.Add(this.chk_Isobar);
 			this.groupBox1.Controls.Add(this.chk_Spiral);
 			this.groupBox1.Controls.Add(this.chk_Flex);
@@ -440,9 +445,20 @@
 			this.groupBox1.Controls.Add(this.chk_Distortion);
 			this.groupBox1.Location = new System.Drawing.Point(6, 5);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(311, 211);
+			this.groupBox1.Size = new System.Drawing.Size(311, 236);
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
+			// 
+			// chk_Isobar
+			// 
+			this.chk_Isobar.AutoSize = true;
+			this.chk_Isobar.Location = new System.Drawing.Point(207, 205);
+			this.chk_Isobar.Name = "chk_Isobar";
+			this.chk_Isobar.Size = new System.Drawing.Size(72, 17);
+			this.chk_Isobar.TabIndex = 21;
+			this.chk_Isobar.Text = "Изобары";
+			this.chk_Isobar.UseVisualStyleBackColor = true;
+			this.chk_Isobar.Click += new System.EventHandler(this.chk_Isobar_Click);
 			// 
 			// chk_Spiral
 			// 
@@ -526,27 +542,36 @@
 			this.Panel_Timer.Interval = 1000;
 			this.Panel_Timer.Tick += new System.EventHandler(this.Panel_Timer_Tick);
 			// 
-			// chk_Isobar
+			// trk_Screen
 			// 
-			this.chk_Isobar.AutoSize = true;
-			this.chk_Isobar.Location = new System.Drawing.Point(129, 182);
-			this.chk_Isobar.Name = "chk_Isobar";
-			this.chk_Isobar.Size = new System.Drawing.Size(72, 17);
-			this.chk_Isobar.TabIndex = 21;
-			this.chk_Isobar.Text = "Изобары";
-			this.chk_Isobar.UseVisualStyleBackColor = true;
-			this.chk_Isobar.Click += new System.EventHandler(this.chk_Isobar_Click);
+			this.trk_Screen.Location = new System.Drawing.Point(7, 180);
+			this.trk_Screen.Minimum = 1;
+			this.trk_Screen.Name = "trk_Screen";
+			this.trk_Screen.Size = new System.Drawing.Size(104, 45);
+			this.trk_Screen.TabIndex = 22;
+			this.trk_Screen.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.trk_Screen.Value = 1;
+			this.trk_Screen.ValueChanged += new System.EventHandler(this.trk_Screen_ValueChanged);
+			// 
+			// lab_Screen
+			// 
+			this.lab_Screen.AutoSize = true;
+			this.lab_Screen.Location = new System.Drawing.Point(112, 183);
+			this.lab_Screen.Name = "lab_Screen";
+			this.lab_Screen.Size = new System.Drawing.Size(51, 13);
+			this.lab_Screen.TabIndex = 23;
+			this.lab_Screen.Text = "Инерция";
 			// 
 			// Panel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(333, 248);
+			this.ClientSize = new System.Drawing.Size(333, 271);
 			this.Controls.Add(this.tabControl1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(349, 286);
+			this.MinimumSize = new System.Drawing.Size(349, 309);
 			this.Name = "Panel";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "SeeMuz - Control";
@@ -570,6 +595,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.trk_Palitra)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Gamma)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.trk_Filter)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.trk_Screen)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -620,5 +646,7 @@
 		private System.Windows.Forms.CheckBox chk_Flex;
 		private System.Windows.Forms.CheckBox chk_Spiral;
 		private System.Windows.Forms.CheckBox chk_Isobar;
+		private System.Windows.Forms.TrackBar trk_Screen;
+		private System.Windows.Forms.Label lab_Screen;
 	}
 }
