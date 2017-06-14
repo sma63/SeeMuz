@@ -66,9 +66,12 @@ namespace SeeMuzic
 				dataGridView1.Rows [i].HeaderCell.Value = i.ToString ();
 
 			}
-			iFnames = Form1.iFnames;
-			dataGridView1.Rows [iFnames].Selected = true;
-			dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
+			if (0 < Form1.ListParam.Count)
+			{
+				iFnames = Form1.iFnames;
+				dataGridView1.Rows [iFnames].Selected = true;
+				dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
+			}
 			bUpdate = true;
 
 			Panel_Timer.Enabled = true;

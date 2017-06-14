@@ -17,6 +17,7 @@ using System.Threading;
 
 using Un4seen.Bass;
 using audio_sma;
+using FastBmp;
 
 namespace SeeMuzic
 {
@@ -386,8 +387,6 @@ namespace SeeMuzic
 
 			int vcnt = 0;
 			double vsum2 = 0.0;
-			Graphics g = e.Graphics;
-			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
 
 			double kf1 = Palitra; // pct;
 			double kf2 = Gamma * 0.1;
@@ -421,6 +420,11 @@ namespace SeeMuzic
 			//	if (bSpiral) kf *= 0.72;
 			//	if (bDistortion) kf *= 1.1;
 			//}
+
+			Graphics g = e.Graphics;
+			Bitmap bmp1 = new Bitmap (Okno, Okno, g);
+			var Fbmp1 = new FastBitmap (bmp1);
+			// FastBmp.ResetFirstPixel (); // вызывается в конструкторе
 
 			double x1, y1, x2, y2;
 			for (int x = 0; x < Okno; x++)
@@ -459,13 +463,18 @@ namespace SeeMuzic
 							double v = Math.Abs (Xbuf [(int)x2] + Ybuf [(int)y2]);
 							vsum2 += v * v; vcnt++;
 							if (0.0 < Power) v /= Power;
-							bmp1.SetPixel (x, y, TriColor (kf1 + v * kf2, v * kf3));
+							//bmp1.SetPixel (x, y, TriColor (kf1 + v * kf2, v * kf3));
+							//Fbmp1.SetPixel (x, y, TriColor (kf1 + v * kf2, v * kf3));
+							Fbmp1.SetNextPixel (TriColor (kf1 + v * kf2, v * kf3));
 							continue;
 						}
 					}
 					//Skip: bmp1.SetPixel (x, y, Color.Black);
+					//FastBmp.SetPixel (x, y, Color.Black);
+					Fbmp1.SetNextPixel (Color.Black);
 				}
 			}
+			Fbmp1.Unlock ();
 
 			double pwr1 = 0.0;
 			if (0 < vcnt)
@@ -474,6 +483,7 @@ namespace SeeMuzic
 				Power += (pwr1 - Power) / Leak;
 				//bw.Write (BitConverter.GetBytes ((short)1000.0 * Power3), 0, sizeof (short));
 			}
+
 			//if (Power < pwr1)
 			{
 				Image img1 = bmp1;
