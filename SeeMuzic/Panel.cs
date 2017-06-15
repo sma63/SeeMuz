@@ -51,13 +51,13 @@ namespace SeeMuzic
 			chk_Spiral.Checked = Form1.bSpiral;
 			chk_Isobar.Checked = Form1.bIsobar;
 
-			lab_Leak.Text = String.Format ("Норма = {0}", Form1.PowerLeak);
-			lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
-			lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
-			lab_Interval.Text = String.Format ("Инт = {0} ms", Form1.Interval);
-			lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
-			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			lab_Resample.Text = String.Format ("Fs = {0} / {1} = {2} Hz", Form1.SAMPLERATE, Form1.Resample, Form1.SAMPLERATE / Form1.Resample);
+			lab_Interval.Text = String.Format ("Интервал = {0} ms", Form1.Interval);
+			lab_Filter.Text = String.Format ("Фильтр = {0}", Form1.iFilter);
+			lab_Leak.Text = String.Format ("Накопление = {0}", Form1.PowerLeak);
+			lab_Level.Text = String.Format ("Яркость = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
+			lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
+			lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			lab_Screen.Text = String.Format ("Инерция = {0}", Form1.ScreenLeak);
 
 			dataGridView1.Rows.Clear ();
@@ -93,33 +93,6 @@ namespace SeeMuzic
 			Form1.bLastPage0 = (this.tabControl1.SelectedTab == this.tabPage0);
 		}
 
-		private void trk_Front_ValueChanged (object sender, EventArgs e)
-		{
-			if (bUpdate)
-			{
-				Form1.PowerLeak = trk_Front.Value * LEAK;
-				lab_Leak.Text = String.Format ("Норма = {0}", Form1.PowerLeak);
-			}
-		}
-
-		private void trk_Level_ValueChanged (object sender, EventArgs e)
-		{
-			if (bUpdate)
-			{
-				Form1.Bright = trk_Bright.Value * BRIGHT;
-				lab_Level.Text = String.Format ("Ярк = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
-			}
-		}
-
-		private void trk_Interval_ValueChanged (object sender, EventArgs e)
-		{
-			if (bUpdate)
-			{
-				Form1.Interval = INTERVAL2 + trk_Interval.Value * INTERVAL;
-				lab_Interval.Text = String.Format ("Интер = {0} ms", Form1.Interval);
-			}
-		}
-
 		private void trk_Resample_ValueChanged (object sender, EventArgs e)
 		{
 			if (bUpdate)
@@ -129,12 +102,12 @@ namespace SeeMuzic
 			}
 		}
 
-		private void trk_Gamma_ValueChanged (object sender, EventArgs e)
+		private void trk_Interval_ValueChanged (object sender, EventArgs e)
 		{
 			if (bUpdate)
 			{
-				Form1.Gamma = trk_Gamma.Value;
-				lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
+				Form1.Interval = INTERVAL2 + trk_Interval.Value * INTERVAL;
+				lab_Interval.Text = String.Format ("Интервал = {0} ms", Form1.Interval);
 			}
 		}
 
@@ -147,6 +120,33 @@ namespace SeeMuzic
 			}
 		}
 
+		private void trk_Front_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.PowerLeak = trk_Front.Value * LEAK;
+				lab_Leak.Text = String.Format ("Накопление = {0}", Form1.PowerLeak);
+			}
+		}
+
+		private void trk_Level_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Bright = trk_Bright.Value * BRIGHT;
+				lab_Level.Text = String.Format ("Яркость = {0}{1}", (0.0 < Form1.Bright ? "+" : ""), Form1.Bright);
+			}
+		}
+
+		private void trk_Gamma_ValueChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
+			{
+				Form1.Gamma = trk_Gamma.Value;
+				lab_Gamma.Text = String.Format ("Гамма = {0}{1}", (0.0 < Form1.Gamma ? "+" : ""), Form1.Gamma);
+			}
+		}
+
 		private void trk_Palitra_ValueChanged (object sender, EventArgs e)
 		{
 			if (bUpdate)
@@ -154,6 +154,12 @@ namespace SeeMuzic
 				Form1.Palitra = trk_Palitra.Value / 20.0;
 				lab_Palitra.Text = String.Format ("Палитра = {0}", Form1.Palitra);
 			}
+		}
+
+		private void trk_Screen_ValueChanged (object sender, EventArgs e)
+		{
+			Form1.ScreenLeak = trk_Screen.Value / 10.0;
+			lab_Screen.Text = String.Format ("Инерция = {0}", Form1.ScreenLeak);
 		}
 
 		private void trk_Volume_ValueChanged (object sender, EventArgs e)
@@ -165,39 +171,54 @@ namespace SeeMuzic
 			}
 		}
 
-		private void trk_Screen_ValueChanged (object sender, EventArgs e)
-		{
-			Form1.ScreenLeak = trk_Screen.Value / 10.0;
-			lab_Screen.Text = String.Format ("Инерция = {0}", Form1.ScreenLeak);
-		}
-
-		private void chk_Rotate_CheckedChanged (object sender, EventArgs e)
+		private void chk_Rotate_Click (object sender, EventArgs e)
 		{
 			Form1.bRotate = chk_Rotate.Checked;
 		}
 
-		private void chk_Stretch_CheckedChanged (object sender, EventArgs e)
-		{
-			Form1.bStretch = chk_Stretch.Checked;
-		}
-
-		private void chk_Inside_CheckedChanged (object sender, EventArgs e)
+		private void chk_Inside_Click (object sender, EventArgs e)
 		{
 			Form1.bInside = chk_Inside.Checked;
 		}
 
-		private void Panel_Timer_Tick (object sender, EventArgs e)
+		private void chk_Stretch_Click (object sender, EventArgs e) //$
 		{
-			progress_Pos.Value = (int)(Form1.pct * 100.0);
-			if (iFnames != Form1.iFnames)
+			Form1.bStretch = chk_Stretch.Checked;
+		}
+
+		private void chk_Distortion_Click (object sender, EventArgs e)
+		{
+			Form1.bDistortion = chk_Distortion.Checked;
+		}
+
+		private void chk_Spiral_Click (object sender, EventArgs e)
+		{
+			Form1.bSpiral = chk_Spiral.Checked;
+		}
+
+		private void chk_Flex_Click (object sender, EventArgs e)
+		{
+			Form1.bFlex = chk_Flex.Checked;
+		}
+
+		private void chk_Isobar_Click (object sender, EventArgs e)
+		{
+			Form1.bIsobar = chk_Isobar.Checked;
+		}
+
+		private void chk_Topmost_Click (object sender, EventArgs e)
+		{
+			Form1.himself.TopMost = Form1.bTopmost = chk_Topmost.Checked;
+		}
+
+		private void dataGridView1_SelectionChanged (object sender, EventArgs e)
+		{
+			if (bUpdate)
 			{
-				iFnames = Form1.iFnames;
-				dataGridView1.Rows [iFnames].Selected = true;
-				dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
-			}
-			if (Form1.bFlex)
-			{
-				trk_Palitra.Value = Ranger10 (Form1.Palitra * 20.0, 0.0, 20.0);
+				if (0 < dataGridView1.SelectedRows.Count)
+				{
+					Form1.Audio_Next (dataGridView1.SelectedRows [0].Index);
+				}
 			}
 		}
 
@@ -217,42 +238,6 @@ namespace SeeMuzic
 		{
 			Form1.Audio_Next (-1);
 			btn_Play.BackgroundImage = SeeMuz.Properties.Resources.player_pause_6166;
-		}
-
-		private void dataGridView1_SelectionChanged (object sender, EventArgs e)
-		{
-			if (bUpdate)
-			{
-				if (0 < dataGridView1.SelectedRows.Count)
-				{
-					Form1.Audio_Next (dataGridView1.SelectedRows [0].Index);
-				}
-			}
-		}
-
-		private void chk_Eros_CheckedChanged (object sender, EventArgs e)
-		{
-			Form1.bDistortion = chk_Distortion.Checked;
-		}
-
-		private void chk_Topmost_Click (object sender, EventArgs e)
-		{
-			Form1.himself.TopMost = Form1.bTopmost = chk_Topmost.Checked;
-		}
-
-		private void chk_Flex_Click (object sender, EventArgs e)
-		{
-			Form1.bFlex = chk_Flex.Checked;
-		}
-
-		private void chk_Spiral_Click (object sender, EventArgs e)
-		{
-			Form1.bSpiral = chk_Spiral.Checked;
-		}
-
-		private void chk_Isobar_Click (object sender, EventArgs e)
-		{
-			Form1.bIsobar = chk_Isobar.Checked;
 		}
 
 		private void btn_Load_Click (object sender, EventArgs e)
@@ -349,6 +334,26 @@ namespace SeeMuzic
 			Form1.ListParam = Lprm1;
 			Reload ();
 			dataGridView1.Refresh ();
+		}
+
+		private void Panel_Timer_Tick (object sender, EventArgs e)
+		{
+			progress_Pos.Value = (int)(Form1.pct * 100.0);
+			if (iFnames != Form1.iFnames)
+			{
+				iFnames = Form1.iFnames;
+				dataGridView1.Rows [iFnames].Selected = true;
+				dataGridView1.CurrentCell = dataGridView1.Rows [iFnames].Cells [0];
+			}
+			if (Form1.bFlex)
+			{
+				trk_Palitra.Value = Ranger10 (Form1.Palitra * 20.0, 0.0, 20.0);
+			}
+		}
+
+		private void btn_Help_Click (object sender, EventArgs e)
+		{
+			Help.ShowHelp (this, "SeeMuz.Руководство оператора.html");
 		}
 
 		private int Ranger10 (double v, double vmin = 1.0, double vmax = 10.0)
